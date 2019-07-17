@@ -7,12 +7,13 @@ require (
 	github.com/appscode/go v0.0.0-20190621064509-6b292c9166e3
 	github.com/aws/aws-sdk-go v1.20.20 // indirect
 	github.com/dave/jennifer v1.3.0
+	github.com/emicklei/go-restful v2.9.6+incompatible // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
 	github.com/go-critic/go-critic v0.0.0-20181204210945-ee9bf5809ead // indirect
+	github.com/go-openapi/spec v0.19.2
 	github.com/gobuffalo/flect v0.1.5
 	github.com/google/gofuzz v1.0.0 // indirect
 	github.com/hashicorp/terraform v0.12.4
-	github.com/kr/pty v1.1.3 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
@@ -27,8 +28,7 @@ require (
 	k8s.io/apimachinery v0.0.0-20190711222657-391ed67afa7b
 	k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
 	k8s.io/klog v0.3.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20190228160746-b3a7cee44a30 // indirect
-	k8s.io/kubernetes v1.14.0
+	k8s.io/kube-openapi v0.0.0-20190228160746-b3a7cee44a30
 	k8s.io/utils v0.0.0-20190607212802-c55fbcfc754a // indirect
 )
 

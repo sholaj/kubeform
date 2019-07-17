@@ -93,9 +93,12 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 			continue
 		}
 
+		jk := flect.Camelize(key) // json key
+		tk := key                 // terraform key
 		if value.Optional {
 			statements = append(statements, Comment("// +optional"))
-			key = key + ",omitempty"
+			jk = jk + ",omitempty"
+			tk = tk + ",omitempty"
 		}
 
 		if value.MaxItems != 0 {
@@ -120,47 +123,47 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 
 		switch value.Type {
 		case schema.TypeString:
-			statements = append(statements, Id(id).String().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+			statements = append(statements, Id(id).String().Tag(map[string]string{"json": jk, "tf": tk}))
 		case schema.TypeInt:
-			statements = append(statements, Id(id).Int().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+			statements = append(statements, Id(id).Int().Tag(map[string]string{"json": jk, "tf": tk}))
 		case schema.TypeBool:
-			statements = append(statements, Id(id).Bool().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+			statements = append(statements, Id(id).Bool().Tag(map[string]string{"json": jk, "tf": tk}))
 		case schema.TypeFloat:
-			statements = append(statements, Id(id).Qual("encoding/json", "Number").Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+			statements = append(statements, Id(id).Qual("encoding/json", "Number").Tag(map[string]string{"json": jk, "tf": tk}))
 		case schema.TypeMap:
 			switch value.Elem.(type) {
 			case *schema.Schema:
 				switch value.Elem.(*schema.Schema).Type {
 				case schema.TypeInt:
-					statements = append(statements, Id(id).Map(String()).Int().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Map(String()).Int().Tag(map[string]string{"json": jk, "tf": tk}))
 				case schema.TypeFloat:
-					statements = append(statements, Id(id).Map(String()).Qual("encoding/json", "Number").Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Map(String()).Qual("encoding/json", "Number").Tag(map[string]string{"json": jk, "tf": tk}))
 				case schema.TypeBool:
-					statements = append(statements, Id(id).Map(String()).Bool().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Map(String()).Bool().Tag(map[string]string{"json": jk, "tf": tk}))
 				case schema.TypeString:
-					statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": jk, "tf": tk}))
 				}
 			case *schema.Resource:
-				statements = append(statements, Id(id).Map(String()).Id(structName+id).Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+				statements = append(statements, Id(id).Map(String()).Id(structName+id).Tag(map[string]string{"json": jk, "tf": tk}))
 				TerraformSchemaToStruct(value.Elem.(*schema.Resource).Schema, structName+id, providerName, false, out)
 			default:
-				statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+				statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": jk, "tf": tk}))
 			}
 		default:
 			switch value.Elem.(type) {
 			case *schema.Schema:
 				switch value.Elem.(*schema.Schema).Type {
 				case schema.TypeInt:
-					statements = append(statements, Id(id).Index().Int64().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Index().Int64().Tag(map[string]string{"json": jk, "tf": tk}))
 				case schema.TypeFloat:
-					statements = append(statements, Id(id).Index().Qual("encoding/json", "Number").Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Index().Qual("encoding/json", "Number").Tag(map[string]string{"json": jk, "tf": tk}))
 				case schema.TypeBool:
-					statements = append(statements, Id(id).Index().Bool().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Index().Bool().Tag(map[string]string{"json": jk, "tf": tk}))
 				case schema.TypeString:
-					statements = append(statements, Id(id).Index().String().Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+					statements = append(statements, Id(id).Index().String().Tag(map[string]string{"json": jk, "tf": tk}))
 				}
 			case *schema.Resource:
-				statements = append(statements, Id(id).Index().Id(structName+id).Tag(map[string]string{"json": flect.Camelize(key), "tf": key}))
+				statements = append(statements, Id(id).Index().Id(structName+id).Tag(map[string]string{"json": jk, "tf": tk}))
 				TerraformSchemaToStruct(value.Elem.(*schema.Resource).Schema, structName+id, providerName, false, out)
 			default:
 				log.Fatalf("Provider %s has resource %s type %s.%s with unknown schema type %s", providerName, structName, structName, id, value.Elem)
