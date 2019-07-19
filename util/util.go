@@ -112,6 +112,10 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 			statements = append(statements, Comment("// +kubebuilder:validation:UniqueItems=true"))
 		}
 
+		if value.Deprecated != "" {
+			statements = append(statements, Comment("// Deprecated"))
+		}
+
 		if value.Sensitive {
 			if value.Type == schema.TypeString {
 				statements = append(statements, Comment("// Sensitive Data. Provide secret name which contains one value only"))
@@ -119,12 +123,8 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 				statements = append(statements, Comment("// Sensitive Data. Provide secret name which contains one or more values"))
 			}
 
-			statements = append(statements, Id(id).Id("core.LocalObjectReference").Tag(map[string]string{"json": jk, "tf": tk}))
+			statements = append(statements, Id(id).Id("*core.LocalObjectReference").Tag(map[string]string{"json": jk, "tf": tk}))
 			continue
-		}
-
-		if value.Deprecated != "" {
-			statements = append(statements, Comment("// Deprecated"))
 		}
 
 		switch value.Type {

@@ -408,8 +408,8 @@ spec:
               maxItems: 1
               type: array
             diskEncryptionKeyRaw:
-              description: Sensitive Data. Provide secret name which contains one
-                value only
+              description: Deprecated Sensitive Data. Provide secret name which contains
+                one value only
               properties:
                 name:
                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names

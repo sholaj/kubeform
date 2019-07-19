@@ -7807,7 +7807,7 @@ func schema_kubeform_apis_google_v1alpha1_ComputeDiskSpec(ref common.ReferenceCa
 					},
 					"diskEncryptionKeyRaw": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Sensitive Data. Provide secret name which contains one value only",
+							Description: "Deprecated Sensitive Data. Provide secret name which contains one value only",
 							Ref:         ref("k8s.io/api/core/v1.LocalObjectReference"),
 						},
 					},
@@ -16635,7 +16635,7 @@ func schema_kubeform_apis_google_v1alpha1_ComputeSnapshotSpec(ref common.Referen
 					},
 					"snapshotEncryptionKeyRaw": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Sensitive Data. Provide secret name which contains one value only",
+							Description: "Deprecated Sensitive Data. Provide secret name which contains one value only",
 							Ref:         ref("k8s.io/api/core/v1.LocalObjectReference"),
 						},
 					},
@@ -16659,7 +16659,7 @@ func schema_kubeform_apis_google_v1alpha1_ComputeSnapshotSpec(ref common.Referen
 					},
 					"sourceDiskEncryptionKeyRaw": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Sensitive Data. Provide secret name which contains one value only",
+							Description: "Deprecated Sensitive Data. Provide secret name which contains one value only",
 							Ref:         ref("k8s.io/api/core/v1.LocalObjectReference"),
 						},
 					},
