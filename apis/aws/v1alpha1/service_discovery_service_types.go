@@ -57,7 +57,9 @@ type ServiceDiscoveryServiceSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	HealthCheckCustomConfig []ServiceDiscoveryServiceSpecHealthCheckCustomConfig `json:"healthCheckCustomConfig,omitempty" tf:"health_check_custom_config,omitempty"`
 	Name                    string                                               `json:"name" tf:"name"`
-	ProviderRef             core.LocalObjectReference                            `json:"providerRef" tf:"-"`
+	// +optional
+	NamespaceID string                    `json:"namespaceID,omitempty" tf:"namespace_id,omitempty"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type ServiceDiscoveryServiceStatus struct {
@@ -65,9 +67,8 @@ type ServiceDiscoveryServiceStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

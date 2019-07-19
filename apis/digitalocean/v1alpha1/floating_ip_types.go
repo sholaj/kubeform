@@ -20,7 +20,9 @@ type FloatingIP struct {
 
 type FloatingIPSpec struct {
 	// +optional
-	DropletID   int                       `json:"dropletID,omitempty" tf:"droplet_id,omitempty"`
+	DropletID int `json:"dropletID,omitempty" tf:"droplet_id,omitempty"`
+	// +optional
+	IpAddress   string                    `json:"ipAddress,omitempty" tf:"ip_address,omitempty"`
 	Region      string                    `json:"region" tf:"region"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
@@ -30,9 +32,8 @@ type FloatingIPStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

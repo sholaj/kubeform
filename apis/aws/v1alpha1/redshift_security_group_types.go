@@ -21,6 +21,10 @@ type RedshiftSecurityGroup struct {
 type RedshiftSecurityGroupSpecIngress struct {
 	// +optional
 	Cidr string `json:"cidr,omitempty" tf:"cidr,omitempty"`
+	// +optional
+	SecurityGroupName string `json:"securityGroupName,omitempty" tf:"security_group_name,omitempty"`
+	// +optional
+	SecurityGroupOwnerID string `json:"securityGroupOwnerID,omitempty" tf:"security_group_owner_id,omitempty"`
 }
 
 type RedshiftSecurityGroupSpec struct {
@@ -37,9 +41,8 @@ type RedshiftSecurityGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

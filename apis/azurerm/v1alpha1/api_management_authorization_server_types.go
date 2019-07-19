@@ -37,7 +37,8 @@ type ApiManagementAuthorizationServerSpec struct {
 	ClientID                   string   `json:"clientID" tf:"client_id"`
 	ClientRegistrationEndpoint string   `json:"clientRegistrationEndpoint" tf:"client_registration_endpoint"`
 	// +optional
-	ClientSecret string `json:"clientSecret,omitempty" tf:"client_secret,omitempty"`
+	// Sensitive Data. Provide secret name which contains one value only
+	ClientSecret core.LocalObjectReference `json:"clientSecret,omitempty" tf:"client_secret,omitempty"`
 	// +optional
 	DefaultScope string `json:"defaultScope,omitempty" tf:"default_scope,omitempty"`
 	// +optional
@@ -48,7 +49,8 @@ type ApiManagementAuthorizationServerSpec struct {
 	Name              string   `json:"name" tf:"name"`
 	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	ResourceOwnerPassword string `json:"resourceOwnerPassword,omitempty" tf:"resource_owner_password,omitempty"`
+	// Sensitive Data. Provide secret name which contains one value only
+	ResourceOwnerPassword core.LocalObjectReference `json:"resourceOwnerPassword,omitempty" tf:"resource_owner_password,omitempty"`
 	// +optional
 	ResourceOwnerUsername string `json:"resourceOwnerUsername,omitempty" tf:"resource_owner_username,omitempty"`
 	// +optional
@@ -65,9 +67,8 @@ type ApiManagementAuthorizationServerStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

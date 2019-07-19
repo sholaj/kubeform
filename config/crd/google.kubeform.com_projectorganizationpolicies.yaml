@@ -438,6 +438,8 @@ spec:
                       type: object
                     maxItems: 1
                     type: array
+                  suggestedValue:
+                    type: string
                 type: object
               maxItems: 1
               type: array
@@ -462,6 +464,8 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            version:
+              type: integer
           required:
           - constraint
           - project
@@ -477,10 +481,7 @@ spec:
             output:
               type: object
             tfState:
-              format: byte
-              type: string
-            tfStateHash:
-              type: string
+              type: object
           type: object
       type: object
   versions:

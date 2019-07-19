@@ -24,7 +24,9 @@ type RdsGlobalClusterSpec struct {
 	// +optional
 	DeletionProtection bool `json:"deletionProtection,omitempty" tf:"deletion_protection,omitempty"`
 	// +optional
-	Engine                  string `json:"engine,omitempty" tf:"engine,omitempty"`
+	Engine string `json:"engine,omitempty" tf:"engine,omitempty"`
+	// +optional
+	EngineVersion           string `json:"engineVersion,omitempty" tf:"engine_version,omitempty"`
 	GlobalClusterIdentifier string `json:"globalClusterIdentifier" tf:"global_cluster_identifier"`
 	// +optional
 	StorageEncrypted bool                      `json:"storageEncrypted,omitempty" tf:"storage_encrypted,omitempty"`
@@ -36,9 +38,8 @@ type RdsGlobalClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

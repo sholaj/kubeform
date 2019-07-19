@@ -37,8 +37,10 @@ type RoleDefinitionSpec struct {
 	Description string                          `json:"description,omitempty" tf:"description,omitempty"`
 	Name        string                          `json:"name" tf:"name"`
 	Permissions []RoleDefinitionSpecPermissions `json:"permissions" tf:"permissions"`
-	Scope       string                          `json:"scope" tf:"scope"`
-	ProviderRef core.LocalObjectReference       `json:"providerRef" tf:"-"`
+	// +optional
+	RoleDefinitionID string                    `json:"roleDefinitionID,omitempty" tf:"role_definition_id,omitempty"`
+	Scope            string                    `json:"scope" tf:"scope"`
+	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type RoleDefinitionStatus struct {
@@ -46,9 +48,8 @@ type RoleDefinitionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

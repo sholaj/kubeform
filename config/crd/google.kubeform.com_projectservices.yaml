@@ -8,7 +8,7 @@ metadata:
 spec:
   group: google.kubeform.com
   names:
-    kind: ProjectServices
+    kind: ProjectService
     plural: projectservices
   scope: ""
   validation:
@@ -399,6 +399,8 @@ spec:
           properties:
             disableOnDestroy:
               type: boolean
+            project:
+              type: string
             providerRef:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
@@ -408,14 +410,11 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
-            services:
-              items:
-                type: string
-              type: array
-              uniqueItems: true
+            service:
+              type: string
           required:
           - providerRef
-          - services
+          - service
           type: object
         status:
           properties:
@@ -427,10 +426,7 @@ spec:
             output:
               type: object
             tfState:
-              format: byte
-              type: string
-            tfStateHash:
-              type: string
+              type: object
           type: object
       type: object
   versions:

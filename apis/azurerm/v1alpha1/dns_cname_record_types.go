@@ -19,12 +19,14 @@ type DnsCnameRecord struct {
 }
 
 type DnsCnameRecordSpec struct {
-	Name              string                    `json:"name" tf:"name"`
-	Record            string                    `json:"record" tf:"record"`
-	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
-	Ttl               int                       `json:"ttl" tf:"ttl"`
-	ZoneName          string                    `json:"zoneName" tf:"zone_name"`
-	ProviderRef       core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Name              string `json:"name" tf:"name"`
+	Record            string `json:"record" tf:"record"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
+	// +optional
+	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
+	Ttl         int                       `json:"ttl" tf:"ttl"`
+	ZoneName    string                    `json:"zoneName" tf:"zone_name"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type DnsCnameRecordStatus struct {
@@ -32,9 +34,8 @@ type DnsCnameRecordStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -35,14 +35,23 @@ type DirectoryServiceDirectorySpecVpcSettings struct {
 
 type DirectoryServiceDirectorySpec struct {
 	// +optional
+	Alias string `json:"alias,omitempty" tf:"alias,omitempty"`
+	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	ConnectSettings []DirectoryServiceDirectorySpecConnectSettings `json:"connectSettings,omitempty" tf:"connect_settings,omitempty"`
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
+	Edition string `json:"edition,omitempty" tf:"edition,omitempty"`
+	// +optional
 	EnableSso bool   `json:"enableSso,omitempty" tf:"enable_sso,omitempty"`
 	Name      string `json:"name" tf:"name"`
-	Password  string `json:"password" tf:"password"`
+	// Sensitive Data. Provide secret name which contains one value only
+	Password core.LocalObjectReference `json:"password" tf:"password"`
+	// +optional
+	ShortName string `json:"shortName,omitempty" tf:"short_name,omitempty"`
+	// +optional
+	Size string `json:"size,omitempty" tf:"size,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
@@ -58,9 +67,8 @@ type DirectoryServiceDirectoryStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

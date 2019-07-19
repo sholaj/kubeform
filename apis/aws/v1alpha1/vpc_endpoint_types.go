@@ -22,8 +22,19 @@ type VpcEndpointSpec struct {
 	// +optional
 	AutoAccept bool `json:"autoAccept,omitempty" tf:"auto_accept,omitempty"`
 	// +optional
-	PrivateDNSEnabled bool   `json:"privateDNSEnabled,omitempty" tf:"private_dns_enabled,omitempty"`
-	ServiceName       string `json:"serviceName" tf:"service_name"`
+	Policy string `json:"policy,omitempty" tf:"policy,omitempty"`
+	// +optional
+	PrivateDNSEnabled bool `json:"privateDNSEnabled,omitempty" tf:"private_dns_enabled,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	RouteTableIDS []string `json:"routeTableIDS,omitempty" tf:"route_table_ids,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	SecurityGroupIDS []string `json:"securityGroupIDS,omitempty" tf:"security_group_ids,omitempty"`
+	ServiceName      string   `json:"serviceName" tf:"service_name"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	SubnetIDS []string `json:"subnetIDS,omitempty" tf:"subnet_ids,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
@@ -37,9 +48,8 @@ type VpcEndpointStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

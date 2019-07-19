@@ -34,11 +34,19 @@ type S3BucketObjectSpec struct {
 	ContentEncoding string `json:"contentEncoding,omitempty" tf:"content_encoding,omitempty"`
 	// +optional
 	ContentLanguage string `json:"contentLanguage,omitempty" tf:"content_language,omitempty"`
-	Key             string `json:"key" tf:"key"`
+	// +optional
+	ContentType string `json:"contentType,omitempty" tf:"content_type,omitempty"`
+	// +optional
+	Etag string `json:"etag,omitempty" tf:"etag,omitempty"`
+	Key  string `json:"key" tf:"key"`
 	// +optional
 	KmsKeyID string `json:"kmsKeyID,omitempty" tf:"kms_key_id,omitempty"`
 	// +optional
+	ServerSideEncryption string `json:"serverSideEncryption,omitempty" tf:"server_side_encryption,omitempty"`
+	// +optional
 	Source string `json:"source,omitempty" tf:"source,omitempty"`
+	// +optional
+	StorageClass string `json:"storageClass,omitempty" tf:"storage_class,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
@@ -51,9 +59,8 @@ type S3BucketObjectStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

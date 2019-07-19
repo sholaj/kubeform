@@ -24,6 +24,8 @@ type ApiManagementAPIOperationPolicySpec struct {
 	OperationID       string `json:"operationID" tf:"operation_id"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
+	XmlContent string `json:"xmlContent,omitempty" tf:"xml_content,omitempty"`
+	// +optional
 	XmlLink     string                    `json:"xmlLink,omitempty" tf:"xml_link,omitempty"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
@@ -33,9 +35,8 @@ type ApiManagementAPIOperationPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

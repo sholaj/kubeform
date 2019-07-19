@@ -28,7 +28,10 @@ type GlueConnectionSpecPhysicalConnectionRequirements struct {
 }
 
 type GlueConnectionSpec struct {
-	ConnectionProperties map[string]string `json:"connectionProperties" tf:"connection_properties"`
+	// +optional
+	CatalogID string `json:"catalogID,omitempty" tf:"catalog_id,omitempty"`
+	// Sensitive Data. Provide secret name which contains one or more values
+	ConnectionProperties core.LocalObjectReference `json:"connectionProperties" tf:"connection_properties"`
 	// +optional
 	ConnectionType string `json:"connectionType,omitempty" tf:"connection_type,omitempty"`
 	// +optional
@@ -47,9 +50,8 @@ type GlueConnectionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

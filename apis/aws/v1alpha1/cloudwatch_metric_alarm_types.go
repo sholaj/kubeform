@@ -58,8 +58,10 @@ type CloudwatchMetricAlarmSpec struct {
 	// +optional
 	DatapointsToAlarm int `json:"datapointsToAlarm,omitempty" tf:"datapoints_to_alarm,omitempty"`
 	// +optional
-	Dimensions        map[string]string `json:"dimensions,omitempty" tf:"dimensions,omitempty"`
-	EvaluationPeriods int               `json:"evaluationPeriods" tf:"evaluation_periods"`
+	Dimensions map[string]string `json:"dimensions,omitempty" tf:"dimensions,omitempty"`
+	// +optional
+	EvaluateLowSampleCountPercentiles string `json:"evaluateLowSampleCountPercentiles,omitempty" tf:"evaluate_low_sample_count_percentiles,omitempty"`
+	EvaluationPeriods                 int    `json:"evaluationPeriods" tf:"evaluation_periods"`
 	// +optional
 	ExtendedStatistic string `json:"extendedStatistic,omitempty" tf:"extended_statistic,omitempty"`
 	// +optional
@@ -94,9 +96,8 @@ type CloudwatchMetricAlarmStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -420,6 +420,10 @@ spec:
               type: object
             resourceGroupName:
               type: string
+            tags:
+              additionalProperties:
+                type: string
+              type: object
             targetRegion:
               items:
                 properties:
@@ -453,10 +457,7 @@ spec:
             output:
               type: object
             tfState:
-              format: byte
-              type: string
-            tfStateHash:
-              type: string
+              type: object
           type: object
       type: object
   versions:

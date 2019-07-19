@@ -44,7 +44,9 @@ type CodepipelineSpecStageAction struct {
 	Provider        string   `json:"provider" tf:"provider"`
 	// +optional
 	RoleArn string `json:"roleArn,omitempty" tf:"role_arn,omitempty"`
-	Version string `json:"version" tf:"version"`
+	// +optional
+	RunOrder int    `json:"runOrder,omitempty" tf:"run_order,omitempty"`
+	Version  string `json:"version" tf:"version"`
 }
 
 type CodepipelineSpecStage struct {
@@ -69,9 +71,8 @@ type CodepipelineStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

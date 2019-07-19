@@ -24,8 +24,10 @@ type PolicyDefinitionSpec struct {
 	DisplayName string `json:"displayName" tf:"display_name"`
 	// +optional
 	ManagementGroupID string `json:"managementGroupID,omitempty" tf:"management_group_id,omitempty"`
-	Mode              string `json:"mode" tf:"mode"`
-	Name              string `json:"name" tf:"name"`
+	// +optional
+	Metadata string `json:"metadata,omitempty" tf:"metadata,omitempty"`
+	Mode     string `json:"mode" tf:"mode"`
+	Name     string `json:"name" tf:"name"`
 	// +optional
 	Parameters string `json:"parameters,omitempty" tf:"parameters,omitempty"`
 	// +optional
@@ -39,9 +41,8 @@ type PolicyDefinitionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

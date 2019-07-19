@@ -133,6 +133,8 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerList":                     schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerList(ref),
 		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpec":                     schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpec(ref),
 		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecForwardingRule":       schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpecForwardingRule(ref),
+		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecHealthcheck":          schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpecHealthcheck(ref),
+		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecStickySessions":       schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpecStickySessions(ref),
 		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerStatus":                   schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerStatus(ref),
 		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.Project":                              schema_kubeform_apis_digitalocean_v1alpha1_Project(ref),
 		"kubeform.dev/kubeform/apis/digitalocean/v1alpha1.ProjectList":                          schema_kubeform_apis_digitalocean_v1alpha1_ProjectList(ref),
@@ -2219,6 +2221,12 @@ func schema_kubeform_apis_digitalocean_v1alpha1_CdnSpec(ref common.ReferenceCall
 							Format: "",
 						},
 					},
+					"ttl": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
 					"providerRef": {
 						SchemaProps: spec.SchemaProps{
 							Ref: ref("k8s.io/api/core/v1.LocalObjectReference"),
@@ -2248,14 +2256,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_CdnStatus(ref common.ReferenceCa
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -2400,8 +2401,8 @@ func schema_kubeform_apis_digitalocean_v1alpha1_CertificateSpec(ref common.Refer
 					},
 					"privateKey": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Description: "Sensitive Data. Provide secret name which contains one value only",
+							Ref:         ref("k8s.io/api/core/v1.LocalObjectReference"),
 						},
 					},
 					"type": {
@@ -2439,14 +2440,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_CertificateStatus(ref common.Ref
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -2660,14 +2654,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_DatabaseClusterStatus(ref common
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -2820,14 +2807,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_DomainStatus(ref common.Referenc
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -3070,14 +3050,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_DropletSnapshotStatus(ref common
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -3185,6 +3158,19 @@ func schema_kubeform_apis_digitalocean_v1alpha1_DropletSpec(ref common.Reference
 							Format: "",
 						},
 					},
+					"volumeIDS": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Type:   []string{"string"},
+										Format: "",
+									},
+								},
+							},
+						},
+					},
 					"providerRef": {
 						SchemaProps: spec.SchemaProps{
 							Ref: ref("k8s.io/api/core/v1.LocalObjectReference"),
@@ -3214,14 +3200,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_DropletStatus(ref common.Referen
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -3572,14 +3551,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_FirewallStatus(ref common.Refere
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -3775,14 +3747,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_FloatingIPAssignmentStatus(ref c
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -3857,6 +3822,12 @@ func schema_kubeform_apis_digitalocean_v1alpha1_FloatingIPSpec(ref common.Refere
 							Format: "int32",
 						},
 					},
+					"ipAddress": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
 					"region": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -3892,14 +3863,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_FloatingIPStatus(ref common.Refe
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -4127,14 +4091,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_KubernetesClusterStatus(ref comm
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -4312,14 +4269,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_KubernetesNodePoolStatus(ref com
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -4437,6 +4387,19 @@ func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpec(ref common.Refe
 							Format: "",
 						},
 					},
+					"dropletIDS": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Type:   []string{"integer"},
+										Format: "int64",
+									},
+								},
+							},
+						},
+					},
 					"dropletTag": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -4461,6 +4424,18 @@ func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpec(ref common.Refe
 							},
 						},
 					},
+					"healthcheck": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecHealthcheck"),
+									},
+								},
+							},
+						},
+					},
 					"name": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -4479,6 +4454,18 @@ func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpec(ref common.Refe
 							Format: "",
 						},
 					},
+					"stickySessions": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecStickySessions"),
+									},
+								},
+							},
+						},
+					},
 					"providerRef": {
 						SchemaProps: spec.SchemaProps{
 							Ref: ref("k8s.io/api/core/v1.LocalObjectReference"),
@@ -4489,7 +4476,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpec(ref common.Refe
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/api/core/v1.LocalObjectReference", "kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecForwardingRule"},
+			"k8s.io/api/core/v1.LocalObjectReference", "kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecForwardingRule", "kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecHealthcheck", "kubeform.dev/kubeform/apis/digitalocean/v1alpha1.LoadbalancerSpecStickySessions"},
 	}
 }
 
@@ -4542,6 +4529,91 @@ func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpecForwardingRule(r
 	}
 }
 
+func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpecHealthcheck(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"checkIntervalSeconds": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"healthyThreshold": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"path": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"port": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"protocol": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"responseTimeoutSeconds": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"unhealthyThreshold": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+				},
+				Required: []string{"port", "protocol"},
+			},
+		},
+	}
+}
+
+func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerSpecStickySessions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"cookieName": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"cookieTtlSeconds": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
 func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -4557,14 +4629,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_LoadbalancerStatus(ref common.Re
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -4742,14 +4807,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_ProjectStatus(ref common.Referen
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -4897,6 +4955,12 @@ func schema_kubeform_apis_digitalocean_v1alpha1_RecordSpec(ref common.ReferenceC
 							Format: "",
 						},
 					},
+					"ttl": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
 					"type": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
@@ -4944,14 +5008,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_RecordStatus(ref common.Referenc
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -5116,14 +5173,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_SpacesBucketStatus(ref common.Re
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -5276,14 +5326,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_SshKeyStatus(ref common.Referenc
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -5430,14 +5473,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_TagStatus(ref common.ReferenceCa
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -5633,14 +5669,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_VolumeAttachmentStatus(ref commo
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -5840,14 +5869,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_VolumeSnapshotStatus(ref common.
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {
@@ -5873,6 +5895,13 @@ func schema_kubeform_apis_digitalocean_v1alpha1_VolumeSpec(ref common.ReferenceC
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",
+						},
+					},
+					"filesystemType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Deprecated",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 					"initialFilesystemLabel": {
@@ -5940,14 +5969,7 @@ func schema_kubeform_apis_digitalocean_v1alpha1_VolumeStatus(ref common.Referenc
 					},
 					"tfState": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "byte",
-						},
-					},
-					"tfStateHash": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
+							Ref: ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
 						},
 					},
 					"output": {

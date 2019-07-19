@@ -20,8 +20,12 @@ type CloudfrontPublicKey struct {
 
 type CloudfrontPublicKeySpec struct {
 	// +optional
-	Comment     string                    `json:"comment,omitempty" tf:"comment,omitempty"`
-	EncodedKey  string                    `json:"encodedKey" tf:"encoded_key"`
+	Comment    string `json:"comment,omitempty" tf:"comment,omitempty"`
+	EncodedKey string `json:"encodedKey" tf:"encoded_key"`
+	// +optional
+	Name string `json:"name,omitempty" tf:"name,omitempty"`
+	// +optional
+	NamePrefix  string                    `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
@@ -30,9 +34,8 @@ type CloudfrontPublicKeyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

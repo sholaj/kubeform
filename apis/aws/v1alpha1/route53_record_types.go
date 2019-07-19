@@ -50,6 +50,8 @@ type Route53RecordSpec struct {
 	// +kubebuilder:validation:UniqueItems=true
 	Alias []Route53RecordSpecAlias `json:"alias,omitempty" tf:"alias,omitempty"`
 	// +optional
+	AllowOverwrite bool `json:"allowOverwrite,omitempty" tf:"allow_overwrite,omitempty"`
+	// +optional
 	FailoverRoutingPolicy []Route53RecordSpecFailoverRoutingPolicy `json:"failoverRoutingPolicy,omitempty" tf:"failover_routing_policy,omitempty"`
 	// +optional
 	GeolocationRoutingPolicy []Route53RecordSpecGeolocationRoutingPolicy `json:"geolocationRoutingPolicy,omitempty" tf:"geolocation_routing_policy,omitempty"`
@@ -79,9 +81,8 @@ type Route53RecordStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

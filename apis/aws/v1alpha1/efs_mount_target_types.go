@@ -19,9 +19,14 @@ type EfsMountTarget struct {
 }
 
 type EfsMountTargetSpec struct {
-	FileSystemID string                    `json:"fileSystemID" tf:"file_system_id"`
-	SubnetID     string                    `json:"subnetID" tf:"subnet_id"`
-	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
+	FileSystemID string `json:"fileSystemID" tf:"file_system_id"`
+	// +optional
+	IpAddress string `json:"ipAddress,omitempty" tf:"ip_address,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	SecurityGroups []string                  `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
+	SubnetID       string                    `json:"subnetID" tf:"subnet_id"`
+	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type EfsMountTargetStatus struct {
@@ -29,9 +34,8 @@ type EfsMountTargetStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

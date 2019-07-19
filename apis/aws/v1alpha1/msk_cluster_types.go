@@ -53,6 +53,8 @@ type MskClusterSpecEncryptionInfoEncryptionInTransit struct {
 
 type MskClusterSpecEncryptionInfo struct {
 	// +optional
+	EncryptionAtRestKmsKeyArn string `json:"encryptionAtRestKmsKeyArn,omitempty" tf:"encryption_at_rest_kms_key_arn,omitempty"`
+	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	EncryptionInTransit []MskClusterSpecEncryptionInfoEncryptionInTransit `json:"encryptionInTransit,omitempty" tf:"encryption_in_transit,omitempty"`
 }
@@ -84,9 +86,8 @@ type MskClusterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

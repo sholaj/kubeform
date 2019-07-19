@@ -20,11 +20,16 @@ type SecretsmanagerSecretVersion struct {
 
 type SecretsmanagerSecretVersionSpec struct {
 	// +optional
-	SecretBinary string `json:"secretBinary,omitempty" tf:"secret_binary,omitempty"`
-	SecretID     string `json:"secretID" tf:"secret_id"`
+	// Sensitive Data. Provide secret name which contains one value only
+	SecretBinary core.LocalObjectReference `json:"secretBinary,omitempty" tf:"secret_binary,omitempty"`
+	SecretID     string                    `json:"secretID" tf:"secret_id"`
 	// +optional
-	SecretString string                    `json:"secretString,omitempty" tf:"secret_string,omitempty"`
-	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
+	// Sensitive Data. Provide secret name which contains one value only
+	SecretString core.LocalObjectReference `json:"secretString,omitempty" tf:"secret_string,omitempty"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	VersionStages []string                  `json:"versionStages,omitempty" tf:"version_stages,omitempty"`
+	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
 type SecretsmanagerSecretVersionStatus struct {
@@ -32,9 +37,8 @@ type SecretsmanagerSecretVersionStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

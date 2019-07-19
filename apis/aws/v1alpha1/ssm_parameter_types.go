@@ -22,16 +22,21 @@ type SsmParameterSpec struct {
 	// +optional
 	AllowedPattern string `json:"allowedPattern,omitempty" tf:"allowed_pattern,omitempty"`
 	// +optional
+	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
+	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
-	Name        string `json:"name" tf:"name"`
+	// +optional
+	KeyID string `json:"keyID,omitempty" tf:"key_id,omitempty"`
+	Name  string `json:"name" tf:"name"`
 	// +optional
 	Overwrite bool `json:"overwrite,omitempty" tf:"overwrite,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	Tier        string                    `json:"tier,omitempty" tf:"tier,omitempty"`
-	Type        string                    `json:"type" tf:"type"`
-	Value       string                    `json:"value" tf:"value"`
+	Tier string `json:"tier,omitempty" tf:"tier,omitempty"`
+	Type string `json:"type" tf:"type"`
+	// Sensitive Data. Provide secret name which contains one value only
+	Value       core.LocalObjectReference `json:"value" tf:"value"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
 
@@ -40,9 +45,8 @@ type SsmParameterStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

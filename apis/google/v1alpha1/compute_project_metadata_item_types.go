@@ -19,7 +19,9 @@ type ComputeProjectMetadataItem struct {
 }
 
 type ComputeProjectMetadataItemSpec struct {
-	Key         string                    `json:"key" tf:"key"`
+	Key string `json:"key" tf:"key"`
+	// +optional
+	Project     string                    `json:"project,omitempty" tf:"project,omitempty"`
 	Value       string                    `json:"value" tf:"value"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
@@ -29,9 +31,8 @@ type ComputeProjectMetadataItemStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

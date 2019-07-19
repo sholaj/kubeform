@@ -18,12 +18,24 @@ type EmrInstanceGroup struct {
 	Status            EmrInstanceGroupStatus `json:"status,omitempty"`
 }
 
+type EmrInstanceGroupSpecEbsConfig struct {
+	// +optional
+	Iops int    `json:"iops,omitempty" tf:"iops,omitempty"`
+	Size int    `json:"size" tf:"size"`
+	Type string `json:"type" tf:"type"`
+	// +optional
+	VolumesPerInstance int `json:"volumesPerInstance,omitempty" tf:"volumes_per_instance,omitempty"`
+}
+
 type EmrInstanceGroupSpec struct {
 	// +optional
 	AutoscalingPolicy string `json:"autoscalingPolicy,omitempty" tf:"autoscaling_policy,omitempty"`
 	// +optional
 	BidPrice  string `json:"bidPrice,omitempty" tf:"bid_price,omitempty"`
 	ClusterID string `json:"clusterID" tf:"cluster_id"`
+	// +optional
+	// +kubebuilder:validation:UniqueItems=true
+	EbsConfig []EmrInstanceGroupSpecEbsConfig `json:"ebsConfig,omitempty" tf:"ebs_config,omitempty"`
 	// +optional
 	EbsOptimized bool `json:"ebsOptimized,omitempty" tf:"ebs_optimized,omitempty"`
 	// +optional
@@ -39,9 +51,8 @@ type EmrInstanceGroupStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

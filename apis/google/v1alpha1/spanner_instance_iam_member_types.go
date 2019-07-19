@@ -19,8 +19,10 @@ type SpannerInstanceIamMember struct {
 }
 
 type SpannerInstanceIamMemberSpec struct {
-	Instance    string                    `json:"instance" tf:"instance"`
-	Member      string                    `json:"member" tf:"member"`
+	Instance string `json:"instance" tf:"instance"`
+	Member   string `json:"member" tf:"member"`
+	// +optional
+	Project     string                    `json:"project,omitempty" tf:"project,omitempty"`
 	Role        string                    `json:"role" tf:"role"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
@@ -30,9 +32,8 @@ type SpannerInstanceIamMemberStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

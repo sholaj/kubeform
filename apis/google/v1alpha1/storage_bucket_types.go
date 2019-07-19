@@ -66,6 +66,8 @@ type StorageBucketSpecLifecycleRule struct {
 
 type StorageBucketSpecLogging struct {
 	LogBucket string `json:"logBucket" tf:"log_bucket"`
+	// +optional
+	LogObjectPrefix string `json:"logObjectPrefix,omitempty" tf:"log_object_prefix,omitempty"`
 }
 
 type StorageBucketSpecVersioning struct {
@@ -100,6 +102,8 @@ type StorageBucketSpec struct {
 	Logging []StorageBucketSpecLogging `json:"logging,omitempty" tf:"logging,omitempty"`
 	Name    string                     `json:"name" tf:"name"`
 	// +optional
+	Project string `json:"project,omitempty" tf:"project,omitempty"`
+	// +optional
 	StorageClass string `json:"storageClass,omitempty" tf:"storage_class,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -114,9 +118,8 @@ type StorageBucketStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

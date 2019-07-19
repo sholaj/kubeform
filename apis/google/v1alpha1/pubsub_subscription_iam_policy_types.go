@@ -19,7 +19,9 @@ type PubsubSubscriptionIamPolicy struct {
 }
 
 type PubsubSubscriptionIamPolicySpec struct {
-	PolicyData   string                    `json:"policyData" tf:"policy_data"`
+	PolicyData string `json:"policyData" tf:"policy_data"`
+	// +optional
+	Project      string                    `json:"project,omitempty" tf:"project,omitempty"`
 	Subscription string                    `json:"subscription" tf:"subscription"`
 	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
 }
@@ -29,9 +31,8 @@ type PubsubSubscriptionIamPolicyStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
-	TFState     []byte                `json:"tfState,omitempty"`
-	TFStateHash string                `json:"tfStateHash,omitempty"`
-	Output      *runtime.RawExtension `json:"output,omitempty"`
+	TFState *runtime.RawExtension `json:"tfState,omitempty"`
+	Output  *runtime.RawExtension `json:"output,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
