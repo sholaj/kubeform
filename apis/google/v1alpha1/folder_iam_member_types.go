@@ -19,10 +19,11 @@ type FolderIamMember struct {
 }
 
 type FolderIamMemberSpec struct {
-	Folder      string                    `json:"folder" tf:"folder"`
-	Member      string                    `json:"member" tf:"member"`
-	Role        string                    `json:"role" tf:"role"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Folder string `json:"folder" tf:"folder"`
+	Member string `json:"member" tf:"member"`
+	Role   string `json:"role" tf:"role"`
 }
 
 type FolderIamMemberStatus struct {

@@ -19,6 +19,8 @@ type AutomationVariableBool struct {
 }
 
 type AutomationVariableBoolSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AutomationAccountName string `json:"automationAccountName" tf:"automation_account_name"`
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
@@ -27,8 +29,7 @@ type AutomationVariableBoolSpec struct {
 	Name              string `json:"name" tf:"name"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Value       bool                      `json:"value,omitempty" tf:"value,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Value bool `json:"value,omitempty" tf:"value,omitempty"`
 }
 
 type AutomationVariableBoolStatus struct {

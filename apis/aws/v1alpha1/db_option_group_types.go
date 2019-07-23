@@ -41,6 +41,8 @@ type DbOptionGroupSpecOption struct {
 }
 
 type DbOptionGroupSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	EngineName         string `json:"engineName" tf:"engine_name"`
 	MajorEngineVersion string `json:"majorEngineVersion" tf:"major_engine_version"`
 	// +optional
@@ -53,8 +55,7 @@ type DbOptionGroupSpec struct {
 	// +optional
 	OptionGroupDescription string `json:"optionGroupDescription,omitempty" tf:"option_group_description,omitempty"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type DbOptionGroupStatus struct {

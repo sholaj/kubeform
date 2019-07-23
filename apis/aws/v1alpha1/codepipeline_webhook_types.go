@@ -22,8 +22,6 @@ type CodepipelineWebhookSpecAuthenticationConfiguration struct {
 	// +optional
 	AllowedIPRange string `json:"allowedIPRange,omitempty" tf:"allowed_ip_range,omitempty"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	SecretToken core.LocalObjectReference `json:"secretToken,omitempty" tf:"secret_token,omitempty"`
 }
 
 type CodepipelineWebhookSpecFilter struct {
@@ -32,6 +30,10 @@ type CodepipelineWebhookSpecFilter struct {
 }
 
 type CodepipelineWebhookSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	Authentication string `json:"authentication" tf:"authentication"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -42,10 +44,9 @@ type CodepipelineWebhookSpec struct {
 	Filter []CodepipelineWebhookSpecFilter `json:"filter" tf:"filter"`
 	Name   string                          `json:"name" tf:"name"`
 	// +optional
-	Tags           map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	TargetAction   string                    `json:"targetAction" tf:"target_action"`
-	TargetPipeline string                    `json:"targetPipeline" tf:"target_pipeline"`
-	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags           map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	TargetAction   string            `json:"targetAction" tf:"target_action"`
+	TargetPipeline string            `json:"targetPipeline" tf:"target_pipeline"`
 }
 
 type CodepipelineWebhookStatus struct {

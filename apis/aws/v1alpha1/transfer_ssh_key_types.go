@@ -19,10 +19,11 @@ type TransferSSHKey struct {
 }
 
 type TransferSSHKeySpec struct {
-	Body        string                    `json:"body" tf:"body"`
-	ServerID    string                    `json:"serverID" tf:"server_id"`
-	UserName    string                    `json:"userName" tf:"user_name"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Body     string `json:"body" tf:"body"`
+	ServerID string `json:"serverID" tf:"server_id"`
+	UserName string `json:"userName" tf:"user_name"`
 }
 
 type TransferSSHKeyStatus struct {

@@ -19,6 +19,8 @@ type DxPrivateVirtualInterface struct {
 }
 
 type DxPrivateVirtualInterfaceSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AddressFamily string `json:"addressFamily" tf:"address_family"`
 	// +optional
 	AmazonAddress string `json:"amazonAddress,omitempty" tf:"amazon_address,omitempty"`
@@ -37,8 +39,7 @@ type DxPrivateVirtualInterfaceSpec struct {
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	Vlan int               `json:"vlan" tf:"vlan"`
 	// +optional
-	VpnGatewayID string                    `json:"vpnGatewayID,omitempty" tf:"vpn_gateway_id,omitempty"`
-	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
+	VpnGatewayID string `json:"vpnGatewayID,omitempty" tf:"vpn_gateway_id,omitempty"`
 }
 
 type DxPrivateVirtualInterfaceStatus struct {

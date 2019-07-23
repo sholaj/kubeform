@@ -19,6 +19,8 @@ type ComputeHTTPHealthCheck struct {
 }
 
 type ComputeHTTPHealthCheckSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	CheckIntervalSec int `json:"checkIntervalSec,omitempty" tf:"check_interval_sec,omitempty"`
 	// +optional
@@ -37,8 +39,7 @@ type ComputeHTTPHealthCheckSpec struct {
 	// +optional
 	TimeoutSec int `json:"timeoutSec,omitempty" tf:"timeout_sec,omitempty"`
 	// +optional
-	UnhealthyThreshold int                       `json:"unhealthyThreshold,omitempty" tf:"unhealthy_threshold,omitempty"`
-	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
+	UnhealthyThreshold int `json:"unhealthyThreshold,omitempty" tf:"unhealthy_threshold,omitempty"`
 }
 
 type ComputeHTTPHealthCheckStatus struct {

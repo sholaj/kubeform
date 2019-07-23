@@ -26,6 +26,8 @@ type LogAnalyticsSolutionSpecPlan struct {
 }
 
 type LogAnalyticsSolutionSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Location string `json:"location" tf:"location"`
 	// +kubebuilder:validation:MaxItems=1
 	Plan                []LogAnalyticsSolutionSpecPlan `json:"plan" tf:"plan"`
@@ -33,7 +35,6 @@ type LogAnalyticsSolutionSpec struct {
 	SolutionName        string                         `json:"solutionName" tf:"solution_name"`
 	WorkspaceName       string                         `json:"workspaceName" tf:"workspace_name"`
 	WorkspaceResourceID string                         `json:"workspaceResourceID" tf:"workspace_resource_id"`
-	ProviderRef         core.LocalObjectReference      `json:"providerRef" tf:"-"`
 }
 
 type LogAnalyticsSolutionStatus struct {

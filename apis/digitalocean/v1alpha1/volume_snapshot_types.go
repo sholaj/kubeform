@@ -19,9 +19,10 @@ type VolumeSnapshot struct {
 }
 
 type VolumeSnapshotSpec struct {
-	Name        string                    `json:"name" tf:"name"`
-	VolumeID    string                    `json:"volumeID" tf:"volume_id"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Name     string `json:"name" tf:"name"`
+	VolumeID string `json:"volumeID" tf:"volume_id"`
 }
 
 type VolumeSnapshotStatus struct {

@@ -24,13 +24,15 @@ type ElasticacheReplicationGroupSpecClusterMode struct {
 }
 
 type ElasticacheReplicationGroupSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	// +optional
 	ApplyImmediately bool `json:"applyImmediately,omitempty" tf:"apply_immediately,omitempty"`
 	// +optional
 	AtRestEncryptionEnabled bool `json:"atRestEncryptionEnabled,omitempty" tf:"at_rest_encryption_enabled,omitempty"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	AuthToken core.LocalObjectReference `json:"authToken,omitempty" tf:"auth_token,omitempty"`
 	// +optional
 	AutoMinorVersionUpgrade bool `json:"autoMinorVersionUpgrade,omitempty" tf:"auto_minor_version_upgrade,omitempty"`
 	// +optional
@@ -79,8 +81,7 @@ type ElasticacheReplicationGroupSpec struct {
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	TransitEncryptionEnabled bool                      `json:"transitEncryptionEnabled,omitempty" tf:"transit_encryption_enabled,omitempty"`
-	ProviderRef              core.LocalObjectReference `json:"providerRef" tf:"-"`
+	TransitEncryptionEnabled bool `json:"transitEncryptionEnabled,omitempty" tf:"transit_encryption_enabled,omitempty"`
 }
 
 type ElasticacheReplicationGroupStatus struct {

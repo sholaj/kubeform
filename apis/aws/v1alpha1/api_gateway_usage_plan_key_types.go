@@ -19,10 +19,11 @@ type ApiGatewayUsagePlanKey struct {
 }
 
 type ApiGatewayUsagePlanKeySpec struct {
-	KeyID       string                    `json:"keyID" tf:"key_id"`
-	KeyType     string                    `json:"keyType" tf:"key_type"`
-	UsagePlanID string                    `json:"usagePlanID" tf:"usage_plan_id"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	KeyID       string `json:"keyID" tf:"key_id"`
+	KeyType     string `json:"keyType" tf:"key_type"`
+	UsagePlanID string `json:"usagePlanID" tf:"usage_plan_id"`
 }
 
 type ApiGatewayUsagePlanKeyStatus struct {

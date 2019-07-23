@@ -19,6 +19,8 @@ type Ec2TransitGateway struct {
 }
 
 type Ec2TransitGatewaySpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	AmazonSideAsn int `json:"amazonSideAsn,omitempty" tf:"amazon_side_asn,omitempty"`
 	// +optional
@@ -34,8 +36,7 @@ type Ec2TransitGatewaySpec struct {
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	VpnEcmpSupport string                    `json:"vpnEcmpSupport,omitempty" tf:"vpn_ecmp_support,omitempty"`
-	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
+	VpnEcmpSupport string `json:"vpnEcmpSupport,omitempty" tf:"vpn_ecmp_support,omitempty"`
 }
 
 type Ec2TransitGatewayStatus struct {

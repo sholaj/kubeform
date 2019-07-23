@@ -23,6 +23,8 @@ type RelayNamespaceSpecSku struct {
 }
 
 type RelayNamespaceSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Location          string `json:"location" tf:"location"`
 	Name              string `json:"name" tf:"name"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
@@ -33,8 +35,7 @@ type RelayNamespaceSpec struct {
 	// +optional
 	SkuName string `json:"skuName,omitempty" tf:"sku_name,omitempty"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type RelayNamespaceStatus struct {

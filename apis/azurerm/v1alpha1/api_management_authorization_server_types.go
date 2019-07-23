@@ -24,6 +24,10 @@ type ApiManagementAuthorizationServerSpecTokenBodyParameter struct {
 }
 
 type ApiManagementAuthorizationServerSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	ApiManagementName     string `json:"apiManagementName" tf:"api_management_name"`
 	AuthorizationEndpoint string `json:"authorizationEndpoint" tf:"authorization_endpoint"`
 	// +kubebuilder:validation:UniqueItems=true
@@ -37,8 +41,6 @@ type ApiManagementAuthorizationServerSpec struct {
 	ClientID                   string   `json:"clientID" tf:"client_id"`
 	ClientRegistrationEndpoint string   `json:"clientRegistrationEndpoint" tf:"client_registration_endpoint"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	ClientSecret core.LocalObjectReference `json:"clientSecret,omitempty" tf:"client_secret,omitempty"`
 	// +optional
 	DefaultScope string `json:"defaultScope,omitempty" tf:"default_scope,omitempty"`
 	// +optional
@@ -49,8 +51,6 @@ type ApiManagementAuthorizationServerSpec struct {
 	Name              string   `json:"name" tf:"name"`
 	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	ResourceOwnerPassword core.LocalObjectReference `json:"resourceOwnerPassword,omitempty" tf:"resource_owner_password,omitempty"`
 	// +optional
 	ResourceOwnerUsername string `json:"resourceOwnerUsername,omitempty" tf:"resource_owner_username,omitempty"`
 	// +optional
@@ -58,8 +58,7 @@ type ApiManagementAuthorizationServerSpec struct {
 	// +optional
 	TokenBodyParameter []ApiManagementAuthorizationServerSpecTokenBodyParameter `json:"tokenBodyParameter,omitempty" tf:"token_body_parameter,omitempty"`
 	// +optional
-	TokenEndpoint string                    `json:"tokenEndpoint,omitempty" tf:"token_endpoint,omitempty"`
-	ProviderRef   core.LocalObjectReference `json:"providerRef" tf:"-"`
+	TokenEndpoint string `json:"tokenEndpoint,omitempty" tf:"token_endpoint,omitempty"`
 }
 
 type ApiManagementAuthorizationServerStatus struct {

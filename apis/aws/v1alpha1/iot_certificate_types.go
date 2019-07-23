@@ -19,9 +19,10 @@ type IotCertificate struct {
 }
 
 type IotCertificateSpec struct {
-	Active      bool                      `json:"active" tf:"active"`
-	Csr         string                    `json:"csr" tf:"csr"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Active bool   `json:"active" tf:"active"`
+	Csr    string `json:"csr" tf:"csr"`
 }
 
 type IotCertificateStatus struct {

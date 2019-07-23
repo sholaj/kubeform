@@ -19,6 +19,8 @@ type GuarddutyMember struct {
 }
 
 type GuarddutyMemberSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AccountID  string `json:"accountID" tf:"account_id"`
 	DetectorID string `json:"detectorID" tf:"detector_id"`
 	// +optional
@@ -27,8 +29,7 @@ type GuarddutyMemberSpec struct {
 	// +optional
 	InvitationMessage string `json:"invitationMessage,omitempty" tf:"invitation_message,omitempty"`
 	// +optional
-	Invite      bool                      `json:"invite,omitempty" tf:"invite,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Invite bool `json:"invite,omitempty" tf:"invite,omitempty"`
 }
 
 type GuarddutyMemberStatus struct {

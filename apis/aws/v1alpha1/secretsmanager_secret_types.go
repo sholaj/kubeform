@@ -23,6 +23,8 @@ type SecretsmanagerSecretSpecRotationRules struct {
 }
 
 type SecretsmanagerSecretSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
@@ -41,8 +43,7 @@ type SecretsmanagerSecretSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	RotationRules []SecretsmanagerSecretSpecRotationRules `json:"rotationRules,omitempty" tf:"rotation_rules,omitempty"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type SecretsmanagerSecretStatus struct {

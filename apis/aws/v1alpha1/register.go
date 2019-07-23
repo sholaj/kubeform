@@ -38,1547 +38,1547 @@ func Resource(resource string) schema.GroupResource {
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 
-		&NeptuneClusterSnapshot{},
-		&NeptuneClusterSnapshotList{},
-
-		&NetworkInterface{},
-		&NetworkInterfaceList{},
-
-		&VpcEndpointRouteTableAssociation{},
-		&VpcEndpointRouteTableAssociationList{},
-
-		&WafregionalWebACLAssociation{},
-		&WafregionalWebACLAssociationList{},
-
-		&ConfigConfigurationAggregator{},
-		&ConfigConfigurationAggregatorList{},
-
-		&IamUserGroupMembership{},
-		&IamUserGroupMembershipList{},
-
-		&NeptuneCluster{},
-		&NeptuneClusterList{},
-
-		&ElasticacheParameterGroup{},
-		&ElasticacheParameterGroupList{},
-
-		&MqConfiguration{},
-		&MqConfigurationList{},
-
-		&WafWebACL{},
-		&WafWebACLList{},
-
-		&NetworkInterfaceAttachment{},
-		&NetworkInterfaceAttachmentList{},
-
-		&ApiGatewayClientCertificate{},
-		&ApiGatewayClientCertificateList{},
-
-		&EbsSnapshotCopy{},
-		&EbsSnapshotCopyList{},
-
-		&IamUserSSHKey{},
-		&IamUserSSHKeyList{},
-
-		&LambdaAlias{},
-		&LambdaAliasList{},
-
-		&MacieS3BucketAssociation{},
-		&MacieS3BucketAssociationList{},
-
-		&SesIdentityPolicy{},
-		&SesIdentityPolicyList{},
-
-		&S3BucketMetric{},
-		&S3BucketMetricList{},
-
-		&Subnet{},
-		&SubnetList{},
-
-		&AppsyncAPIKey{},
-		&AppsyncAPIKeyList{},
-
-		&DmsReplicationInstance{},
-		&DmsReplicationInstanceList{},
-
-		&EmrSecurityConfiguration{},
-		&EmrSecurityConfigurationList{},
-
-		&IotThingType{},
-		&IotThingTypeList{},
-
-		&KmsExternalKey{},
-		&KmsExternalKeyList{},
-
-		&S3BucketObject{},
-		&S3BucketObjectList{},
-
-		&StoragegatewayNfsFileShare{},
-		&StoragegatewayNfsFileShareList{},
-
-		&AmiCopy{},
-		&AmiCopyList{},
-
-		&Ec2ClientVPNEndpoint{},
-		&Ec2ClientVPNEndpointList{},
-
-		&Ec2TransitGatewayRoute{},
-		&Ec2TransitGatewayRouteList{},
-
-		&DbOptionGroup{},
-		&DbOptionGroupList{},
-
-		&DxGatewayAssociation{},
-		&DxGatewayAssociationList{},
-
-		&GameliftFleet{},
-		&GameliftFleetList{},
-
-		&CustomerGateway{},
-		&CustomerGatewayList{},
-
-		&Route53ResolverEndpoint{},
-		&Route53ResolverEndpointList{},
-
-		&PinpointApnsSandboxChannel{},
-		&PinpointApnsSandboxChannelList{},
-
-		&DynamodbGlobalTable{},
-		&DynamodbGlobalTableList{},
-
-		&EipAssociation{},
-		&EipAssociationList{},
-
-		&RamPrincipalAssociation{},
-		&RamPrincipalAssociationList{},
-
-		&SesTemplate{},
-		&SesTemplateList{},
-
-		&DefaultVpc{},
-		&DefaultVpcList{},
-
-		&WafregionalRateBasedRule{},
-		&WafregionalRateBasedRuleList{},
-
-		&DxGatewayAssociationProposal{},
-		&DxGatewayAssociationProposalList{},
-
-		&ElasticBeanstalkConfigurationTemplate{},
-		&ElasticBeanstalkConfigurationTemplateList{},
-
-		&RamResourceAssociation{},
-		&RamResourceAssociationList{},
-
-		&NeptuneClusterInstance{},
-		&NeptuneClusterInstanceList{},
-
-		&Route53QueryLog{},
-		&Route53QueryLogList{},
-
-		&WafregionalRegexPatternSet{},
-		&WafregionalRegexPatternSetList{},
-
-		&AcmCertificateValidation{},
-		&AcmCertificateValidationList{},
-
-		&DmsCertificate{},
-		&DmsCertificateList{},
-
-		&EcsService{},
-		&EcsServiceList{},
-
-		&DirectoryServiceDirectory{},
-		&DirectoryServiceDirectoryList{},
-
-		&ServicecatalogPortfolio{},
-		&ServicecatalogPortfolioList{},
-
-		&StoragegatewayUploadBuffer{},
-		&StoragegatewayUploadBufferList{},
-
-		&CognitoIdentityPool{},
-		&CognitoIdentityPoolList{},
-
-		&IamUserPolicy{},
-		&IamUserPolicyList{},
-
-		&KmsAlias{},
-		&KmsAliasList{},
-
-		&CloudfrontPublicKey{},
-		&CloudfrontPublicKeyList{},
-
-		&ServiceDiscoveryPrivateDNSNamespace{},
-		&ServiceDiscoveryPrivateDNSNamespaceList{},
-
-		&ApiGatewayDocumentationPart{},
-		&ApiGatewayDocumentationPartList{},
-
-		&DatasyncTask{},
-		&DatasyncTaskList{},
-
-		&RouteTable{},
-		&RouteTableList{},
-
-		&DefaultVpcDHCPOptions{},
-		&DefaultVpcDHCPOptionsList{},
-
-		&ApiGatewayMethodSettings{},
-		&ApiGatewayMethodSettingsList{},
-
-		&IamGroupPolicyAttachment{},
-		&IamGroupPolicyAttachmentList{},
-
-		&DefaultNetworkACL{},
-		&DefaultNetworkACLList{},
-
-		&ApiGatewayAPIKey{},
-		&ApiGatewayAPIKeyList{},
-
-		&LightsailStaticIPAttachment{},
-		&LightsailStaticIPAttachmentList{},
-
-		&IotCertificate{},
-		&IotCertificateList{},
-
-		&MskCluster{},
-		&MskClusterList{},
-
-		&LbListenerRule{},
-		&LbListenerRuleList{},
-
-		&CloudfrontDistribution{},
-		&CloudfrontDistributionList{},
-
-		&SecurityGroup{},
-		&SecurityGroupList{},
-
-		&WafregionalGeoMatchSet{},
-		&WafregionalGeoMatchSetList{},
-
-		&RdsClusterEndpoint{},
-		&RdsClusterEndpointList{},
-
-		&ServiceDiscoveryPublicDNSNamespace{},
-		&ServiceDiscoveryPublicDNSNamespaceList{},
-
-		&InspectorAssessmentTarget{},
-		&InspectorAssessmentTargetList{},
-
-		&S3BucketNotification{},
-		&S3BucketNotificationList{},
-
-		&KmsKey{},
-		&KmsKeyList{},
-
-		&ApiGatewayUsagePlan{},
-		&ApiGatewayUsagePlanList{},
-
-		&CloudformationStackSet{},
-		&CloudformationStackSetList{},
-
-		&Elb{},
-		&ElbList{},
-
-		&ElasticBeanstalkEnvironment{},
-		&ElasticBeanstalkEnvironmentList{},
-
-		&SnsSmsPreferences{},
-		&SnsSmsPreferencesList{},
-
-		&PinpointAdmChannel{},
-		&PinpointAdmChannelList{},
-
-		&GlobalacceleratorListener{},
-		&GlobalacceleratorListenerList{},
-
-		&LoadBalancerListenerPolicy{},
-		&LoadBalancerListenerPolicyList{},
-
-		&SsmPatchBaseline{},
-		&SsmPatchBaselineList{},
-
-		&OpsworksRdsDbInstance{},
-		&OpsworksRdsDbInstanceList{},
-
-		&StoragegatewayCachedIscsiVolume{},
-		&StoragegatewayCachedIscsiVolumeList{},
-
-		&VpcPeeringConnection{},
-		&VpcPeeringConnectionList{},
-
-		&Cloud9EnvironmentEc2{},
-		&Cloud9EnvironmentEc2List{},
-
-		&GlacierVaultLock{},
-		&GlacierVaultLockList{},
-
-		&InspectorAssessmentTemplate{},
-		&InspectorAssessmentTemplateList{},
-
-		&IotPolicyAttachment{},
-		&IotPolicyAttachmentList{},
-
-		&DefaultSubnet{},
-		&DefaultSubnetList{},
-
-		&CloudwatchLogDestination{},
-		&CloudwatchLogDestinationList{},
-
-		&CloudwatchLogGroup{},
-		&CloudwatchLogGroupList{},
-
-		&DmsReplicationTask{},
-		&DmsReplicationTaskList{},
-
-		&Ec2TransitGatewayRouteTable{},
-		&Ec2TransitGatewayRouteTableList{},
-
-		&ElasticsearchDomainPolicy{},
-		&ElasticsearchDomainPolicyList{},
-
-		&IamUser{},
-		&IamUserList{},
-
-		&LambdaFunction{},
-		&LambdaFunctionList{},
-
-		&OpsworksGangliaLayer{},
-		&OpsworksGangliaLayerList{},
-
-		&ApiGatewayGatewayResponse{},
-		&ApiGatewayGatewayResponseList{},
-
-		&AthenaWorkgroup{},
-		&AthenaWorkgroupList{},
-
-		&DatasyncAgent{},
-		&DatasyncAgentList{},
-
-		&OrganizationsOrganization{},
-		&OrganizationsOrganizationList{},
-
-		&Vpc{},
-		&VpcList{},
-
-		&AppautoscalingTarget{},
-		&AppautoscalingTargetList{},
-
-		&GlueTrigger{},
-		&GlueTriggerList{},
-
-		&TransferServer{},
-		&TransferServerList{},
-
-		&WafIpset{},
-		&WafIpsetList{},
-
-		&WafregionalXssMatchSet{},
-		&WafregionalXssMatchSetList{},
-
-		&EmrCluster{},
-		&EmrClusterList{},
-
-		&GlueCrawler{},
-		&GlueCrawlerList{},
-
-		&OpsworksMemcachedLayer{},
-		&OpsworksMemcachedLayerList{},
-
-		&DbSubnetGroup{},
-		&DbSubnetGroupList{},
-
-		&LaunchConfiguration{},
-		&LaunchConfigurationList{},
-
-		&ServiceDiscoveryService{},
-		&ServiceDiscoveryServiceList{},
-
-		&RdsClusterInstance{},
-		&RdsClusterInstanceList{},
-
-		&SesConfigurationSet{},
-		&SesConfigurationSetList{},
-
-		&SpotFleetRequest{},
-		&SpotFleetRequestList{},
-
-		&ApiGatewayAuthorizer{},
-		&ApiGatewayAuthorizerList{},
-
-		&CognitoUserPoolDomain{},
-		&CognitoUserPoolDomainList{},
-
-		&DatasyncLocationS3{},
-		&DatasyncLocationS3List{},
-
-		&OpsworksInstance{},
-		&OpsworksInstanceList{},
-
-		&VpcIpv4CIDRBlockAssociation{},
-		&VpcIpv4CIDRBlockAssociationList{},
-
-		&PinpointEmailChannel{},
-		&PinpointEmailChannelList{},
-
-		&ApiGatewayStage{},
-		&ApiGatewayStageList{},
-
-		&DocdbClusterParameterGroup{},
-		&DocdbClusterParameterGroupList{},
-
-		&OpsworksApplication{},
-		&OpsworksApplicationList{},
-
-		&IamPolicyAttachment{},
-		&IamPolicyAttachmentList{},
-
-		&Lb{},
-		&LbList{},
-
-		&CognitoUserGroup{},
-		&CognitoUserGroupList{},
-
-		&EksCluster{},
-		&EksClusterList{},
-
-		&GlueCatalogDatabase{},
-		&GlueCatalogDatabaseList{},
-
-		&DefaultSecurityGroup{},
-		&DefaultSecurityGroupList{},
-
-		&StoragegatewayWorkingStorage{},
-		&StoragegatewayWorkingStorageList{},
-
-		&CodedeployApp{},
-		&CodedeployAppList{},
-
-		&IamOpenidConnectProvider{},
-		&IamOpenidConnectProviderList{},
-
-		&KeyPair{},
-		&KeyPairList{},
-
-		&Route{},
-		&RouteList{},
-
-		&CognitoUserPoolClient{},
-		&CognitoUserPoolClientList{},
-
-		&DbInstanceRoleAssociation{},
-		&DbInstanceRoleAssociationList{},
-
-		&IamAccountAlias{},
-		&IamAccountAliasList{},
-
-		&OpsworksUserProfile{},
-		&OpsworksUserProfileList{},
-
-		&LbTargetGroup{},
-		&LbTargetGroupList{},
-
-		&GlueClassifier{},
-		&GlueClassifierList{},
-
-		&NetworkACLRule{},
-		&NetworkACLRuleList{},
-
-		&SpotInstanceRequest{},
-		&SpotInstanceRequestList{},
-
-		&AppsyncResolver{},
-		&AppsyncResolverList{},
-
-		&CognitoUserPool{},
-		&CognitoUserPoolList{},
-
-		&ElasticacheSubnetGroup{},
-		&ElasticacheSubnetGroupList{},
-
-		&VpnConnection{},
-		&VpnConnectionList{},
-
-		&BatchComputeEnvironment{},
-		&BatchComputeEnvironmentList{},
-
-		&ApiGatewayResource{},
-		&ApiGatewayResourceList{},
-
-		&AppmeshRoute{},
-		&AppmeshRouteList{},
-
-		&OpsworksStaticWebLayer{},
-		&OpsworksStaticWebLayerList{},
-
-		&AlbTargetGroup{},
-		&AlbTargetGroupList{},
-
-		&DbClusterSnapshot{},
-		&DbClusterSnapshotList{},
-
-		&DxConnectionAssociation{},
-		&DxConnectionAssociationList{},
-
-		&EbsEncryptionByDefault{},
-		&EbsEncryptionByDefaultList{},
-
-		&FlowLog{},
-		&FlowLogList{},
-
-		&Route53HealthCheck{},
-		&Route53HealthCheckList{},
-
-		&ApiGatewayMethodResponse{},
-		&ApiGatewayMethodResponseList{},
-
-		&DaxSubnetGroup{},
-		&DaxSubnetGroupList{},
-
-		&DxHostedPrivateVirtualInterfaceAccepter{},
-		&DxHostedPrivateVirtualInterfaceAccepterList{},
-
-		&IamUserLoginProfile{},
-		&IamUserLoginProfileList{},
-
-		&RdsGlobalCluster{},
-		&RdsGlobalClusterList{},
-
-		&WafRegexMatchSet{},
-		&WafRegexMatchSetList{},
-
-		&DmsReplicationSubnetGroup{},
-		&DmsReplicationSubnetGroupList{},
-
-		&EfsFileSystem{},
-		&EfsFileSystemList{},
-
-		&SwfDomain{},
-		&SwfDomainList{},
-
-		&WafXssMatchSet{},
-		&WafXssMatchSetList{},
-
-		&CodedeployDeploymentGroup{},
-		&CodedeployDeploymentGroupList{},
-
-		&DxHostedPrivateVirtualInterface{},
-		&DxHostedPrivateVirtualInterfaceList{},
-
-		&RdsClusterParameterGroup{},
-		&RdsClusterParameterGroupList{},
-
-		&SqsQueue{},
-		&SqsQueueList{},
-
-		&AppmeshVirtualNode{},
-		&AppmeshVirtualNodeList{},
-
-		&CurReportDefinition{},
-		&CurReportDefinitionList{},
-
-		&DatasyncLocationEfs{},
-		&DatasyncLocationEfsList{},
-
-		&EgressOnlyInternetGateway{},
-		&EgressOnlyInternetGatewayList{},
-
-		&IamRolePolicy{},
-		&IamRolePolicyList{},
-
-		&AlbListener{},
-		&AlbListenerList{},
-
-		&CognitoIdentityPoolRolesAttachment{},
-		&CognitoIdentityPoolRolesAttachmentList{},
+		&LicensemanagerLicenseConfiguration{},
+		&LicensemanagerLicenseConfigurationList{},
 
 		&RedshiftSnapshotCopyGrant{},
 		&RedshiftSnapshotCopyGrantList{},
 
-		&SecretsmanagerSecretVersion{},
-		&SecretsmanagerSecretVersionList{},
-
-		&AcmCertificate{},
-		&AcmCertificateList{},
-
-		&ApiGatewayModel{},
-		&ApiGatewayModelList{},
-
-		&CloudwatchEventRule{},
-		&CloudwatchEventRuleList{},
-
-		&SesDomainIdentity{},
-		&SesDomainIdentityList{},
-
-		&AlbListenerRule{},
-		&AlbListenerRuleList{},
-
-		&CloudwatchEventPermission{},
-		&CloudwatchEventPermissionList{},
-
-		&EmrInstanceGroup{},
-		&EmrInstanceGroupList{},
-
-		&IamGroupMembership{},
-		&IamGroupMembershipList{},
-
-		&SfnStateMachine{},
-		&SfnStateMachineList{},
-
-		&VpcPeeringConnectionOptions{},
-		&VpcPeeringConnectionOptionsList{},
-
-		&GuarddutyInviteAccepter{},
-		&GuarddutyInviteAccepterList{},
-
-		&RedshiftCluster{},
-		&RedshiftClusterList{},
-
-		&SecurityhubProductSubscription{},
-		&SecurityhubProductSubscriptionList{},
-
-		&ApiGatewayAccount{},
-		&ApiGatewayAccountList{},
-
-		&CloudwatchLogSubscriptionFilter{},
-		&CloudwatchLogSubscriptionFilterList{},
-
-		&GlueSecurityConfiguration{},
-		&GlueSecurityConfigurationList{},
-
-		&MediaStoreContainerPolicy{},
-		&MediaStoreContainerPolicyList{},
-
-		&WafRuleGroup{},
-		&WafRuleGroupList{},
-
-		&WafregionalByteMatchSet{},
-		&WafregionalByteMatchSetList{},
-
-		&AppmeshMesh{},
-		&AppmeshMeshList{},
-
-		&EfsMountTarget{},
-		&EfsMountTargetList{},
-
-		&GlueJob{},
-		&GlueJobList{},
-
-		&IamInstanceProfile{},
-		&IamInstanceProfileList{},
-
-		&PinpointApnsVoipSandboxChannel{},
-		&PinpointApnsVoipSandboxChannelList{},
-
-		&ApiGatewayVpcLink{},
-		&ApiGatewayVpcLinkList{},
-
-		&GameliftGameSessionQueue{},
-		&GameliftGameSessionQueueList{},
-
-		&RamResourceShare{},
-		&RamResourceShareList{},
-
-		&MainRouteTableAssociation{},
-		&MainRouteTableAssociationList{},
-
-		&OrganizationsPolicyAttachment{},
-		&OrganizationsPolicyAttachmentList{},
-
-		&StoragegatewayCache{},
-		&StoragegatewayCacheList{},
-
-		&VolumeAttachment{},
-		&VolumeAttachmentList{},
-
-		&DirectoryServiceConditionalForwarder{},
-		&DirectoryServiceConditionalForwarderList{},
-
-		&IamPolicy{},
-		&IamPolicyList{},
-
-		&LoadBalancerPolicy{},
-		&LoadBalancerPolicyList{},
-
-		&CodepipelineWebhook{},
-		&CodepipelineWebhookList{},
-
-		&DbSnapshot{},
-		&DbSnapshotList{},
-
-		&IotRoleAlias{},
-		&IotRoleAliasList{},
-
-		&VpnGatewayRoutePropagation{},
-		&VpnGatewayRoutePropagationList{},
-
-		&CloudwatchLogResourcePolicy{},
-		&CloudwatchLogResourcePolicyList{},
-
-		&DlmLifecyclePolicy{},
-		&DlmLifecyclePolicyList{},
-
-		&SsmMaintenanceWindowTask{},
-		&SsmMaintenanceWindowTaskList{},
-
-		&KmsGrant{},
-		&KmsGrantList{},
-
-		&WafSQLInjectionMatchSet{},
-		&WafSQLInjectionMatchSetList{},
-
-		&RedshiftParameterGroup{},
-		&RedshiftParameterGroupList{},
-
-		&RedshiftSubnetGroup{},
-		&RedshiftSubnetGroupList{},
-
-		&SesReceiptRule{},
-		&SesReceiptRuleList{},
-
-		&WafRule{},
-		&WafRuleList{},
-
-		&AthenaDatabase{},
-		&AthenaDatabaseList{},
-
-		&CodecommitTrigger{},
-		&CodecommitTriggerList{},
-
-		&Instance{},
-		&InstanceList{},
-
-		&SecurityhubAccount{},
-		&SecurityhubAccountList{},
-
-		&ServiceDiscoveryHTTPNamespace{},
-		&ServiceDiscoveryHTTPNamespaceList{},
-
-		&CloudformationStack{},
-		&CloudformationStackList{},
-
-		&CloudhsmV2Hsm{},
-		&CloudhsmV2HsmList{},
-
-		&RdsCluster{},
-		&RdsClusterList{},
-
-		&ElbAttachment{},
-		&ElbAttachmentList{},
-
-		&LbCookieStickinessPolicy{},
-		&LbCookieStickinessPolicyList{},
-
-		&MediaPackageChannel{},
-		&MediaPackageChannelList{},
-
-		&Eip{},
-		&EipList{},
-
-		&LambdaEventSourceMapping{},
-		&LambdaEventSourceMappingList{},
-
-		&SagemakerNotebookInstanceLifecycleConfiguration{},
-		&SagemakerNotebookInstanceLifecycleConfigurationList{},
-
-		&SsmMaintenanceWindowTarget{},
-		&SsmMaintenanceWindowTargetList{},
-
-		&Alb{},
-		&AlbList{},
-
-		&DxHostedPublicVirtualInterfaceAccepter{},
-		&DxHostedPublicVirtualInterfaceAccepterList{},
-
-		&DxPrivateVirtualInterface{},
-		&DxPrivateVirtualInterfaceList{},
-
-		&Ec2TransitGatewayVpcAttachmentAccepter{},
-		&Ec2TransitGatewayVpcAttachmentAccepterList{},
-
-		&Ec2TransitGatewayRouteTableAssociation{},
-		&Ec2TransitGatewayRouteTableAssociationList{},
-
-		&IotPolicy{},
-		&IotPolicyList{},
-
-		&StoragegatewayGateway{},
-		&StoragegatewayGatewayList{},
-
-		&Cloudtrail{},
-		&CloudtrailList{},
-
-		&EcsCluster{},
-		&EcsClusterList{},
-
-		&GlobalacceleratorEndpointGroup{},
-		&GlobalacceleratorEndpointGroupList{},
-
-		&MediaStoreContainer{},
-		&MediaStoreContainerList{},
-
-		&AlbListenerCertificate{},
-		&AlbListenerCertificateList{},
-
-		&EcrRepositoryPolicy{},
-		&EcrRepositoryPolicyList{},
-
-		&VpcEndpointConnectionNotification{},
-		&VpcEndpointConnectionNotificationList{},
-
-		&IotTopicRule{},
-		&IotTopicRuleList{},
-
-		&MacieMemberAccountAssociation{},
-		&MacieMemberAccountAssociationList{},
-
-		&DefaultRouteTable{},
-		&DefaultRouteTableList{},
-
-		&WafregionalSizeConstraintSet{},
-		&WafregionalSizeConstraintSetList{},
-
-		&DatasyncLocationNfs{},
-		&DatasyncLocationNfsList{},
-
-		&DbEventSubscription{},
-		&DbEventSubscriptionList{},
-
-		&IamAccessKey{},
-		&IamAccessKeyList{},
-
-		&Ec2Fleet{},
-		&Ec2FleetList{},
-
-		&InspectorResourceGroup{},
-		&InspectorResourceGroupList{},
-
-		&S3Bucket{},
-		&S3BucketList{},
-
-		&ShieldProtection{},
-		&ShieldProtectionList{},
-
-		&VpnGatewayAttachment{},
-		&VpnGatewayAttachmentList{},
-
-		&Ec2CapacityReservation{},
-		&Ec2CapacityReservationList{},
-
-		&Ec2TransitGateway{},
-		&Ec2TransitGatewayList{},
-
-		&ElasticacheCluster{},
-		&ElasticacheClusterList{},
-
-		&VpcDHCPOptionsAssociation{},
-		&VpcDHCPOptionsAssociationList{},
-
-		&WafRateBasedRule{},
-		&WafRateBasedRuleList{},
-
-		&DevicefarmProject{},
-		&DevicefarmProjectList{},
-
-		&ElastictranscoderPipeline{},
-		&ElastictranscoderPipelineList{},
-
-		&SesDomainIdentityVerification{},
-		&SesDomainIdentityVerificationList{},
-
-		&Route53ZoneAssociation{},
-		&Route53ZoneAssociationList{},
-
-		&VpcDHCPOptions{},
-		&VpcDHCPOptionsList{},
-
-		&EbsSnapshot{},
-		&EbsSnapshotList{},
-
-		&KinesisStream{},
-		&KinesisStreamList{},
-
-		&NetworkACL{},
-		&NetworkACLList{},
-
-		&EbsDefaultKmsKey{},
-		&EbsDefaultKmsKeyList{},
-
-		&GuarddutyMember{},
-		&GuarddutyMemberList{},
-
-		&TransferSSHKey{},
-		&TransferSSHKeyList{},
-
-		&OpsworksStack{},
-		&OpsworksStackList{},
-
-		&PlacementGroup{},
-		&PlacementGroupList{},
-
-		&DmsEndpoint{},
-		&DmsEndpointList{},
-
-		&ElasticBeanstalkApplication{},
-		&ElasticBeanstalkApplicationList{},
-
-		&LoadBalancerBackendServerPolicy{},
-		&LoadBalancerBackendServerPolicyList{},
-
-		&EbsVolume{},
-		&EbsVolumeList{},
-
-		&Route53ResolverRuleAssociation{},
-		&Route53ResolverRuleAssociationList{},
-
-		&WafregionalRule{},
-		&WafregionalRuleList{},
-
-		&WafregionalWebACL{},
-		&WafregionalWebACLList{},
-
-		&GlueCatalogTable{},
-		&GlueCatalogTableList{},
-
-		&SsmParameter{},
-		&SsmParameterList{},
-
-		&WafregionalIpset{},
-		&WafregionalIpsetList{},
-
-		&MskConfiguration{},
-		&MskConfigurationList{},
-
-		&S3BucketInventory{},
-		&S3BucketInventoryList{},
-
-		&LbListenerCertificate{},
-		&LbListenerCertificateList{},
-
-		&DocdbClusterSnapshot{},
-		&DocdbClusterSnapshotList{},
-
 		&SesEmailIdentity{},
 		&SesEmailIdentityList{},
 
-		&SecurityGroupRule{},
-		&SecurityGroupRuleList{},
-
-		&IamGroup{},
-		&IamGroupList{},
-
-		&AlbTargetGroupAttachment{},
-		&AlbTargetGroupAttachmentList{},
-
-		&CodebuildWebhook{},
-		&CodebuildWebhookList{},
-
-		&ElasticacheSecurityGroup{},
-		&ElasticacheSecurityGroupList{},
-
-		&IamAccountPasswordPolicy{},
-		&IamAccountPasswordPolicyList{},
-
-		&OrganizationsPolicy{},
-		&OrganizationsPolicyList{},
-
-		&SsmAssociation{},
-		&SsmAssociationList{},
-
-		&WafregionalRegexMatchSet{},
-		&WafregionalRegexMatchSetList{},
-
-		&AppCookieStickinessPolicy{},
-		&AppCookieStickinessPolicyList{},
-
-		&NeptuneParameterGroup{},
-		&NeptuneParameterGroupList{},
-
-		&OpsworksHaproxyLayer{},
-		&OpsworksHaproxyLayerList{},
-
-		&OpsworksCustomLayer{},
-		&OpsworksCustomLayerList{},
-
-		&SnsTopicSubscription{},
-		&SnsTopicSubscriptionList{},
-
-		&Ami{},
-		&AmiList{},
-
-		&CloudwatchLogStream{},
-		&CloudwatchLogStreamList{},
-
-		&DbSecurityGroup{},
-		&DbSecurityGroupList{},
-
-		&AthenaNamedQuery{},
-		&AthenaNamedQueryList{},
-
-		&DbParameterGroup{},
-		&DbParameterGroupList{},
-
-		&TransferUser{},
-		&TransferUserList{},
-
-		&DynamodbTableItem{},
-		&DynamodbTableItemList{},
-
-		&KinesisFirehoseDeliveryStream{},
-		&KinesisFirehoseDeliveryStreamList{},
-
-		&WafRegexPatternSet{},
-		&WafRegexPatternSetList{},
-
-		&AmiFromInstance{},
-		&AmiFromInstanceList{},
-
-		&CloudwatchLogDestinationPolicy{},
-		&CloudwatchLogDestinationPolicyList{},
-
-		&S3AccountPublicAccessBlock{},
-		&S3AccountPublicAccessBlockList{},
-
-		&BatchJobDefinition{},
-		&BatchJobDefinitionList{},
-
-		&AppautoscalingScheduledAction{},
-		&AppautoscalingScheduledActionList{},
-
-		&AppmeshVirtualRouter{},
-		&AppmeshVirtualRouterList{},
-
-		&GameliftAlias{},
-		&GameliftAliasList{},
-
-		&WafSizeConstraintSet{},
-		&WafSizeConstraintSetList{},
-
-		&LbListener{},
-		&LbListenerList{},
-
-		&CloudfrontOriginAccessIdentity{},
-		&CloudfrontOriginAccessIdentityList{},
-
-		&KinesisAnalyticsApplication{},
-		&KinesisAnalyticsApplicationList{},
-
-		&LightsailKeyPair{},
-		&LightsailKeyPairList{},
-
-		&OpsworksRailsAppLayer{},
-		&OpsworksRailsAppLayerList{},
-
-		&StoragegatewaySmbFileShare{},
-		&StoragegatewaySmbFileShareList{},
-
-		&CloudwatchLogMetricFilter{},
-		&CloudwatchLogMetricFilterList{},
-
-		&ElasticBeanstalkApplicationVersion{},
-		&ElasticBeanstalkApplicationVersionList{},
-
-		&IamSamlProvider{},
-		&IamSamlProviderList{},
-
-		&S3BucketPublicAccessBlock{},
-		&S3BucketPublicAccessBlockList{},
-
-		&SsmMaintenanceWindow{},
-		&SsmMaintenanceWindowList{},
-
-		&AmiLaunchPermission{},
-		&AmiLaunchPermissionList{},
-
-		&CodebuildProject{},
-		&CodebuildProjectList{},
-
-		&LicensemanagerLicenseConfiguration{},
-		&LicensemanagerLicenseConfigurationList{},
-
-		&IamRolePolicyAttachment{},
-		&IamRolePolicyAttachmentList{},
-
-		&IamServerCertificate{},
-		&IamServerCertificateList{},
-
-		&NatGateway{},
-		&NatGatewayList{},
-
-		&OrganizationsAccount{},
-		&OrganizationsAccountList{},
-
-		&ApiGatewayMethod{},
-		&ApiGatewayMethodList{},
-
-		&Ec2TransitGatewayVpcAttachment{},
-		&Ec2TransitGatewayVpcAttachmentList{},
-
-		&EcrRepository{},
-		&EcrRepositoryList{},
-
-		&IamRole{},
-		&IamRoleList{},
-
-		&ResourcegroupsGroup{},
-		&ResourcegroupsGroupList{},
-
-		&ApiGatewayIntegrationResponse{},
-		&ApiGatewayIntegrationResponseList{},
-
-		&Ec2ClientVPNNetworkAssociation{},
-		&Ec2ClientVPNNetworkAssociationList{},
-
-		&GuarddutyDetector{},
-		&GuarddutyDetectorList{},
-
-		&SesIdentityNotificationTopic{},
-		&SesIdentityNotificationTopicList{},
-
-		&CloudformationStackSetInstance{},
-		&CloudformationStackSetInstanceList{},
-
-		&DaxParameterGroup{},
-		&DaxParameterGroupList{},
-
-		&DxBGPPeer{},
-		&DxBGPPeerList{},
-
-		&NetworkInterfaceSgAttachment{},
-		&NetworkInterfaceSgAttachmentList{},
-
-		&PinpointBaiduChannel{},
-		&PinpointBaiduChannelList{},
-
-		&AppsyncGraphqlAPI{},
-		&AppsyncGraphqlAPIList{},
-
-		&GuarddutyThreatintelset{},
-		&GuarddutyThreatintelsetList{},
-
-		&IotThing{},
-		&IotThingList{},
-
-		&SsmDocument{},
-		&SsmDocumentList{},
-
-		&PinpointGcmChannel{},
-		&PinpointGcmChannelList{},
-
-		&AutoscalingAttachment{},
-		&AutoscalingAttachmentList{},
-
-		&LaunchTemplate{},
-		&LaunchTemplateList{},
-
-		&LicensemanagerAssociation{},
-		&LicensemanagerAssociationList{},
-
-		&RedshiftEventSubscription{},
-		&RedshiftEventSubscriptionList{},
-
-		&SagemakerEndpointConfiguration{},
-		&SagemakerEndpointConfigurationList{},
-
-		&SesReceiptFilter{},
-		&SesReceiptFilterList{},
-
-		&WafGeoMatchSet{},
-		&WafGeoMatchSetList{},
-
-		&WorklinkFleet{},
-		&WorklinkFleetList{},
-
-		&ApiGatewayRequestValidator{},
-		&ApiGatewayRequestValidatorList{},
-
-		&DatapipelinePipeline{},
-		&DatapipelinePipelineList{},
-
-		&LightsailDomain{},
-		&LightsailDomainList{},
-
-		&ApiGatewayDeployment{},
-		&ApiGatewayDeploymentList{},
-
-		&AppsyncFunction{},
-		&AppsyncFunctionList{},
-
-		&CloudwatchEventTarget{},
-		&CloudwatchEventTargetList{},
-
-		&LambdaLayerVersion{},
-		&LambdaLayerVersionList{},
-
-		&SecretsmanagerSecret{},
-		&SecretsmanagerSecretList{},
-
-		&SesDomainMailFrom{},
-		&SesDomainMailFromList{},
-
-		&VpnGateway{},
-		&VpnGatewayList{},
-
-		&ApiGatewayRestAPI{},
-		&ApiGatewayRestAPIList{},
-
-		&CodecommitRepository{},
-		&CodecommitRepositoryList{},
-
-		&GlobalacceleratorAccelerator{},
-		&GlobalacceleratorAcceleratorList{},
-
-		&OpsworksPermission{},
-		&OpsworksPermissionList{},
-
-		&ProxyProtocolPolicy{},
-		&ProxyProtocolPolicyList{},
-
-		&LbTargetGroupAttachment{},
-		&LbTargetGroupAttachmentList{},
-
-		&AppsyncDatasource{},
-		&AppsyncDatasourceList{},
-
-		&CloudhsmV2Cluster{},
-		&CloudhsmV2ClusterList{},
-
-		&Codepipeline{},
-		&CodepipelineList{},
-
-		&PinpointApnsChannel{},
-		&PinpointApnsChannelList{},
-
-		&DxConnection{},
-		&DxConnectionList{},
-
-		&SesActiveReceiptRuleSet{},
-		&SesActiveReceiptRuleSetList{},
-
-		&SesDomainDkim{},
-		&SesDomainDkimList{},
-
-		&BackupPlan{},
-		&BackupPlanList{},
-
-		&SfnActivity{},
-		&SfnActivityList{},
-
-		&OrganizationsOrganizationalUnit{},
-		&OrganizationsOrganizationalUnitList{},
-
-		&VpcEndpoint{},
-		&VpcEndpointList{},
-
-		&XraySamplingRule{},
-		&XraySamplingRuleList{},
-
-		&BatchJobQueue{},
-		&BatchJobQueueList{},
-
-		&CognitoIdentityProvider{},
-		&CognitoIdentityProviderList{},
-
-		&InternetGateway{},
-		&InternetGatewayList{},
-
-		&WafByteMatchSet{},
-		&WafByteMatchSetList{},
-
-		&Route53DelegationSet{},
-		&Route53DelegationSetList{},
-
-		&SesEventDestination{},
-		&SesEventDestinationList{},
+		&DefaultVpc{},
+		&DefaultVpcList{},
 
 		&DocdbClusterInstance{},
 		&DocdbClusterInstanceList{},
 
-		&KmsCiphertext{},
-		&KmsCiphertextList{},
-
-		&LbSslNegotiationPolicy{},
-		&LbSslNegotiationPolicyList{},
-
-		&SnapshotCreateVolumePermission{},
-		&SnapshotCreateVolumePermissionList{},
-
-		&ApiGatewayDocumentationVersion{},
-		&ApiGatewayDocumentationVersionList{},
-
-		&DxGateway{},
-		&DxGatewayList{},
-
-		&OpsworksJavaAppLayer{},
-		&OpsworksJavaAppLayerList{},
-
-		&SsmResourceDataSync{},
-		&SsmResourceDataSyncList{},
-
-		&AcmpcaCertificateAuthority{},
-		&AcmpcaCertificateAuthorityList{},
-
-		&IamServiceLinkedRole{},
-		&IamServiceLinkedRoleList{},
-
-		&NeptuneClusterParameterGroup{},
-		&NeptuneClusterParameterGroupList{},
-
-		&IamUserPolicyAttachment{},
-		&IamUserPolicyAttachmentList{},
-
-		&LightsailStaticIP{},
-		&LightsailStaticIPList{},
-
-		&GlacierVault{},
-		&GlacierVaultList{},
-
-		&RedshiftSecurityGroup{},
-		&RedshiftSecurityGroupList{},
-
-		&WafregionalRuleGroup{},
-		&WafregionalRuleGroupList{},
-
-		&BackupSelection{},
-		&BackupSelectionList{},
-
-		&CodedeployDeploymentConfig{},
-		&CodedeployDeploymentConfigList{},
-
-		&DxPublicVirtualInterface{},
-		&DxPublicVirtualInterfaceList{},
-
-		&VpcEndpointSubnetAssociation{},
-		&VpcEndpointSubnetAssociationList{},
-
-		&DynamodbTable{},
-		&DynamodbTableList{},
-
-		&SesReceiptRuleSet{},
-		&SesReceiptRuleSetList{},
-
-		&SimpledbDomain{},
-		&SimpledbDomainList{},
-
-		&SnsTopic{},
-		&SnsTopicList{},
-
-		&WafregionalSQLInjectionMatchSet{},
-		&WafregionalSQLInjectionMatchSetList{},
-
-		&AutoscalingGroup{},
-		&AutoscalingGroupList{},
-
-		&IamGroupPolicy{},
-		&IamGroupPolicyList{},
-
-		&NeptuneSubnetGroup{},
-		&NeptuneSubnetGroupList{},
-
-		&SqsQueuePolicy{},
-		&SqsQueuePolicyList{},
-
-		&GuarddutyIpset{},
-		&GuarddutyIpsetList{},
-
-		&LightsailInstance{},
-		&LightsailInstanceList{},
-
-		&OpsworksMysqlLayer{},
-		&OpsworksMysqlLayerList{},
-
-		&VpnConnectionRoute{},
-		&VpnConnectionRouteList{},
-
-		&ApiGatewayBasePathMapping{},
-		&ApiGatewayBasePathMappingList{},
-
-		&ApiGatewayIntegration{},
-		&ApiGatewayIntegrationList{},
-
-		&GameliftBuild{},
-		&GameliftBuildList{},
-
-		&SagemakerNotebookInstance{},
-		&SagemakerNotebookInstanceList{},
-
-		&ElasticacheReplicationGroup{},
-		&ElasticacheReplicationGroupList{},
-
-		&ElasticsearchDomain{},
-		&ElasticsearchDomainList{},
-
-		&GlueConnection{},
-		&GlueConnectionList{},
-
-		&Route53ResolverRule{},
-		&Route53ResolverRuleList{},
-
-		&AutoscalingPolicy{},
-		&AutoscalingPolicyList{},
-
-		&AutoscalingSchedule{},
-		&AutoscalingScheduleList{},
-
-		&ConfigConfigurationRecorder{},
-		&ConfigConfigurationRecorderList{},
-
-		&ApiGatewayDomainName{},
-		&ApiGatewayDomainNameList{},
-
-		&SnsPlatformApplication{},
-		&SnsPlatformApplicationList{},
-
-		&AppautoscalingPolicy{},
-		&AppautoscalingPolicyList{},
-
-		&DocdbSubnetGroup{},
-		&DocdbSubnetGroupList{},
-
-		&EcsTaskDefinition{},
-		&EcsTaskDefinitionList{},
-
-		&CloudwatchMetricAlarm{},
-		&CloudwatchMetricAlarmList{},
-
-		&DirectoryServiceLogSubscription{},
-		&DirectoryServiceLogSubscriptionList{},
-
-		&DxLag{},
-		&DxLagList{},
-
-		&SagemakerEndpoint{},
-		&SagemakerEndpointList{},
-
-		&S3BucketPolicy{},
-		&S3BucketPolicyList{},
-
-		&AutoscalingNotification{},
-		&AutoscalingNotificationList{},
-
-		&ConfigConfigurationRecorderStatus_{},
-		&ConfigConfigurationRecorderStatus_List{},
-
-		&ConfigDeliveryChannel{},
-		&ConfigDeliveryChannelList{},
-
-		&VpcPeeringConnectionAccepter{},
-		&VpcPeeringConnectionAccepterList{},
-
-		&PinpointSmsChannel{},
-		&PinpointSmsChannelList{},
-
-		&MqBroker{},
-		&MqBrokerList{},
-
-		&SsmPatchGroup{},
-		&SsmPatchGroupList{},
-
-		&PinpointApnsVoipChannel{},
-		&PinpointApnsVoipChannelList{},
-
-		&DbInstance{},
-		&DbInstanceList{},
-
-		&Route53Record{},
-		&Route53RecordList{},
-
-		&BackupVault{},
-		&BackupVaultList{},
-
-		&BudgetsBudget{},
-		&BudgetsBudgetList{},
-
-		&DaxCluster{},
-		&DaxClusterList{},
-
-		&NeptuneEventSubscription{},
-		&NeptuneEventSubscriptionList{},
-
-		&RouteTableAssociation{},
-		&RouteTableAssociationList{},
-
-		&SecurityhubStandardsSubscription{},
-		&SecurityhubStandardsSubscriptionList{},
-
-		&WorklinkWebsiteCertificateAuthorityAssociation{},
-		&WorklinkWebsiteCertificateAuthorityAssociationList{},
-
-		&AppmeshVirtualService{},
-		&AppmeshVirtualServiceList{},
-
-		&DocdbCluster{},
-		&DocdbClusterList{},
-
-		&ElastictranscoderPreset{},
-		&ElastictranscoderPresetList{},
-
-		&Route53Zone{},
-		&Route53ZoneList{},
-
-		&SsmActivation{},
-		&SsmActivationList{},
-
-		&ApiGatewayUsagePlanKey{},
-		&ApiGatewayUsagePlanKeyList{},
-
-		&AutoscalingLifecycleHook{},
-		&AutoscalingLifecycleHookList{},
-
-		&CognitoResourceServer{},
-		&CognitoResourceServerList{},
-
-		&SagemakerModel{},
-		&SagemakerModelList{},
-
-		&SnsTopicPolicy{},
-		&SnsTopicPolicyList{},
-
-		&VpcEndpointService{},
-		&VpcEndpointServiceList{},
-
-		&VpcEndpointServiceAllowedPrincipal{},
-		&VpcEndpointServiceAllowedPrincipalList{},
-
-		&PinpointEventStream{},
-		&PinpointEventStreamList{},
-
-		&EcrLifecyclePolicy{},
-		&EcrLifecyclePolicyList{},
-
-		&LambdaPermission{},
-		&LambdaPermissionList{},
-
-		&OpsworksPhpAppLayer{},
-		&OpsworksPhpAppLayerList{},
-
-		&OpsworksNodejsAppLayer{},
-		&OpsworksNodejsAppLayerList{},
-
-		&Ec2TransitGatewayRouteTablePropagation{},
-		&Ec2TransitGatewayRouteTablePropagationList{},
-
-		&IotThingPrincipalAttachment{},
-		&IotThingPrincipalAttachmentList{},
-
-		&SpotDatafeedSubscription{},
-		&SpotDatafeedSubscriptionList{},
-
-		&DxHostedPublicVirtualInterface{},
-		&DxHostedPublicVirtualInterfaceList{},
-
-		&PinpointApp{},
-		&PinpointAppList{},
+		&DxGatewayAssociationProposal{},
+		&DxGatewayAssociationProposalList{},
 
 		&ConfigAggregateAuthorization{},
 		&ConfigAggregateAuthorizationList{},
 
-		&ConfigConfigRule{},
-		&ConfigConfigRuleList{},
+		&IotThingPrincipalAttachment{},
+		&IotThingPrincipalAttachmentList{},
+
+		&SecurityGroupRule{},
+		&SecurityGroupRuleList{},
+
+		&VpcEndpoint{},
+		&VpcEndpointList{},
+
+		&VpnGateway{},
+		&VpnGatewayList{},
+
+		&AppsyncAPIKey{},
+		&AppsyncAPIKeyList{},
+
+		&AutoscalingSchedule{},
+		&AutoscalingScheduleList{},
+
+		&ShieldProtection{},
+		&ShieldProtectionList{},
+
+		&LbTargetGroupAttachment{},
+		&LbTargetGroupAttachmentList{},
+
+		&ApiGatewayUsagePlan{},
+		&ApiGatewayUsagePlanList{},
+
+		&GlacierVaultLock{},
+		&GlacierVaultLockList{},
+
+		&SqsQueue{},
+		&SqsQueueList{},
+
+		&SnsTopicPolicy{},
+		&SnsTopicPolicyList{},
+
+		&DbEventSubscription{},
+		&DbEventSubscriptionList{},
+
+		&DocdbClusterSnapshot{},
+		&DocdbClusterSnapshotList{},
+
+		&WafregionalRuleGroup{},
+		&WafregionalRuleGroupList{},
+
+		&DirectoryServiceLogSubscription{},
+		&DirectoryServiceLogSubscriptionList{},
+
+		&KmsExternalKey{},
+		&KmsExternalKeyList{},
+
+		&AppmeshMesh{},
+		&AppmeshMeshList{},
+
+		&CognitoUserPool{},
+		&CognitoUserPoolList{},
+
+		&KinesisAnalyticsApplication{},
+		&KinesisAnalyticsApplicationList{},
+
+		&OpsworksRdsDbInstance{},
+		&OpsworksRdsDbInstanceList{},
+
+		&AlbTargetGroup{},
+		&AlbTargetGroupList{},
+
+		&AmiFromInstance{},
+		&AmiFromInstanceList{},
+
+		&ApiGatewayGatewayResponse{},
+		&ApiGatewayGatewayResponseList{},
+
+		&SsmMaintenanceWindow{},
+		&SsmMaintenanceWindowList{},
+
+		&IamInstanceProfile{},
+		&IamInstanceProfileList{},
+
+		&MainRouteTableAssociation{},
+		&MainRouteTableAssociationList{},
+
+		&InspectorAssessmentTarget{},
+		&InspectorAssessmentTargetList{},
+
+		&OpsworksHaproxyLayer{},
+		&OpsworksHaproxyLayerList{},
+
+		&CodedeployDeploymentConfig{},
+		&CodedeployDeploymentConfigList{},
+
+		&InternetGateway{},
+		&InternetGatewayList{},
+
+		&OpsworksStaticWebLayer{},
+		&OpsworksStaticWebLayerList{},
+
+		&OrganizationsPolicyAttachment{},
+		&OrganizationsPolicyAttachmentList{},
+
+		&SpotFleetRequest{},
+		&SpotFleetRequestList{},
+
+		&DbSubnetGroup{},
+		&DbSubnetGroupList{},
+
+		&EcsCluster{},
+		&EcsClusterList{},
+
+		&CloudformationStackSet{},
+		&CloudformationStackSetList{},
+
+		&WafregionalRegexPatternSet{},
+		&WafregionalRegexPatternSetList{},
+
+		&BackupVault{},
+		&BackupVaultList{},
+
+		&CloudformationStack{},
+		&CloudformationStackList{},
+
+		&GuarddutyMember{},
+		&GuarddutyMemberList{},
+
+		&OpsworksGangliaLayer{},
+		&OpsworksGangliaLayerList{},
+
+		&OrganizationsOrganizationalUnit{},
+		&OrganizationsOrganizationalUnitList{},
+
+		&BackupSelection{},
+		&BackupSelectionList{},
+
+		&GlueClassifier{},
+		&GlueClassifierList{},
+
+		&OpsworksInstance{},
+		&OpsworksInstanceList{},
+
+		&DxLag{},
+		&DxLagList{},
+
+		&LaunchConfiguration{},
+		&LaunchConfigurationList{},
+
+		&ElasticsearchDomainPolicy{},
+		&ElasticsearchDomainPolicyList{},
+
+		&GlobalacceleratorEndpointGroup{},
+		&GlobalacceleratorEndpointGroupList{},
+
+		&S3BucketPolicy{},
+		&S3BucketPolicyList{},
+
+		&ServicecatalogPortfolio{},
+		&ServicecatalogPortfolioList{},
+
+		&VpcEndpointSubnetAssociation{},
+		&VpcEndpointSubnetAssociationList{},
+
+		&AthenaDatabase{},
+		&AthenaDatabaseList{},
+
+		&ElasticacheParameterGroup{},
+		&ElasticacheParameterGroupList{},
+
+		&OrganizationsOrganization{},
+		&OrganizationsOrganizationList{},
+
+		&RedshiftEventSubscription{},
+		&RedshiftEventSubscriptionList{},
+
+		&GlueConnection{},
+		&GlueConnectionList{},
+
+		&OpsworksPermission{},
+		&OpsworksPermissionList{},
+
+		&EcrRepository{},
+		&EcrRepositoryList{},
+
+		&RouteTableAssociation{},
+		&RouteTableAssociationList{},
+
+		&DefaultSubnet{},
+		&DefaultSubnetList{},
+
+		&ApiGatewayDocumentationVersion{},
+		&ApiGatewayDocumentationVersionList{},
+
+		&DirectoryServiceDirectory{},
+		&DirectoryServiceDirectoryList{},
+
+		&PlacementGroup{},
+		&PlacementGroupList{},
+
+		&Subnet{},
+		&SubnetList{},
+
+		&VpcEndpointService{},
+		&VpcEndpointServiceList{},
+
+		&CodecommitRepository{},
+		&CodecommitRepositoryList{},
+
+		&IamUserLoginProfile{},
+		&IamUserLoginProfileList{},
+
+		&TransferUser{},
+		&TransferUserList{},
+
+		&Alb{},
+		&AlbList{},
+
+		&GuarddutyIpset{},
+		&GuarddutyIpsetList{},
+
+		&SagemakerModel{},
+		&SagemakerModelList{},
+
+		&Route53Record{},
+		&Route53RecordList{},
+
+		&S3BucketObject{},
+		&S3BucketObjectList{},
+
+		&NetworkInterfaceSgAttachment{},
+		&NetworkInterfaceSgAttachmentList{},
+
+		&AppsyncGraphqlAPI{},
+		&AppsyncGraphqlAPIList{},
+
+		&IamGroup{},
+		&IamGroupList{},
+
+		&IamUserPolicy{},
+		&IamUserPolicyList{},
+
+		&LbTargetGroup{},
+		&LbTargetGroupList{},
+
+		&StoragegatewayCache{},
+		&StoragegatewayCacheList{},
+
+		&CognitoUserGroup{},
+		&CognitoUserGroupList{},
+
+		&LambdaLayerVersion{},
+		&LambdaLayerVersionList{},
+
+		&LightsailStaticIPAttachment{},
+		&LightsailStaticIPAttachmentList{},
+
+		&Route53HealthCheck{},
+		&Route53HealthCheckList{},
+
+		&AutoscalingPolicy{},
+		&AutoscalingPolicyList{},
+
+		&IotThing{},
+		&IotThingList{},
+
+		&IamAccountAlias{},
+		&IamAccountAliasList{},
+
+		&MacieS3BucketAssociation{},
+		&MacieS3BucketAssociationList{},
+
+		&PinpointApnsVoipSandboxChannel{},
+		&PinpointApnsVoipSandboxChannelList{},
+
+		&ApiGatewayMethodResponse{},
+		&ApiGatewayMethodResponseList{},
+
+		&DbOptionGroup{},
+		&DbOptionGroupList{},
+
+		&DocdbSubnetGroup{},
+		&DocdbSubnetGroupList{},
+
+		&EbsSnapshotCopy{},
+		&EbsSnapshotCopyList{},
+
+		&WafregionalIpset{},
+		&WafregionalIpsetList{},
+
+		&DatasyncAgent{},
+		&DatasyncAgentList{},
+
+		&DatasyncLocationEfs{},
+		&DatasyncLocationEfsList{},
+
+		&KinesisFirehoseDeliveryStream{},
+		&KinesisFirehoseDeliveryStreamList{},
+
+		&RdsCluster{},
+		&RdsClusterList{},
+
+		&SecurityGroup{},
+		&SecurityGroupList{},
+
+		&AlbListener{},
+		&AlbListenerList{},
+
+		&AlbListenerCertificate{},
+		&AlbListenerCertificateList{},
+
+		&AthenaNamedQuery{},
+		&AthenaNamedQueryList{},
+
+		&GlueTrigger{},
+		&GlueTriggerList{},
+
+		&LoadBalancerListenerPolicy{},
+		&LoadBalancerListenerPolicyList{},
+
+		&ApiGatewayAPIKey{},
+		&ApiGatewayAPIKeyList{},
+
+		&DxHostedPublicVirtualInterface{},
+		&DxHostedPublicVirtualInterfaceList{},
+
+		&LicensemanagerAssociation{},
+		&LicensemanagerAssociationList{},
+
+		&MacieMemberAccountAssociation{},
+		&MacieMemberAccountAssociationList{},
+
+		&NeptuneSubnetGroup{},
+		&NeptuneSubnetGroupList{},
+
+		&XraySamplingRule{},
+		&XraySamplingRuleList{},
+
+		&DmsCertificate{},
+		&DmsCertificateList{},
+
+		&GameliftAlias{},
+		&GameliftAliasList{},
+
+		&Ec2ClientVPNNetworkAssociation{},
+		&Ec2ClientVPNNetworkAssociationList{},
+
+		&SesReceiptFilter{},
+		&SesReceiptFilterList{},
+
+		&InspectorResourceGroup{},
+		&InspectorResourceGroupList{},
+
+		&KmsGrant{},
+		&KmsGrantList{},
+
+		&NetworkACLRule{},
+		&NetworkACLRuleList{},
+
+		&VpcDHCPOptionsAssociation{},
+		&VpcDHCPOptionsAssociationList{},
+
+		&WafregionalRegexMatchSet{},
+		&WafregionalRegexMatchSetList{},
+
+		&DxHostedPrivateVirtualInterface{},
+		&DxHostedPrivateVirtualInterfaceList{},
+
+		&ElbAttachment{},
+		&ElbAttachmentList{},
+
+		&ElasticacheCluster{},
+		&ElasticacheClusterList{},
+
+		&IamRolePolicyAttachment{},
+		&IamRolePolicyAttachmentList{},
+
+		&SsmDocument{},
+		&SsmDocumentList{},
+
+		&PinpointEmailChannel{},
+		&PinpointEmailChannelList{},
+
+		&DxConnection{},
+		&DxConnectionList{},
+
+		&DxPrivateVirtualInterface{},
+		&DxPrivateVirtualInterfaceList{},
+
+		&OpsworksPhpAppLayer{},
+		&OpsworksPhpAppLayerList{},
+
+		&Ec2TransitGatewayRouteTablePropagation{},
+		&Ec2TransitGatewayRouteTablePropagationList{},
+
+		&IamAccountPasswordPolicy{},
+		&IamAccountPasswordPolicyList{},
+
+		&DmsReplicationInstance{},
+		&DmsReplicationInstanceList{},
+
+		&LightsailDomain{},
+		&LightsailDomainList{},
+
+		&DocdbClusterParameterGroup{},
+		&DocdbClusterParameterGroupList{},
+
+		&EcrLifecyclePolicy{},
+		&EcrLifecyclePolicyList{},
+
+		&ApiGatewayAccount{},
+		&ApiGatewayAccountList{},
 
 		&CloudwatchDashboard{},
 		&CloudwatchDashboardList{},
+
+		&CodebuildWebhook{},
+		&CodebuildWebhookList{},
+
+		&Ec2CapacityReservation{},
+		&Ec2CapacityReservationList{},
+
+		&GameliftGameSessionQueue{},
+		&GameliftGameSessionQueueList{},
+
+		&MediaStoreContainer{},
+		&MediaStoreContainerList{},
+
+		&SqsQueuePolicy{},
+		&SqsQueuePolicyList{},
+
+		&ApiGatewayVpcLink{},
+		&ApiGatewayVpcLinkList{},
+
+		&ConfigConfigurationRecorderStatus_{},
+		&ConfigConfigurationRecorderStatus_List{},
+
+		&PinpointSmsChannel{},
+		&PinpointSmsChannelList{},
+
+		&IotThingType{},
+		&IotThingTypeList{},
+
+		&StoragegatewaySmbFileShare{},
+		&StoragegatewaySmbFileShareList{},
+
+		&GameliftFleet{},
+		&GameliftFleetList{},
+
+		&OpsworksRailsAppLayer{},
+		&OpsworksRailsAppLayerList{},
+
+		&EbsDefaultKmsKey{},
+		&EbsDefaultKmsKeyList{},
+
+		&ApiGatewayResource{},
+		&ApiGatewayResourceList{},
+
+		&DocdbCluster{},
+		&DocdbClusterList{},
+
+		&NetworkACL{},
+		&NetworkACLList{},
+
+		&SesActiveReceiptRuleSet{},
+		&SesActiveReceiptRuleSetList{},
+
+		&S3AccountPublicAccessBlock{},
+		&S3AccountPublicAccessBlockList{},
+
+		&WafregionalRateBasedRule{},
+		&WafregionalRateBasedRuleList{},
+
+		&AthenaWorkgroup{},
+		&AthenaWorkgroupList{},
+
+		&CloudwatchEventTarget{},
+		&CloudwatchEventTargetList{},
+
+		&SagemakerNotebookInstanceLifecycleConfiguration{},
+		&SagemakerNotebookInstanceLifecycleConfigurationList{},
+
+		&DlmLifecyclePolicy{},
+		&DlmLifecyclePolicyList{},
+
+		&NeptuneCluster{},
+		&NeptuneClusterList{},
+
+		&DxGatewayAssociation{},
+		&DxGatewayAssociationList{},
+
+		&GlueJob{},
+		&GlueJobList{},
+
+		&MqConfiguration{},
+		&MqConfigurationList{},
+
+		&SagemakerNotebookInstance{},
+		&SagemakerNotebookInstanceList{},
+
+		&AcmCertificateValidation{},
+		&AcmCertificateValidationList{},
+
+		&CognitoIdentityPoolRolesAttachment{},
+		&CognitoIdentityPoolRolesAttachmentList{},
+
+		&StoragegatewayUploadBuffer{},
+		&StoragegatewayUploadBufferList{},
+
+		&SesTemplate{},
+		&SesTemplateList{},
+
+		&IotTopicRule{},
+		&IotTopicRuleList{},
+
+		&MskCluster{},
+		&MskClusterList{},
+
+		&WafGeoMatchSet{},
+		&WafGeoMatchSetList{},
+
+		&AppmeshVirtualRouter{},
+		&AppmeshVirtualRouterList{},
+
+		&RamResourceAssociation{},
+		&RamResourceAssociationList{},
+
+		&WafByteMatchSet{},
+		&WafByteMatchSetList{},
+
+		&DatasyncLocationS3{},
+		&DatasyncLocationS3List{},
+
+		&EfsFileSystem{},
+		&EfsFileSystemList{},
+
+		&SfnActivity{},
+		&SfnActivityList{},
+
+		&CurReportDefinition{},
+		&CurReportDefinitionList{},
+
+		&ElasticsearchDomain{},
+		&ElasticsearchDomainList{},
+
+		&MqBroker{},
+		&MqBrokerList{},
+
+		&DbParameterGroup{},
+		&DbParameterGroupList{},
+
+		&LightsailStaticIP{},
+		&LightsailStaticIPList{},
+
+		&AutoscalingGroup{},
+		&AutoscalingGroupList{},
+
+		&AutoscalingNotification{},
+		&AutoscalingNotificationList{},
+
+		&RedshiftSecurityGroup{},
+		&RedshiftSecurityGroupList{},
+
+		&RedshiftSubnetGroup{},
+		&RedshiftSubnetGroupList{},
+
+		&AppautoscalingPolicy{},
+		&AppautoscalingPolicyList{},
+
+		&AppautoscalingScheduledAction{},
+		&AppautoscalingScheduledActionList{},
+
+		&ServiceDiscoveryPublicDNSNamespace{},
+		&ServiceDiscoveryPublicDNSNamespaceList{},
+
+		&Lb{},
+		&LbList{},
+
+		&ApiGatewayDocumentationPart{},
+		&ApiGatewayDocumentationPartList{},
+
+		&EbsSnapshot{},
+		&EbsSnapshotList{},
+
+		&IamUserSSHKey{},
+		&IamUserSSHKeyList{},
+
+		&KinesisStream{},
+		&KinesisStreamList{},
+
+		&OrganizationsPolicy{},
+		&OrganizationsPolicyList{},
+
+		&SsmMaintenanceWindowTask{},
+		&SsmMaintenanceWindowTaskList{},
+
+		&VpcPeeringConnectionAccepter{},
+		&VpcPeeringConnectionAccepterList{},
+
+		&AppsyncFunction{},
+		&AppsyncFunctionList{},
+
+		&ConfigConfigRule{},
+		&ConfigConfigRuleList{},
+
+		&SecurityhubAccount{},
+		&SecurityhubAccountList{},
+
+		&WorklinkFleet{},
+		&WorklinkFleetList{},
+
+		&PinpointApnsVoipChannel{},
+		&PinpointApnsVoipChannelList{},
+
+		&CloudfrontOriginAccessIdentity{},
+		&CloudfrontOriginAccessIdentityList{},
+
+		&EmrCluster{},
+		&EmrClusterList{},
+
+		&MediaStoreContainerPolicy{},
+		&MediaStoreContainerPolicyList{},
+
+		&SagemakerEndpointConfiguration{},
+		&SagemakerEndpointConfigurationList{},
+
+		&SpotInstanceRequest{},
+		&SpotInstanceRequestList{},
+
+		&VpcPeeringConnectionOptions{},
+		&VpcPeeringConnectionOptionsList{},
+
+		&VpcEndpointServiceAllowedPrincipal{},
+		&VpcEndpointServiceAllowedPrincipalList{},
+
+		&AppautoscalingTarget{},
+		&AppautoscalingTargetList{},
+
+		&EipAssociation{},
+		&EipAssociationList{},
+
+		&SnsTopicSubscription{},
+		&SnsTopicSubscriptionList{},
+
+		&ApiGatewayModel{},
+		&ApiGatewayModelList{},
+
+		&OpsworksCustomLayer{},
+		&OpsworksCustomLayerList{},
+
+		&Vpc{},
+		&VpcList{},
+
+		&CognitoResourceServer{},
+		&CognitoResourceServerList{},
+
+		&ResourcegroupsGroup{},
+		&ResourcegroupsGroupList{},
+
+		&EmrSecurityConfiguration{},
+		&EmrSecurityConfigurationList{},
+
+		&RamPrincipalAssociation{},
+		&RamPrincipalAssociationList{},
+
+		&SfnStateMachine{},
+		&SfnStateMachineList{},
+
+		&DatasyncTask{},
+		&DatasyncTaskList{},
+
+		&Eip{},
+		&EipList{},
+
+		&DxGateway{},
+		&DxGatewayList{},
+
+		&GlobalacceleratorAccelerator{},
+		&GlobalacceleratorAcceleratorList{},
+
+		&DefaultSecurityGroup{},
+		&DefaultSecurityGroupList{},
+
+		&ApiGatewayMethodSettings{},
+		&ApiGatewayMethodSettingsList{},
+
+		&CloudhsmV2Hsm{},
+		&CloudhsmV2HsmList{},
+
+		&OpsworksJavaAppLayer{},
+		&OpsworksJavaAppLayerList{},
+
+		&DaxCluster{},
+		&DaxClusterList{},
+
+		&KeyPair{},
+		&KeyPairList{},
+
+		&OpsworksMysqlLayer{},
+		&OpsworksMysqlLayerList{},
+
+		&SwfDomain{},
+		&SwfDomainList{},
+
+		&CloudwatchLogGroup{},
+		&CloudwatchLogGroupList{},
+
+		&Ec2TransitGatewayVpcAttachment{},
+		&Ec2TransitGatewayVpcAttachmentList{},
+
+		&DxHostedPublicVirtualInterfaceAccepter{},
+		&DxHostedPublicVirtualInterfaceAccepterList{},
+
+		&DynamodbTable{},
+		&DynamodbTableList{},
+
+		&Elb{},
+		&ElbList{},
+
+		&LbSslNegotiationPolicy{},
+		&LbSslNegotiationPolicyList{},
+
+		&ApiGatewayUsagePlanKey{},
+		&ApiGatewayUsagePlanKeyList{},
+
+		&DbClusterSnapshot{},
+		&DbClusterSnapshotList{},
+
+		&DxBGPPeer{},
+		&DxBGPPeerList{},
+
+		&GlueSecurityConfiguration{},
+		&GlueSecurityConfigurationList{},
+
+		&DefaultRouteTable{},
+		&DefaultRouteTableList{},
+
+		&SagemakerEndpoint{},
+		&SagemakerEndpointList{},
+
+		&SnsTopic{},
+		&SnsTopicList{},
+
+		&WafRateBasedRule{},
+		&WafRateBasedRuleList{},
+
+		&AppsyncResolver{},
+		&AppsyncResolverList{},
+
+		&CognitoUserPoolClient{},
+		&CognitoUserPoolClientList{},
+
+		&RdsClusterEndpoint{},
+		&RdsClusterEndpointList{},
+
+		&S3Bucket{},
+		&S3BucketList{},
+
+		&WafIpset{},
+		&WafIpsetList{},
+
+		&ApiGatewayDomainName{},
+		&ApiGatewayDomainNameList{},
+
+		&KmsKey{},
+		&KmsKeyList{},
+
+		&LbListener{},
+		&LbListenerList{},
+
+		&IamRole{},
+		&IamRoleList{},
+
+		&IamServerCertificate{},
+		&IamServerCertificateList{},
+
+		&CloudwatchLogDestinationPolicy{},
+		&CloudwatchLogDestinationPolicyList{},
+
+		&VpcDHCPOptions{},
+		&VpcDHCPOptionsList{},
+
+		&WorklinkWebsiteCertificateAuthorityAssociation{},
+		&WorklinkWebsiteCertificateAuthorityAssociationList{},
+
+		&PinpointAdmChannel{},
+		&PinpointAdmChannelList{},
+
+		&OrganizationsAccount{},
+		&OrganizationsAccountList{},
+
+		&WafregionalRule{},
+		&WafregionalRuleList{},
+
+		&WafregionalByteMatchSet{},
+		&WafregionalByteMatchSetList{},
+
+		&BatchJobDefinition{},
+		&BatchJobDefinitionList{},
+
+		&CloudwatchLogSubscriptionFilter{},
+		&CloudwatchLogSubscriptionFilterList{},
+
+		&LambdaPermission{},
+		&LambdaPermissionList{},
+
+		&RdsGlobalCluster{},
+		&RdsGlobalClusterList{},
+
+		&VolumeAttachment{},
+		&VolumeAttachmentList{},
+
+		&CloudwatchEventPermission{},
+		&CloudwatchEventPermissionList{},
+
+		&IamServiceLinkedRole{},
+		&IamServiceLinkedRoleList{},
+
+		&StoragegatewayWorkingStorage{},
+		&StoragegatewayWorkingStorageList{},
+
+		&Cloud9EnvironmentEc2{},
+		&Cloud9EnvironmentEc2List{},
+
+		&GlobalacceleratorListener{},
+		&GlobalacceleratorListenerList{},
+
+		&VpnConnection{},
+		&VpnConnectionList{},
+
+		&VpnGatewayRoutePropagation{},
+		&VpnGatewayRoutePropagationList{},
+
+		&SesDomainMailFrom{},
+		&SesDomainMailFromList{},
+
+		&SimpledbDomain{},
+		&SimpledbDomainList{},
+
+		&RdsClusterParameterGroup{},
+		&RdsClusterParameterGroupList{},
+
+		&Route53Zone{},
+		&Route53ZoneList{},
+
+		&S3BucketMetric{},
+		&S3BucketMetricList{},
+
+		&CloudwatchLogStream{},
+		&CloudwatchLogStreamList{},
+
+		&NetworkInterface{},
+		&NetworkInterfaceList{},
+
+		&GlueCatalogDatabase{},
+		&GlueCatalogDatabaseList{},
+
+		&RouteTable{},
+		&RouteTableList{},
+
+		&ApiGatewayStage{},
+		&ApiGatewayStageList{},
+
+		&DmsReplicationTask{},
+		&DmsReplicationTaskList{},
+
+		&ConfigDeliveryChannel{},
+		&ConfigDeliveryChannelList{},
+
+		&DbInstanceRoleAssociation{},
+		&DbInstanceRoleAssociationList{},
+
+		&IamPolicy{},
+		&IamPolicyList{},
+
+		&MskConfiguration{},
+		&MskConfigurationList{},
+
+		&VpcEndpointRouteTableAssociation{},
+		&VpcEndpointRouteTableAssociationList{},
+
+		&AppCookieStickinessPolicy{},
+		&AppCookieStickinessPolicyList{},
+
+		&CloudfrontPublicKey{},
+		&CloudfrontPublicKeyList{},
+
+		&Ec2TransitGatewayVpcAttachmentAccepter{},
+		&Ec2TransitGatewayVpcAttachmentAccepterList{},
+
+		&EcrRepositoryPolicy{},
+		&EcrRepositoryPolicyList{},
+
+		&GuarddutyThreatintelset{},
+		&GuarddutyThreatintelsetList{},
+
+		&AcmCertificate{},
+		&AcmCertificateList{},
+
+		&AppmeshRoute{},
+		&AppmeshRouteList{},
+
+		&SesIdentityNotificationTopic{},
+		&SesIdentityNotificationTopicList{},
+
+		&WafSQLInjectionMatchSet{},
+		&WafSQLInjectionMatchSetList{},
+
+		&NetworkInterfaceAttachment{},
+		&NetworkInterfaceAttachmentList{},
+
+		&SesIdentityPolicy{},
+		&SesIdentityPolicyList{},
+
+		&SesDomainIdentity{},
+		&SesDomainIdentityList{},
+
+		&SnsPlatformApplication{},
+		&SnsPlatformApplicationList{},
+
+		&CognitoIdentityPool{},
+		&CognitoIdentityPoolList{},
+
+		&DaxSubnetGroup{},
+		&DaxSubnetGroupList{},
+
+		&Instance{},
+		&InstanceList{},
+
+		&LambdaEventSourceMapping{},
+		&LambdaEventSourceMappingList{},
+
+		&OpsworksApplication{},
+		&OpsworksApplicationList{},
+
+		&SesReceiptRule{},
+		&SesReceiptRuleList{},
+
+		&SecurityhubProductSubscription{},
+		&SecurityhubProductSubscriptionList{},
+
+		&WafRule{},
+		&WafRuleList{},
+
+		&CognitoUserPoolDomain{},
+		&CognitoUserPoolDomainList{},
+
+		&IamUser{},
+		&IamUserList{},
+
+		&NeptuneClusterSnapshot{},
+		&NeptuneClusterSnapshotList{},
+
+		&SsmAssociation{},
+		&SsmAssociationList{},
+
+		&VpcPeeringConnection{},
+		&VpcPeeringConnectionList{},
+
+		&WafSizeConstraintSet{},
+		&WafSizeConstraintSetList{},
+
+		&Ec2TransitGatewayRoute{},
+		&Ec2TransitGatewayRouteList{},
+
+		&EksCluster{},
+		&EksClusterList{},
+
+		&EfsMountTarget{},
+		&EfsMountTargetList{},
+
+		&EgressOnlyInternetGateway{},
+		&EgressOnlyInternetGatewayList{},
+
+		&GlueCatalogTable{},
+		&GlueCatalogTableList{},
+
+		&OpsworksMemcachedLayer{},
+		&OpsworksMemcachedLayerList{},
+
+		&SsmPatchGroup{},
+		&SsmPatchGroupList{},
+
+		&BatchJobQueue{},
+		&BatchJobQueueList{},
+
+		&BackupPlan{},
+		&BackupPlanList{},
+
+		&DxConnectionAssociation{},
+		&DxConnectionAssociationList{},
+
+		&Ec2TransitGateway{},
+		&Ec2TransitGatewayList{},
+
+		&ElasticacheSubnetGroup{},
+		&ElasticacheSubnetGroupList{},
+
+		&GuarddutyInviteAccepter{},
+		&GuarddutyInviteAccepterList{},
+
+		&Codepipeline{},
+		&CodepipelineList{},
+
+		&DmsReplicationSubnetGroup{},
+		&DmsReplicationSubnetGroupList{},
+
+		&DbSnapshot{},
+		&DbSnapshotList{},
+
+		&SnapshotCreateVolumePermission{},
+		&SnapshotCreateVolumePermissionList{},
+
+		&ApiGatewayAuthorizer{},
+		&ApiGatewayAuthorizerList{},
+
+		&LoadBalancerPolicy{},
+		&LoadBalancerPolicyList{},
+
+		&SsmPatchBaseline{},
+		&SsmPatchBaselineList{},
+
+		&WafWebACL{},
+		&WafWebACLList{},
+
+		&PinpointGcmChannel{},
+		&PinpointGcmChannelList{},
+
+		&AppsyncDatasource{},
+		&AppsyncDatasourceList{},
+
+		&Route53ResolverRule{},
+		&Route53ResolverRuleList{},
+
+		&SsmParameter{},
+		&SsmParameterList{},
+
+		&LbListenerRule{},
+		&LbListenerRuleList{},
+
+		&CloudwatchLogResourcePolicy{},
+		&CloudwatchLogResourcePolicyList{},
+
+		&S3BucketNotification{},
+		&S3BucketNotificationList{},
+
+		&EcsService{},
+		&EcsServiceList{},
+
+		&EcsTaskDefinition{},
+		&EcsTaskDefinitionList{},
+
+		&IamGroupPolicy{},
+		&IamGroupPolicyList{},
+
+		&LbCookieStickinessPolicy{},
+		&LbCookieStickinessPolicyList{},
+
+		&ServiceDiscoveryPrivateDNSNamespace{},
+		&ServiceDiscoveryPrivateDNSNamespaceList{},
+
+		&SsmActivation{},
+		&SsmActivationList{},
+
+		&DatapipelinePipeline{},
+		&DatapipelinePipelineList{},
+
+		&Ec2ClientVPNEndpoint{},
+		&Ec2ClientVPNEndpointList{},
+
+		&WafregionalWebACL{},
+		&WafregionalWebACLList{},
+
+		&PinpointEventStream{},
+		&PinpointEventStreamList{},
+
+		&SesReceiptRuleSet{},
+		&SesReceiptRuleSetList{},
+
+		&BatchComputeEnvironment{},
+		&BatchComputeEnvironmentList{},
+
+		&ElasticacheReplicationGroup{},
+		&ElasticacheReplicationGroupList{},
+
+		&KmsCiphertext{},
+		&KmsCiphertextList{},
+
+		&GameliftBuild{},
+		&GameliftBuildList{},
+
+		&GlacierVault{},
+		&GlacierVaultList{},
+
+		&GlueCrawler{},
+		&GlueCrawlerList{},
+
+		&IamGroupMembership{},
+		&IamGroupMembershipList{},
+
+		&NeptuneEventSubscription{},
+		&NeptuneEventSubscriptionList{},
+
+		&NeptuneParameterGroup{},
+		&NeptuneParameterGroupList{},
+
+		&DatasyncLocationNfs{},
+		&DatasyncLocationNfsList{},
+
+		&Ec2TransitGatewayRouteTableAssociation{},
+		&Ec2TransitGatewayRouteTableAssociationList{},
+
+		&IamOpenidConnectProvider{},
+		&IamOpenidConnectProviderList{},
+
+		&RedshiftParameterGroup{},
+		&RedshiftParameterGroupList{},
+
+		&BudgetsBudget{},
+		&BudgetsBudgetList{},
+
+		&CloudwatchLogDestination{},
+		&CloudwatchLogDestinationList{},
+
+		&SsmMaintenanceWindowTarget{},
+		&SsmMaintenanceWindowTargetList{},
+
+		&IamAccessKey{},
+		&IamAccessKeyList{},
+
+		&DefaultNetworkACL{},
+		&DefaultNetworkACLList{},
+
+		&WafregionalGeoMatchSet{},
+		&WafregionalGeoMatchSetList{},
+
+		&DbInstance{},
+		&DbInstanceList{},
+
+		&IamGroupPolicyAttachment{},
+		&IamGroupPolicyAttachmentList{},
+
+		&DevicefarmProject{},
+		&DevicefarmProjectList{},
+
+		&SesEventDestination{},
+		&SesEventDestinationList{},
+
+		&WafregionalSQLInjectionMatchSet{},
+		&WafregionalSQLInjectionMatchSetList{},
+
+		&GuarddutyDetector{},
+		&GuarddutyDetectorList{},
+
+		&VpcEndpointConnectionNotification{},
+		&VpcEndpointConnectionNotificationList{},
+
+		&KmsAlias{},
+		&KmsAliasList{},
+
+		&AlbTargetGroupAttachment{},
+		&AlbTargetGroupAttachmentList{},
+
+		&DmsEndpoint{},
+		&DmsEndpointList{},
+
+		&ElasticBeanstalkApplicationVersion{},
+		&ElasticBeanstalkApplicationVersionList{},
+
+		&OpsworksStack{},
+		&OpsworksStackList{},
+
+		&SecretsmanagerSecretVersion{},
+		&SecretsmanagerSecretVersionList{},
+
+		&WafregionalXssMatchSet{},
+		&WafregionalXssMatchSetList{},
+
+		&PinpointApp{},
+		&PinpointAppList{},
+
+		&CodebuildProject{},
+		&CodebuildProjectList{},
+
+		&Ec2TransitGatewayRouteTable{},
+		&Ec2TransitGatewayRouteTableList{},
+
+		&CustomerGateway{},
+		&CustomerGatewayList{},
+
+		&DynamodbGlobalTable{},
+		&DynamodbGlobalTableList{},
+
+		&IotRoleAlias{},
+		&IotRoleAliasList{},
+
+		&Route53QueryLog{},
+		&Route53QueryLogList{},
+
+		&S3BucketPublicAccessBlock{},
+		&S3BucketPublicAccessBlockList{},
+
+		&SsmResourceDataSync{},
+		&SsmResourceDataSyncList{},
+
+		&ApiGatewayMethod{},
+		&ApiGatewayMethodList{},
+
+		&AppmeshVirtualNode{},
+		&AppmeshVirtualNodeList{},
+
+		&CloudwatchLogMetricFilter{},
+		&CloudwatchLogMetricFilterList{},
+
+		&CognitoIdentityProvider{},
+		&CognitoIdentityProviderList{},
+
+		&DxHostedPrivateVirtualInterfaceAccepter{},
+		&DxHostedPrivateVirtualInterfaceAccepterList{},
+
+		&TransferServer{},
+		&TransferServerList{},
+
+		&VpcIpv4CIDRBlockAssociation{},
+		&VpcIpv4CIDRBlockAssociationList{},
+
+		&ApiGatewayRestAPI{},
+		&ApiGatewayRestAPIList{},
+
+		&AppmeshVirtualService{},
+		&AppmeshVirtualServiceList{},
+
+		&Cloudtrail{},
+		&CloudtrailList{},
+
+		&StoragegatewayGateway{},
+		&StoragegatewayGatewayList{},
+
+		&TransferSSHKey{},
+		&TransferSSHKeyList{},
+
+		&WafRegexMatchSet{},
+		&WafRegexMatchSetList{},
+
+		&CodepipelineWebhook{},
+		&CodepipelineWebhookList{},
+
+		&FlowLog{},
+		&FlowLogList{},
+
+		&Route53ResolverEndpoint{},
+		&Route53ResolverEndpointList{},
+
+		&ServiceDiscoveryHTTPNamespace{},
+		&ServiceDiscoveryHTTPNamespaceList{},
+
+		&CloudwatchEventRule{},
+		&CloudwatchEventRuleList{},
+
+		&IamPolicyAttachment{},
+		&IamPolicyAttachmentList{},
+
+		&ElasticBeanstalkApplication{},
+		&ElasticBeanstalkApplicationList{},
+
+		&ElastictranscoderPreset{},
+		&ElastictranscoderPresetList{},
+
+		&CodedeployDeploymentGroup{},
+		&CodedeployDeploymentGroupList{},
+
+		&EbsEncryptionByDefault{},
+		&EbsEncryptionByDefaultList{},
+
+		&ElasticacheSecurityGroup{},
+		&ElasticacheSecurityGroupList{},
+
+		&LambdaFunction{},
+		&LambdaFunctionList{},
+
+		&SecretsmanagerSecret{},
+		&SecretsmanagerSecretList{},
+
+		&StoragegatewayCachedIscsiVolume{},
+		&StoragegatewayCachedIscsiVolumeList{},
+
+		&ApiGatewayIntegrationResponse{},
+		&ApiGatewayIntegrationResponseList{},
+
+		&AutoscalingLifecycleHook{},
+		&AutoscalingLifecycleHookList{},
+
+		&RedshiftCluster{},
+		&RedshiftClusterList{},
+
+		&Ec2Fleet{},
+		&Ec2FleetList{},
+
+		&IotPolicy{},
+		&IotPolicyList{},
+
+		&ConfigConfigurationAggregator{},
+		&ConfigConfigurationAggregatorList{},
+
+		&MediaPackageChannel{},
+		&MediaPackageChannelList{},
+
+		&DynamodbTableItem{},
+		&DynamodbTableItemList{},
+
+		&DaxParameterGroup{},
+		&DaxParameterGroupList{},
+
+		&IotPolicyAttachment{},
+		&IotPolicyAttachmentList{},
+
+		&InspectorAssessmentTemplate{},
+		&InspectorAssessmentTemplateList{},
+
+		&LightsailInstance{},
+		&LightsailInstanceList{},
+
+		&LoadBalancerBackendServerPolicy{},
+		&LoadBalancerBackendServerPolicyList{},
+
+		&ProxyProtocolPolicy{},
+		&ProxyProtocolPolicyList{},
+
+		&ApiGatewayIntegration{},
+		&ApiGatewayIntegrationList{},
+
+		&EmrInstanceGroup{},
+		&EmrInstanceGroupList{},
+
+		&CodecommitTrigger{},
+		&CodecommitTriggerList{},
+
+		&Route53ResolverRuleAssociation{},
+		&Route53ResolverRuleAssociationList{},
+
+		&SesDomainDkim{},
+		&SesDomainDkimList{},
+
+		&PinpointApnsChannel{},
+		&PinpointApnsChannelList{},
+
+		&ApiGatewayClientCertificate{},
+		&ApiGatewayClientCertificateList{},
+
+		&CloudwatchMetricAlarm{},
+		&CloudwatchMetricAlarmList{},
+
+		&NeptuneClusterInstance{},
+		&NeptuneClusterInstanceList{},
+
+		&Ami{},
+		&AmiList{},
+
+		&CloudformationStackSetInstance{},
+		&CloudformationStackSetInstanceList{},
+
+		&IamUserPolicyAttachment{},
+		&IamUserPolicyAttachmentList{},
+
+		&LightsailKeyPair{},
+		&LightsailKeyPairList{},
+
+		&AcmpcaCertificateAuthority{},
+		&AcmpcaCertificateAuthorityList{},
+
+		&IamUserGroupMembership{},
+		&IamUserGroupMembershipList{},
+
+		&DbSecurityGroup{},
+		&DbSecurityGroupList{},
+
+		&SesConfigurationSet{},
+		&SesConfigurationSetList{},
+
+		&Route{},
+		&RouteList{},
+
+		&DefaultVpcDHCPOptions{},
+		&DefaultVpcDHCPOptionsList{},
+
+		&CloudfrontDistribution{},
+		&CloudfrontDistributionList{},
+
+		&ElastictranscoderPipeline{},
+		&ElastictranscoderPipelineList{},
+
+		&VpnConnectionRoute{},
+		&VpnConnectionRouteList{},
+
+		&WafRuleGroup{},
+		&WafRuleGroupList{},
+
+		&WafregionalWebACLAssociation{},
+		&WafregionalWebACLAssociationList{},
+
+		&AlbListenerRule{},
+		&AlbListenerRuleList{},
+
+		&NeptuneClusterParameterGroup{},
+		&NeptuneClusterParameterGroupList{},
+
+		&SpotDatafeedSubscription{},
+		&SpotDatafeedSubscriptionList{},
+
+		&LbListenerCertificate{},
+		&LbListenerCertificateList{},
+
+		&RdsClusterInstance{},
+		&RdsClusterInstanceList{},
+
+		&SecurityhubStandardsSubscription{},
+		&SecurityhubStandardsSubscriptionList{},
+
+		&ApiGatewayDeployment{},
+		&ApiGatewayDeploymentList{},
+
+		&SesDomainIdentityVerification{},
+		&SesDomainIdentityVerificationList{},
+
+		&ServiceDiscoveryService{},
+		&ServiceDiscoveryServiceList{},
+
+		&AmiLaunchPermission{},
+		&AmiLaunchPermissionList{},
+
+		&ApiGatewayBasePathMapping{},
+		&ApiGatewayBasePathMappingList{},
+
+		&VpnGatewayAttachment{},
+		&VpnGatewayAttachmentList{},
+
+		&WafregionalSizeConstraintSet{},
+		&WafregionalSizeConstraintSetList{},
+
+		&Route53DelegationSet{},
+		&Route53DelegationSetList{},
+
+		&SnsSmsPreferences{},
+		&SnsSmsPreferencesList{},
+
+		&CodedeployApp{},
+		&CodedeployAppList{},
+
+		&DxPublicVirtualInterface{},
+		&DxPublicVirtualInterfaceList{},
+
+		&ElasticBeanstalkEnvironment{},
+		&ElasticBeanstalkEnvironmentList{},
+
+		&PinpointBaiduChannel{},
+		&PinpointBaiduChannelList{},
+
+		&EbsVolume{},
+		&EbsVolumeList{},
+
+		&ElasticBeanstalkConfigurationTemplate{},
+		&ElasticBeanstalkConfigurationTemplateList{},
+
+		&StoragegatewayNfsFileShare{},
+		&StoragegatewayNfsFileShareList{},
+
+		&AutoscalingAttachment{},
+		&AutoscalingAttachmentList{},
+
+		&RamResourceShare{},
+		&RamResourceShareList{},
+
+		&S3BucketInventory{},
+		&S3BucketInventoryList{},
+
+		&WafRegexPatternSet{},
+		&WafRegexPatternSetList{},
+
+		&WafXssMatchSet{},
+		&WafXssMatchSetList{},
+
+		&IamRolePolicy{},
+		&IamRolePolicyList{},
+
+		&IamSamlProvider{},
+		&IamSamlProviderList{},
+
+		&DirectoryServiceConditionalForwarder{},
+		&DirectoryServiceConditionalForwarderList{},
+
+		&Route53ZoneAssociation{},
+		&Route53ZoneAssociationList{},
+
+		&OpsworksNodejsAppLayer{},
+		&OpsworksNodejsAppLayerList{},
+
+		&AmiCopy{},
+		&AmiCopyList{},
+
+		&LaunchTemplate{},
+		&LaunchTemplateList{},
+
+		&LambdaAlias{},
+		&LambdaAliasList{},
+
+		&PinpointApnsSandboxChannel{},
+		&PinpointApnsSandboxChannelList{},
+
+		&CloudhsmV2Cluster{},
+		&CloudhsmV2ClusterList{},
+
+		&IotCertificate{},
+		&IotCertificateList{},
+
+		&NatGateway{},
+		&NatGatewayList{},
+
+		&OpsworksUserProfile{},
+		&OpsworksUserProfileList{},
+
+		&ApiGatewayRequestValidator{},
+		&ApiGatewayRequestValidatorList{},
+
+		&ConfigConfigurationRecorder{},
+		&ConfigConfigurationRecorderList{},
 	)
 
 	scheme.AddKnownTypes(SchemeGroupVersion,

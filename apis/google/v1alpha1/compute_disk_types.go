@@ -34,14 +34,16 @@ type ComputeDiskSpecSourceSnapshotEncryptionKey struct {
 }
 
 type ComputeDiskSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	DiskEncryptionKey []ComputeDiskSpecDiskEncryptionKey `json:"diskEncryptionKey,omitempty" tf:"disk_encryption_key,omitempty"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	DiskEncryptionKeyRaw core.LocalObjectReference `json:"diskEncryptionKeyRaw,omitempty" tf:"disk_encryption_key_raw,omitempty"`
 	// +optional
 	Image string `json:"image,omitempty" tf:"image,omitempty"`
 	// +optional
@@ -62,8 +64,7 @@ type ComputeDiskSpec struct {
 	// +optional
 	Type string `json:"type,omitempty" tf:"type,omitempty"`
 	// +optional
-	Zone        string                    `json:"zone,omitempty" tf:"zone,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Zone string `json:"zone,omitempty" tf:"zone,omitempty"`
 }
 
 type ComputeDiskStatus struct {

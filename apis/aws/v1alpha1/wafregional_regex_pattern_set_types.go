@@ -19,11 +19,12 @@ type WafregionalRegexPatternSet struct {
 }
 
 type WafregionalRegexPatternSetSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	RegexPatternStrings []string                  `json:"regexPatternStrings,omitempty" tf:"regex_pattern_strings,omitempty"`
-	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
+	RegexPatternStrings []string `json:"regexPatternStrings,omitempty" tf:"regex_pattern_strings,omitempty"`
 }
 
 type WafregionalRegexPatternSetStatus struct {

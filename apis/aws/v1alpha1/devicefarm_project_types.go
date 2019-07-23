@@ -19,8 +19,9 @@ type DevicefarmProject struct {
 }
 
 type DevicefarmProjectSpec struct {
-	Name        string                    `json:"name" tf:"name"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Name string `json:"name" tf:"name"`
 }
 
 type DevicefarmProjectStatus struct {

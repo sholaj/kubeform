@@ -28,6 +28,8 @@ type KubernetesClusterSpecNodePool struct {
 }
 
 type KubernetesClusterSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Name string `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
@@ -35,9 +37,8 @@ type KubernetesClusterSpec struct {
 	Region   string                          `json:"region" tf:"region"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
-	Tags        []string                  `json:"tags,omitempty" tf:"tags,omitempty"`
-	Version     string                    `json:"version" tf:"version"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags    []string `json:"tags,omitempty" tf:"tags,omitempty"`
+	Version string   `json:"version" tf:"version"`
 }
 
 type KubernetesClusterStatus struct {

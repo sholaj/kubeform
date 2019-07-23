@@ -19,12 +19,13 @@ type DynamodbTableItem struct {
 }
 
 type DynamodbTableItemSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	HashKey string `json:"hashKey" tf:"hash_key"`
 	Item    string `json:"item" tf:"item"`
 	// +optional
-	RangeKey    string                    `json:"rangeKey,omitempty" tf:"range_key,omitempty"`
-	TableName   string                    `json:"tableName" tf:"table_name"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	RangeKey  string `json:"rangeKey,omitempty" tf:"range_key,omitempty"`
+	TableName string `json:"tableName" tf:"table_name"`
 }
 
 type DynamodbTableItemStatus struct {

@@ -19,6 +19,8 @@ type ComputeTargetTcpProxy struct {
 }
 
 type ComputeTargetTcpProxySpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	BackendService string `json:"backendService" tf:"backend_service"`
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
@@ -26,8 +28,7 @@ type ComputeTargetTcpProxySpec struct {
 	// +optional
 	Project string `json:"project,omitempty" tf:"project,omitempty"`
 	// +optional
-	ProxyHeader string                    `json:"proxyHeader,omitempty" tf:"proxy_header,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ProxyHeader string `json:"proxyHeader,omitempty" tf:"proxy_header,omitempty"`
 }
 
 type ComputeTargetTcpProxyStatus struct {

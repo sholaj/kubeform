@@ -43,6 +43,8 @@ type AppsyncGraphqlAPISpecUserPoolConfig struct {
 }
 
 type AppsyncGraphqlAPISpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AuthenticationType string `json:"authenticationType" tf:"authentication_type"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -58,7 +60,6 @@ type AppsyncGraphqlAPISpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	UserPoolConfig []AppsyncGraphqlAPISpecUserPoolConfig `json:"userPoolConfig,omitempty" tf:"user_pool_config,omitempty"`
-	ProviderRef    core.LocalObjectReference             `json:"providerRef" tf:"-"`
 }
 
 type AppsyncGraphqlAPIStatus struct {

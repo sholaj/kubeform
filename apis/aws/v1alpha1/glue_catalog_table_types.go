@@ -87,6 +87,8 @@ type GlueCatalogTableSpecStorageDescriptor struct {
 }
 
 type GlueCatalogTableSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	CatalogID    string `json:"catalogID,omitempty" tf:"catalog_id,omitempty"`
 	DatabaseName string `json:"databaseName" tf:"database_name"`
@@ -109,8 +111,7 @@ type GlueCatalogTableSpec struct {
 	// +optional
 	ViewExpandedText string `json:"viewExpandedText,omitempty" tf:"view_expanded_text,omitempty"`
 	// +optional
-	ViewOriginalText string                    `json:"viewOriginalText,omitempty" tf:"view_original_text,omitempty"`
-	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ViewOriginalText string `json:"viewOriginalText,omitempty" tf:"view_original_text,omitempty"`
 }
 
 type GlueCatalogTableStatus struct {

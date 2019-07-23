@@ -102,6 +102,8 @@ type BatchPoolSpecStorageImageReference struct {
 }
 
 type BatchPoolSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AccountName string `json:"accountName" tf:"account_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -129,7 +131,6 @@ type BatchPoolSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	StorageImageReference []BatchPoolSpecStorageImageReference `json:"storageImageReference" tf:"storage_image_reference"`
 	VmSize                string                               `json:"vmSize" tf:"vm_size"`
-	ProviderRef           core.LocalObjectReference            `json:"providerRef" tf:"-"`
 }
 
 type BatchPoolStatus struct {

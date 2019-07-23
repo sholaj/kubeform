@@ -19,22 +19,21 @@ type ApiManagementSubscription struct {
 }
 
 type ApiManagementSubscriptionSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	ApiManagementName string `json:"apiManagementName" tf:"api_management_name"`
 	DisplayName       string `json:"displayName" tf:"display_name"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	PrimaryKey        core.LocalObjectReference `json:"primaryKey,omitempty" tf:"primary_key,omitempty"`
-	ProductID         string                    `json:"productID" tf:"product_id"`
-	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	ProductID         string `json:"productID" tf:"product_id"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	SecondaryKey core.LocalObjectReference `json:"secondaryKey,omitempty" tf:"secondary_key,omitempty"`
 	// +optional
 	State string `json:"state,omitempty" tf:"state,omitempty"`
 	// +optional
-	SubscriptionID string                    `json:"subscriptionID,omitempty" tf:"subscription_id,omitempty"`
-	UserID         string                    `json:"userID" tf:"user_id"`
-	ProviderRef    core.LocalObjectReference `json:"providerRef" tf:"-"`
+	SubscriptionID string `json:"subscriptionID,omitempty" tf:"subscription_id,omitempty"`
+	UserID         string `json:"userID" tf:"user_id"`
 }
 
 type ApiManagementSubscriptionStatus struct {

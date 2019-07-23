@@ -26,12 +26,13 @@ type S3BucketMetricSpecFilter struct {
 }
 
 type S3BucketMetricSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	Filter      []S3BucketMetricSpecFilter `json:"filter,omitempty" tf:"filter,omitempty"`
-	Name        string                     `json:"name" tf:"name"`
-	ProviderRef core.LocalObjectReference  `json:"providerRef" tf:"-"`
+	Filter []S3BucketMetricSpecFilter `json:"filter,omitempty" tf:"filter,omitempty"`
+	Name   string                     `json:"name" tf:"name"`
 }
 
 type S3BucketMetricStatus struct {

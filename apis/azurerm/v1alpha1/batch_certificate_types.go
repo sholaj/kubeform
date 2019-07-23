@@ -19,17 +19,16 @@ type BatchCertificate struct {
 }
 
 type BatchCertificateSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	AccountName string `json:"accountName" tf:"account_name"`
-	// Sensitive Data. Provide secret name which contains one value only
-	Certificate core.LocalObjectReference `json:"certificate" tf:"certificate"`
-	Format      string                    `json:"format" tf:"format"`
+	Format      string `json:"format" tf:"format"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	Password            core.LocalObjectReference `json:"password,omitempty" tf:"password,omitempty"`
-	ResourceGroupName   string                    `json:"resourceGroupName" tf:"resource_group_name"`
-	Thumbprint          string                    `json:"thumbprint" tf:"thumbprint"`
-	ThumbprintAlgorithm string                    `json:"thumbprintAlgorithm" tf:"thumbprint_algorithm"`
-	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ResourceGroupName   string `json:"resourceGroupName" tf:"resource_group_name"`
+	Thumbprint          string `json:"thumbprint" tf:"thumbprint"`
+	ThumbprintAlgorithm string `json:"thumbprintAlgorithm" tf:"thumbprint_algorithm"`
 }
 
 type BatchCertificateStatus struct {

@@ -19,23 +19,24 @@ type VirtualMachineExtension struct {
 }
 
 type VirtualMachineExtensionSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	// +optional
 	AutoUpgradeMinorVersion bool   `json:"autoUpgradeMinorVersion,omitempty" tf:"auto_upgrade_minor_version,omitempty"`
 	Location                string `json:"location" tf:"location"`
 	Name                    string `json:"name" tf:"name"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	ProtectedSettings core.LocalObjectReference `json:"protectedSettings,omitempty" tf:"protected_settings,omitempty"`
-	Publisher         string                    `json:"publisher" tf:"publisher"`
-	ResourceGroupName string                    `json:"resourceGroupName" tf:"resource_group_name"`
+	Publisher         string `json:"publisher" tf:"publisher"`
+	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
 	Settings string `json:"settings,omitempty" tf:"settings,omitempty"`
 	// +optional
-	Tags               map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	Type               string                    `json:"type" tf:"type"`
-	TypeHandlerVersion string                    `json:"typeHandlerVersion" tf:"type_handler_version"`
-	VirtualMachineName string                    `json:"virtualMachineName" tf:"virtual_machine_name"`
-	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags               map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	Type               string            `json:"type" tf:"type"`
+	TypeHandlerVersion string            `json:"typeHandlerVersion" tf:"type_handler_version"`
+	VirtualMachineName string            `json:"virtualMachineName" tf:"virtual_machine_name"`
 }
 
 type VirtualMachineExtensionStatus struct {

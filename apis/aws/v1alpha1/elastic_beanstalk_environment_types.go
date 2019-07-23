@@ -27,6 +27,8 @@ type ElasticBeanstalkEnvironmentSpecSetting struct {
 }
 
 type ElasticBeanstalkEnvironmentSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Application string `json:"application" tf:"application"`
 	// +optional
 	CnamePrefix string `json:"cnamePrefix,omitempty" tf:"cname_prefix,omitempty"`
@@ -51,8 +53,7 @@ type ElasticBeanstalkEnvironmentSpec struct {
 	// +optional
 	VersionLabel string `json:"versionLabel,omitempty" tf:"version_label,omitempty"`
 	// +optional
-	WaitForReadyTimeout string                    `json:"waitForReadyTimeout,omitempty" tf:"wait_for_ready_timeout,omitempty"`
-	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
+	WaitForReadyTimeout string `json:"waitForReadyTimeout,omitempty" tf:"wait_for_ready_timeout,omitempty"`
 }
 
 type ElasticBeanstalkEnvironmentStatus struct {

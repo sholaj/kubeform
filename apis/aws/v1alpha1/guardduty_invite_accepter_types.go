@@ -19,9 +19,10 @@ type GuarddutyInviteAccepter struct {
 }
 
 type GuarddutyInviteAccepterSpec struct {
-	DetectorID      string                    `json:"detectorID" tf:"detector_id"`
-	MasterAccountID string                    `json:"masterAccountID" tf:"master_account_id"`
-	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	DetectorID      string `json:"detectorID" tf:"detector_id"`
+	MasterAccountID string `json:"masterAccountID" tf:"master_account_id"`
 }
 
 type GuarddutyInviteAccepterStatus struct {

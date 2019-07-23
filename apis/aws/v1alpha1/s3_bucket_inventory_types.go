@@ -61,6 +61,8 @@ type S3BucketInventorySpecSchedule struct {
 }
 
 type S3BucketInventorySpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Bucket string `json:"bucket" tf:"bucket"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
@@ -77,8 +79,7 @@ type S3BucketInventorySpec struct {
 	OptionalFields []string `json:"optionalFields,omitempty" tf:"optional_fields,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	Schedule    []S3BucketInventorySpecSchedule `json:"schedule" tf:"schedule"`
-	ProviderRef core.LocalObjectReference       `json:"providerRef" tf:"-"`
+	Schedule []S3BucketInventorySpecSchedule `json:"schedule" tf:"schedule"`
 }
 
 type S3BucketInventoryStatus struct {

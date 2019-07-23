@@ -19,11 +19,12 @@ type LogicAppTriggerRecurrence struct {
 }
 
 type LogicAppTriggerRecurrenceSpec struct {
-	Frequency   string                    `json:"frequency" tf:"frequency"`
-	Interval    int                       `json:"interval" tf:"interval"`
-	LogicAppID  string                    `json:"logicAppID" tf:"logic_app_id"`
-	Name        string                    `json:"name" tf:"name"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Frequency  string `json:"frequency" tf:"frequency"`
+	Interval   int    `json:"interval" tf:"interval"`
+	LogicAppID string `json:"logicAppID" tf:"logic_app_id"`
+	Name       string `json:"name" tf:"name"`
 }
 
 type LogicAppTriggerRecurrenceStatus struct {

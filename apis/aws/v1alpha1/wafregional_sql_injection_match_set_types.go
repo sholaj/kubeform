@@ -31,11 +31,12 @@ type WafregionalSQLInjectionMatchSetSpecSqlInjectionMatchTuple struct {
 }
 
 type WafregionalSQLInjectionMatchSetSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Name string `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
 	SqlInjectionMatchTuple []WafregionalSQLInjectionMatchSetSpecSqlInjectionMatchTuple `json:"sqlInjectionMatchTuple,omitempty" tf:"sql_injection_match_tuple,omitempty"`
-	ProviderRef            core.LocalObjectReference                                   `json:"providerRef" tf:"-"`
 }
 
 type WafregionalSQLInjectionMatchSetStatus struct {

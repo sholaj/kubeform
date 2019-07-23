@@ -19,6 +19,8 @@ type OrganizationIamCustomRole struct {
 }
 
 type OrganizationIamCustomRoleSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// Deprecated
 	Deleted bool `json:"deleted,omitempty" tf:"deleted,omitempty"`
@@ -30,9 +32,8 @@ type OrganizationIamCustomRoleSpec struct {
 	Permissions []string `json:"permissions" tf:"permissions"`
 	RoleID      string   `json:"roleID" tf:"role_id"`
 	// +optional
-	Stage       string                    `json:"stage,omitempty" tf:"stage,omitempty"`
-	Title       string                    `json:"title" tf:"title"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Stage string `json:"stage,omitempty" tf:"stage,omitempty"`
+	Title string `json:"title" tf:"title"`
 }
 
 type OrganizationIamCustomRoleStatus struct {

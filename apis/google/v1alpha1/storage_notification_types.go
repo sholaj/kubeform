@@ -19,6 +19,8 @@ type StorageNotification struct {
 }
 
 type StorageNotificationSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
 	CustomAttributes map[string]string `json:"customAttributes,omitempty" tf:"custom_attributes,omitempty"`
@@ -26,10 +28,9 @@ type StorageNotificationSpec struct {
 	// +kubebuilder:validation:UniqueItems=true
 	EventTypes []string `json:"eventTypes,omitempty" tf:"event_types,omitempty"`
 	// +optional
-	ObjectNamePrefix string                    `json:"objectNamePrefix,omitempty" tf:"object_name_prefix,omitempty"`
-	PayloadFormat    string                    `json:"payloadFormat" tf:"payload_format"`
-	Topic            string                    `json:"topic" tf:"topic"`
-	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ObjectNamePrefix string `json:"objectNamePrefix,omitempty" tf:"object_name_prefix,omitempty"`
+	PayloadFormat    string `json:"payloadFormat" tf:"payload_format"`
+	Topic            string `json:"topic" tf:"topic"`
 }
 
 type StorageNotificationStatus struct {

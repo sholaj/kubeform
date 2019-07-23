@@ -19,6 +19,8 @@ type RuntimeconfigVariable struct {
 }
 
 type RuntimeconfigVariableSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Name   string `json:"name" tf:"name"`
 	Parent string `json:"parent" tf:"parent"`
 	// +optional
@@ -26,8 +28,7 @@ type RuntimeconfigVariableSpec struct {
 	// +optional
 	Text string `json:"text,omitempty" tf:"text,omitempty"`
 	// +optional
-	Value       string                    `json:"value,omitempty" tf:"value,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Value string `json:"value,omitempty" tf:"value,omitempty"`
 }
 
 type RuntimeconfigVariableStatus struct {

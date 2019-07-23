@@ -24,6 +24,8 @@ type ApiGatewayStageSpecAccessLogSettings struct {
 }
 
 type ApiGatewayStageSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	AccessLogSettings []ApiGatewayStageSpecAccessLogSettings `json:"accessLogSettings,omitempty" tf:"access_log_settings,omitempty"`
@@ -45,8 +47,7 @@ type ApiGatewayStageSpec struct {
 	// +optional
 	Variables map[string]string `json:"variables,omitempty" tf:"variables,omitempty"`
 	// +optional
-	XrayTracingEnabled bool                      `json:"xrayTracingEnabled,omitempty" tf:"xray_tracing_enabled,omitempty"`
-	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
+	XrayTracingEnabled bool `json:"xrayTracingEnabled,omitempty" tf:"xray_tracing_enabled,omitempty"`
 }
 
 type ApiGatewayStageStatus struct {

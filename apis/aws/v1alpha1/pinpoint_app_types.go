@@ -46,6 +46,8 @@ type PinpointAppSpecQuietTime struct {
 }
 
 type PinpointAppSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	CampaignHook []PinpointAppSpecCampaignHook `json:"campaignHook,omitempty" tf:"campaign_hook,omitempty"`
@@ -58,8 +60,7 @@ type PinpointAppSpec struct {
 	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	QuietTime   []PinpointAppSpecQuietTime `json:"quietTime,omitempty" tf:"quiet_time,omitempty"`
-	ProviderRef core.LocalObjectReference  `json:"providerRef" tf:"-"`
+	QuietTime []PinpointAppSpecQuietTime `json:"quietTime,omitempty" tf:"quiet_time,omitempty"`
 }
 
 type PinpointAppStatus struct {

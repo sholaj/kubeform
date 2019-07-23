@@ -33,6 +33,8 @@ type FirewallNetworkRuleCollectionSpecRule struct {
 }
 
 type FirewallNetworkRuleCollectionSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Action            string `json:"action" tf:"action"`
 	AzureFirewallName string `json:"azureFirewallName" tf:"azure_firewall_name"`
 	Name              string `json:"name" tf:"name"`
@@ -40,8 +42,7 @@ type FirewallNetworkRuleCollectionSpec struct {
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	Rule        []FirewallNetworkRuleCollectionSpecRule `json:"rule" tf:"rule"`
-	ProviderRef core.LocalObjectReference               `json:"providerRef" tf:"-"`
+	Rule []FirewallNetworkRuleCollectionSpecRule `json:"rule" tf:"rule"`
 }
 
 type FirewallNetworkRuleCollectionStatus struct {

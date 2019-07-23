@@ -19,6 +19,10 @@ type ComputeVPNTunnel struct {
 }
 
 type ComputeVPNTunnelSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
@@ -38,11 +42,8 @@ type ComputeVPNTunnelSpec struct {
 	// +kubebuilder:validation:UniqueItems=true
 	RemoteTrafficSelector []string `json:"remoteTrafficSelector,omitempty" tf:"remote_traffic_selector,omitempty"`
 	// +optional
-	Router string `json:"router,omitempty" tf:"router,omitempty"`
-	// Sensitive Data. Provide secret name which contains one value only
-	SharedSecret     core.LocalObjectReference `json:"sharedSecret" tf:"shared_secret"`
-	TargetVPNGateway string                    `json:"targetVPNGateway" tf:"target_vpn_gateway"`
-	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Router           string `json:"router,omitempty" tf:"router,omitempty"`
+	TargetVPNGateway string `json:"targetVPNGateway" tf:"target_vpn_gateway"`
 }
 
 type ComputeVPNTunnelStatus struct {

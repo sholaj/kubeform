@@ -19,6 +19,8 @@ type VirtualMachineDataDiskAttachment struct {
 }
 
 type VirtualMachineDataDiskAttachmentSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Caching string `json:"caching" tf:"caching"`
 	// +optional
 	CreateOption     string `json:"createOption,omitempty" tf:"create_option,omitempty"`
@@ -26,8 +28,7 @@ type VirtualMachineDataDiskAttachmentSpec struct {
 	ManagedDiskID    string `json:"managedDiskID" tf:"managed_disk_id"`
 	VirtualMachineID string `json:"virtualMachineID" tf:"virtual_machine_id"`
 	// +optional
-	WriteAcceleratorEnabled bool                      `json:"writeAcceleratorEnabled,omitempty" tf:"write_accelerator_enabled,omitempty"`
-	ProviderRef             core.LocalObjectReference `json:"providerRef" tf:"-"`
+	WriteAcceleratorEnabled bool `json:"writeAcceleratorEnabled,omitempty" tf:"write_accelerator_enabled,omitempty"`
 }
 
 type VirtualMachineDataDiskAttachmentStatus struct {

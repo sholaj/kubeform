@@ -56,14 +56,15 @@ type S3BucketNotificationSpecTopic struct {
 }
 
 type S3BucketNotificationSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
 	LambdaFunction []S3BucketNotificationSpecLambdaFunction `json:"lambdaFunction,omitempty" tf:"lambda_function,omitempty"`
 	// +optional
 	Queue []S3BucketNotificationSpecQueue `json:"queue,omitempty" tf:"queue,omitempty"`
 	// +optional
-	Topic       []S3BucketNotificationSpecTopic `json:"topic,omitempty" tf:"topic,omitempty"`
-	ProviderRef core.LocalObjectReference       `json:"providerRef" tf:"-"`
+	Topic []S3BucketNotificationSpecTopic `json:"topic,omitempty" tf:"topic,omitempty"`
 }
 
 type S3BucketNotificationStatus struct {

@@ -19,12 +19,13 @@ type StorageShare struct {
 }
 
 type StorageShareSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Name string `json:"name" tf:"name"`
 	// +optional
-	Quota              int                       `json:"quota,omitempty" tf:"quota,omitempty"`
-	ResourceGroupName  string                    `json:"resourceGroupName" tf:"resource_group_name"`
-	StorageAccountName string                    `json:"storageAccountName" tf:"storage_account_name"`
-	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Quota              int    `json:"quota,omitempty" tf:"quota,omitempty"`
+	ResourceGroupName  string `json:"resourceGroupName" tf:"resource_group_name"`
+	StorageAccountName string `json:"storageAccountName" tf:"storage_account_name"`
 }
 
 type StorageShareStatus struct {

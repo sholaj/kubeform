@@ -19,6 +19,8 @@ type SqsQueue struct {
 }
 
 type SqsQueueSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	ContentBasedDeduplication bool `json:"contentBasedDeduplication,omitempty" tf:"content_based_deduplication,omitempty"`
 	// +optional
@@ -46,8 +48,7 @@ type SqsQueueSpec struct {
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	VisibilityTimeoutSeconds int                       `json:"visibilityTimeoutSeconds,omitempty" tf:"visibility_timeout_seconds,omitempty"`
-	ProviderRef              core.LocalObjectReference `json:"providerRef" tf:"-"`
+	VisibilityTimeoutSeconds int `json:"visibilityTimeoutSeconds,omitempty" tf:"visibility_timeout_seconds,omitempty"`
 }
 
 type SqsQueueStatus struct {

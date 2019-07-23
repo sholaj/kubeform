@@ -19,9 +19,10 @@ type ConfigAggregateAuthorization struct {
 }
 
 type ConfigAggregateAuthorizationSpec struct {
-	AccountID   string                    `json:"accountID" tf:"account_id"`
-	Region      string                    `json:"region" tf:"region"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	AccountID string `json:"accountID" tf:"account_id"`
+	Region    string `json:"region" tf:"region"`
 }
 
 type ConfigAggregateAuthorizationStatus struct {

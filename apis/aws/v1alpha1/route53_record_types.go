@@ -46,6 +46,8 @@ type Route53RecordSpecWeightedRoutingPolicy struct {
 }
 
 type Route53RecordSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
 	Alias []Route53RecordSpecAlias `json:"alias,omitempty" tf:"alias,omitempty"`
@@ -73,7 +75,6 @@ type Route53RecordSpec struct {
 	// +optional
 	WeightedRoutingPolicy []Route53RecordSpecWeightedRoutingPolicy `json:"weightedRoutingPolicy,omitempty" tf:"weighted_routing_policy,omitempty"`
 	ZoneID                string                                   `json:"zoneID" tf:"zone_id"`
-	ProviderRef           core.LocalObjectReference                `json:"providerRef" tf:"-"`
 }
 
 type Route53RecordStatus struct {

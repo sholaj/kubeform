@@ -49,6 +49,8 @@ type CosmosdbAccountSpecVirtualNetworkRule struct {
 }
 
 type CosmosdbAccountSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
 	Capabilities []CosmosdbAccountSpecCapabilities `json:"capabilities,omitempty" tf:"capabilities,omitempty"`
@@ -80,7 +82,6 @@ type CosmosdbAccountSpec struct {
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
 	VirtualNetworkRule []CosmosdbAccountSpecVirtualNetworkRule `json:"virtualNetworkRule,omitempty" tf:"virtual_network_rule,omitempty"`
-	ProviderRef        core.LocalObjectReference               `json:"providerRef" tf:"-"`
 }
 
 type CosmosdbAccountStatus struct {

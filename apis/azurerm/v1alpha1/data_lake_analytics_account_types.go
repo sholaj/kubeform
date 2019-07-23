@@ -19,6 +19,8 @@ type DataLakeAnalyticsAccount struct {
 }
 
 type DataLakeAnalyticsAccountSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	DefaultStoreAccountName string `json:"defaultStoreAccountName" tf:"default_store_account_name"`
 	Location                string `json:"location" tf:"location"`
 	Name                    string `json:"name" tf:"name"`
@@ -26,8 +28,7 @@ type DataLakeAnalyticsAccountSpec struct {
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	Tier        string                    `json:"tier,omitempty" tf:"tier,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tier string `json:"tier,omitempty" tf:"tier,omitempty"`
 }
 
 type DataLakeAnalyticsAccountStatus struct {

@@ -19,10 +19,11 @@ type IamGroup struct {
 }
 
 type IamGroupSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Name string `json:"name" tf:"name"`
 	// +optional
-	Path        string                    `json:"path,omitempty" tf:"path,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Path string `json:"path,omitempty" tf:"path,omitempty"`
 }
 
 type IamGroupStatus struct {

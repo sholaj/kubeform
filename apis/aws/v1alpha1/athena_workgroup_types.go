@@ -46,6 +46,8 @@ type AthenaWorkgroupSpecConfiguration struct {
 }
 
 type AthenaWorkgroupSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	Configuration []AthenaWorkgroupSpecConfiguration `json:"configuration,omitempty" tf:"configuration,omitempty"`
@@ -55,8 +57,7 @@ type AthenaWorkgroupSpec struct {
 	// +optional
 	State string `json:"state,omitempty" tf:"state,omitempty"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type AthenaWorkgroupStatus struct {

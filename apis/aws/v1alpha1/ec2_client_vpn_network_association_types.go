@@ -19,9 +19,10 @@ type Ec2ClientVPNNetworkAssociation struct {
 }
 
 type Ec2ClientVPNNetworkAssociationSpec struct {
-	ClientVPNEndpointID string                    `json:"clientVPNEndpointID" tf:"client_vpn_endpoint_id"`
-	SubnetID            string                    `json:"subnetID" tf:"subnet_id"`
-	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	ClientVPNEndpointID string `json:"clientVPNEndpointID" tf:"client_vpn_endpoint_id"`
+	SubnetID            string `json:"subnetID" tf:"subnet_id"`
 }
 
 type Ec2ClientVPNNetworkAssociationStatus struct {

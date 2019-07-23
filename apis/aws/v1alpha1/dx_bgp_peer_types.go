@@ -19,6 +19,8 @@ type DxBGPPeer struct {
 }
 
 type DxBGPPeerSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AddressFamily string `json:"addressFamily" tf:"address_family"`
 	// +optional
 	AmazonAddress string `json:"amazonAddress,omitempty" tf:"amazon_address,omitempty"`
@@ -26,9 +28,8 @@ type DxBGPPeerSpec struct {
 	// +optional
 	BgpAuthKey string `json:"bgpAuthKey,omitempty" tf:"bgp_auth_key,omitempty"`
 	// +optional
-	CustomerAddress    string                    `json:"customerAddress,omitempty" tf:"customer_address,omitempty"`
-	VirtualInterfaceID string                    `json:"virtualInterfaceID" tf:"virtual_interface_id"`
-	ProviderRef        core.LocalObjectReference `json:"providerRef" tf:"-"`
+	CustomerAddress    string `json:"customerAddress,omitempty" tf:"customer_address,omitempty"`
+	VirtualInterfaceID string `json:"virtualInterfaceID" tf:"virtual_interface_id"`
 }
 
 type DxBGPPeerStatus struct {

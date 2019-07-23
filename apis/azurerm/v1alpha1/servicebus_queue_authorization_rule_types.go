@@ -19,6 +19,8 @@ type ServicebusQueueAuthorizationRule struct {
 }
 
 type ServicebusQueueAuthorizationRuleSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	Listen bool `json:"listen,omitempty" tf:"listen,omitempty"`
 	// +optional
@@ -28,8 +30,7 @@ type ServicebusQueueAuthorizationRuleSpec struct {
 	QueueName         string `json:"queueName" tf:"queue_name"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Send        bool                      `json:"send,omitempty" tf:"send,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Send bool `json:"send,omitempty" tf:"send,omitempty"`
 }
 
 type ServicebusQueueAuthorizationRuleStatus struct {

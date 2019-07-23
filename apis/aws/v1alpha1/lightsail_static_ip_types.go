@@ -19,8 +19,9 @@ type LightsailStaticIP struct {
 }
 
 type LightsailStaticIPSpec struct {
-	Name        string                    `json:"name" tf:"name"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Name string `json:"name" tf:"name"`
 }
 
 type LightsailStaticIPStatus struct {

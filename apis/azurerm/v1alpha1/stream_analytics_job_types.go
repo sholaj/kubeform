@@ -19,6 +19,8 @@ type StreamAnalyticsJob struct {
 }
 
 type StreamAnalyticsJobSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	CompatibilityLevel                 string `json:"compatibilityLevel" tf:"compatibility_level"`
 	DataLocale                         string `json:"dataLocale" tf:"data_locale"`
 	EventsLateArrivalMaxDelayInSeconds int    `json:"eventsLateArrivalMaxDelayInSeconds" tf:"events_late_arrival_max_delay_in_seconds"`
@@ -30,9 +32,8 @@ type StreamAnalyticsJobSpec struct {
 	ResourceGroupName                  string `json:"resourceGroupName" tf:"resource_group_name"`
 	StreamingUnits                     int    `json:"streamingUnits" tf:"streaming_units"`
 	// +optional
-	Tags                map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	TransformationQuery string                    `json:"transformationQuery" tf:"transformation_query"`
-	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags                map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	TransformationQuery string            `json:"transformationQuery" tf:"transformation_query"`
 }
 
 type StreamAnalyticsJobStatus struct {

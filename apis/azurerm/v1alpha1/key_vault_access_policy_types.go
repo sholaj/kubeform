@@ -19,6 +19,8 @@ type KeyVaultAccessPolicy struct {
 }
 
 type KeyVaultAccessPolicySpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	ApplicationID string `json:"applicationID,omitempty" tf:"application_id,omitempty"`
 	// +optional
@@ -38,8 +40,7 @@ type KeyVaultAccessPolicySpec struct {
 	TenantID           string   `json:"tenantID" tf:"tenant_id"`
 	// +optional
 	// Deprecated
-	VaultName   string                    `json:"vaultName,omitempty" tf:"vault_name,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	VaultName string `json:"vaultName,omitempty" tf:"vault_name,omitempty"`
 }
 
 type KeyVaultAccessPolicyStatus struct {

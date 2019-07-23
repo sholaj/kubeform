@@ -25,6 +25,10 @@ type ApiGatewayDomainNameSpecEndpointConfiguration struct {
 }
 
 type ApiGatewayDomainNameSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	// +optional
 	CertificateArn string `json:"certificateArn,omitempty" tf:"certificate_arn,omitempty"`
 	// +optional
@@ -34,9 +38,7 @@ type ApiGatewayDomainNameSpec struct {
 	// +optional
 	CertificateName string `json:"certificateName,omitempty" tf:"certificate_name,omitempty"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	CertificatePrivateKey core.LocalObjectReference `json:"certificatePrivateKey,omitempty" tf:"certificate_private_key,omitempty"`
-	DomainName            string                    `json:"domainName" tf:"domain_name"`
+	DomainName string `json:"domainName" tf:"domain_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
@@ -44,8 +46,7 @@ type ApiGatewayDomainNameSpec struct {
 	// +optional
 	RegionalCertificateArn string `json:"regionalCertificateArn,omitempty" tf:"regional_certificate_arn,omitempty"`
 	// +optional
-	RegionalCertificateName string                    `json:"regionalCertificateName,omitempty" tf:"regional_certificate_name,omitempty"`
-	ProviderRef             core.LocalObjectReference `json:"providerRef" tf:"-"`
+	RegionalCertificateName string `json:"regionalCertificateName,omitempty" tf:"regional_certificate_name,omitempty"`
 }
 
 type ApiGatewayDomainNameStatus struct {

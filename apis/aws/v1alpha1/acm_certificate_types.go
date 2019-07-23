@@ -19,6 +19,10 @@ type AcmCertificate struct {
 }
 
 type AcmCertificateSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	// +optional
 	CertificateBody string `json:"certificateBody,omitempty" tf:"certificate_body,omitempty"`
 	// +optional
@@ -26,15 +30,12 @@ type AcmCertificateSpec struct {
 	// +optional
 	DomainName string `json:"domainName,omitempty" tf:"domain_name,omitempty"`
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	PrivateKey core.LocalObjectReference `json:"privateKey,omitempty" tf:"private_key,omitempty"`
 	// +optional
 	SubjectAlternativeNames []string `json:"subjectAlternativeNames,omitempty" tf:"subject_alternative_names,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	ValidationMethod string                    `json:"validationMethod,omitempty" tf:"validation_method,omitempty"`
-	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ValidationMethod string `json:"validationMethod,omitempty" tf:"validation_method,omitempty"`
 }
 
 type AcmCertificateStatus struct {

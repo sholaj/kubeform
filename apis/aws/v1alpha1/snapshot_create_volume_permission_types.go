@@ -19,9 +19,10 @@ type SnapshotCreateVolumePermission struct {
 }
 
 type SnapshotCreateVolumePermissionSpec struct {
-	AccountID   string                    `json:"accountID" tf:"account_id"`
-	SnapshotID  string                    `json:"snapshotID" tf:"snapshot_id"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	AccountID  string `json:"accountID" tf:"account_id"`
+	SnapshotID string `json:"snapshotID" tf:"snapshot_id"`
 }
 
 type SnapshotCreateVolumePermissionStatus struct {

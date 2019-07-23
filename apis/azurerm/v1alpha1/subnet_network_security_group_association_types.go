@@ -19,9 +19,10 @@ type SubnetNetworkSecurityGroupAssociation struct {
 }
 
 type SubnetNetworkSecurityGroupAssociationSpec struct {
-	NetworkSecurityGroupID string                    `json:"networkSecurityGroupID" tf:"network_security_group_id"`
-	SubnetID               string                    `json:"subnetID" tf:"subnet_id"`
-	ProviderRef            core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	NetworkSecurityGroupID string `json:"networkSecurityGroupID" tf:"network_security_group_id"`
+	SubnetID               string `json:"subnetID" tf:"subnet_id"`
 }
 
 type SubnetNetworkSecurityGroupAssociationStatus struct {

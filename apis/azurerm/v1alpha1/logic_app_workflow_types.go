@@ -19,6 +19,8 @@ type LogicAppWorkflow struct {
 }
 
 type LogicAppWorkflowSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Location string `json:"location" tf:"location"`
 	Name     string `json:"name" tf:"name"`
 	// +optional
@@ -29,8 +31,7 @@ type LogicAppWorkflowSpec struct {
 	// +optional
 	WorkflowSchema string `json:"workflowSchema,omitempty" tf:"workflow_schema,omitempty"`
 	// +optional
-	WorkflowVersion string                    `json:"workflowVersion,omitempty" tf:"workflow_version,omitempty"`
-	ProviderRef     core.LocalObjectReference `json:"providerRef" tf:"-"`
+	WorkflowVersion string `json:"workflowVersion,omitempty" tf:"workflow_version,omitempty"`
 }
 
 type LogicAppWorkflowStatus struct {

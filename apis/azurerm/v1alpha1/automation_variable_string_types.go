@@ -19,6 +19,8 @@ type AutomationVariableString struct {
 }
 
 type AutomationVariableStringSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AutomationAccountName string `json:"automationAccountName" tf:"automation_account_name"`
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
@@ -27,8 +29,7 @@ type AutomationVariableStringSpec struct {
 	Name              string `json:"name" tf:"name"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Value       string                    `json:"value,omitempty" tf:"value,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Value string `json:"value,omitempty" tf:"value,omitempty"`
 }
 
 type AutomationVariableStringStatus struct {

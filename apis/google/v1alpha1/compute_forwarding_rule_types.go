@@ -19,6 +19,8 @@ type ComputeForwardingRule struct {
 }
 
 type ComputeForwardingRuleSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	BackendService string `json:"backendService,omitempty" tf:"backend_service,omitempty"`
 	// +optional
@@ -55,8 +57,7 @@ type ComputeForwardingRuleSpec struct {
 	// +optional
 	Subnetwork string `json:"subnetwork,omitempty" tf:"subnetwork,omitempty"`
 	// +optional
-	Target      string                    `json:"target,omitempty" tf:"target,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Target string `json:"target,omitempty" tf:"target,omitempty"`
 }
 
 type ComputeForwardingRuleStatus struct {

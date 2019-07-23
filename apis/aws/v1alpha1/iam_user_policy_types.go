@@ -19,13 +19,14 @@ type IamUserPolicy struct {
 }
 
 type IamUserPolicySpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
-	NamePrefix  string                    `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
-	Policy      string                    `json:"policy" tf:"policy"`
-	User        string                    `json:"user" tf:"user"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
+	Policy     string `json:"policy" tf:"policy"`
+	User       string `json:"user" tf:"user"`
 }
 
 type IamUserPolicyStatus struct {

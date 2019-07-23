@@ -145,6 +145,8 @@ type CognitoUserPoolSpecVerificationMessageTemplate struct {
 }
 
 type CognitoUserPoolSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	AdminCreateUserConfig []CognitoUserPoolSpecAdminCreateUserConfig `json:"adminCreateUserConfig,omitempty" tf:"admin_create_user_config,omitempty"`
@@ -195,7 +197,6 @@ type CognitoUserPoolSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	VerificationMessageTemplate []CognitoUserPoolSpecVerificationMessageTemplate `json:"verificationMessageTemplate,omitempty" tf:"verification_message_template,omitempty"`
-	ProviderRef                 core.LocalObjectReference                        `json:"providerRef" tf:"-"`
 }
 
 type CognitoUserPoolStatus struct {

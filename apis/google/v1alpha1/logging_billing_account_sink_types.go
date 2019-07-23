@@ -19,12 +19,13 @@ type LoggingBillingAccountSink struct {
 }
 
 type LoggingBillingAccountSinkSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	BillingAccount string `json:"billingAccount" tf:"billing_account"`
 	Destination    string `json:"destination" tf:"destination"`
 	// +optional
-	Filter      string                    `json:"filter,omitempty" tf:"filter,omitempty"`
-	Name        string                    `json:"name" tf:"name"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Filter string `json:"filter,omitempty" tf:"filter,omitempty"`
+	Name   string `json:"name" tf:"name"`
 }
 
 type LoggingBillingAccountSinkStatus struct {

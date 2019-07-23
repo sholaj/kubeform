@@ -19,9 +19,10 @@ type IotThingPrincipalAttachment struct {
 }
 
 type IotThingPrincipalAttachmentSpec struct {
-	Principal   string                    `json:"principal" tf:"principal"`
-	Thing       string                    `json:"thing" tf:"thing"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Principal string `json:"principal" tf:"principal"`
+	Thing     string `json:"thing" tf:"thing"`
 }
 
 type IotThingPrincipalAttachmentStatus struct {

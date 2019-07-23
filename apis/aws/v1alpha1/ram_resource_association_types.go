@@ -19,9 +19,10 @@ type RamResourceAssociation struct {
 }
 
 type RamResourceAssociationSpec struct {
-	ResourceArn      string                    `json:"resourceArn" tf:"resource_arn"`
-	ResourceShareArn string                    `json:"resourceShareArn" tf:"resource_share_arn"`
-	ProviderRef      core.LocalObjectReference `json:"providerRef" tf:"-"`
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	ResourceArn      string `json:"resourceArn" tf:"resource_arn"`
+	ResourceShareArn string `json:"resourceShareArn" tf:"resource_share_arn"`
 }
 
 type RamResourceAssociationStatus struct {

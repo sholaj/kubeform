@@ -19,6 +19,8 @@ type SagemakerNotebookInstance struct {
 }
 
 type SagemakerNotebookInstanceSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	InstanceType string `json:"instanceType" tf:"instance_type"`
 	// +optional
 	KmsKeyID string `json:"kmsKeyID,omitempty" tf:"kms_key_id,omitempty"`
@@ -33,8 +35,7 @@ type SagemakerNotebookInstanceSpec struct {
 	// +optional
 	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type SagemakerNotebookInstanceStatus struct {

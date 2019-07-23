@@ -26,6 +26,8 @@ type LocalNetworkGatewaySpecBgpSettings struct {
 }
 
 type LocalNetworkGatewaySpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AddressSpace []string `json:"addressSpace" tf:"address_space"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -35,8 +37,7 @@ type LocalNetworkGatewaySpec struct {
 	Name              string                               `json:"name" tf:"name"`
 	ResourceGroupName string                               `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type LocalNetworkGatewayStatus struct {

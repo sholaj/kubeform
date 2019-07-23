@@ -19,15 +19,16 @@ type DnsAaaaRecord struct {
 }
 
 type DnsAaaaRecordSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Name string `json:"name" tf:"name"`
 	// +kubebuilder:validation:UniqueItems=true
 	Records           []string `json:"records" tf:"records"`
 	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	Ttl         int                       `json:"ttl" tf:"ttl"`
-	ZoneName    string                    `json:"zoneName" tf:"zone_name"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags     map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
+	Ttl      int               `json:"ttl" tf:"ttl"`
+	ZoneName string            `json:"zoneName" tf:"zone_name"`
 }
 
 type DnsAaaaRecordStatus struct {

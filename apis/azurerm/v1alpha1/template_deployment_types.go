@@ -19,6 +19,8 @@ type TemplateDeployment struct {
 }
 
 type TemplateDeploymentSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	DeploymentMode string `json:"deploymentMode" tf:"deployment_mode"`
 	Name           string `json:"name" tf:"name"`
 	// +optional
@@ -27,8 +29,7 @@ type TemplateDeploymentSpec struct {
 	ParametersBody    string `json:"parametersBody,omitempty" tf:"parameters_body,omitempty"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
-	TemplateBody string                    `json:"templateBody,omitempty" tf:"template_body,omitempty"`
-	ProviderRef  core.LocalObjectReference `json:"providerRef" tf:"-"`
+	TemplateBody string `json:"templateBody,omitempty" tf:"template_body,omitempty"`
 }
 
 type TemplateDeploymentStatus struct {

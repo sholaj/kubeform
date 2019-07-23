@@ -28,6 +28,8 @@ type GlobalacceleratorEndpointGroupSpecEndpointConfiguration struct {
 }
 
 type GlobalacceleratorEndpointGroupSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:UniqueItems=true
@@ -46,8 +48,7 @@ type GlobalacceleratorEndpointGroupSpec struct {
 	// +optional
 	ThresholdCount int `json:"thresholdCount,omitempty" tf:"threshold_count,omitempty"`
 	// +optional
-	TrafficDialPercentage json.Number               `json:"trafficDialPercentage,omitempty" tf:"traffic_dial_percentage,omitempty"`
-	ProviderRef           core.LocalObjectReference `json:"providerRef" tf:"-"`
+	TrafficDialPercentage json.Number `json:"trafficDialPercentage,omitempty" tf:"traffic_dial_percentage,omitempty"`
 }
 
 type GlobalacceleratorEndpointGroupStatus struct {

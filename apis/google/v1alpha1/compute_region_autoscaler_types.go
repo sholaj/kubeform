@@ -50,6 +50,8 @@ type ComputeRegionAutoscalerSpecAutoscalingPolicy struct {
 }
 
 type ComputeRegionAutoscalerSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +kubebuilder:validation:MaxItems=1
 	AutoscalingPolicy []ComputeRegionAutoscalerSpecAutoscalingPolicy `json:"autoscalingPolicy" tf:"autoscaling_policy"`
 	// +optional
@@ -58,9 +60,8 @@ type ComputeRegionAutoscalerSpec struct {
 	// +optional
 	Project string `json:"project,omitempty" tf:"project,omitempty"`
 	// +optional
-	Region      string                    `json:"region,omitempty" tf:"region,omitempty"`
-	Target      string                    `json:"target" tf:"target"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Region string `json:"region,omitempty" tf:"region,omitempty"`
+	Target string `json:"target" tf:"target"`
 }
 
 type ComputeRegionAutoscalerStatus struct {

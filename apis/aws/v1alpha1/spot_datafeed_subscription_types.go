@@ -19,10 +19,11 @@ type SpotDatafeedSubscription struct {
 }
 
 type SpotDatafeedSubscriptionSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Bucket string `json:"bucket" tf:"bucket"`
 	// +optional
-	Prefix      string                    `json:"prefix,omitempty" tf:"prefix,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 }
 
 type SpotDatafeedSubscriptionStatus struct {

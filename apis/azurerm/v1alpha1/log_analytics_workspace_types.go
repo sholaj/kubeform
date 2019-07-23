@@ -19,6 +19,8 @@ type LogAnalyticsWorkspace struct {
 }
 
 type LogAnalyticsWorkspaceSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	Location          string `json:"location" tf:"location"`
 	Name              string `json:"name" tf:"name"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
@@ -26,8 +28,7 @@ type LogAnalyticsWorkspaceSpec struct {
 	RetentionInDays int    `json:"retentionInDays,omitempty" tf:"retention_in_days,omitempty"`
 	Sku             string `json:"sku" tf:"sku"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type LogAnalyticsWorkspaceStatus struct {

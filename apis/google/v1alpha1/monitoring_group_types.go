@@ -19,6 +19,8 @@ type MonitoringGroup struct {
 }
 
 type MonitoringGroupSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	DisplayName string `json:"displayName" tf:"display_name"`
 	Filter      string `json:"filter" tf:"filter"`
 	// +optional
@@ -26,8 +28,7 @@ type MonitoringGroupSpec struct {
 	// +optional
 	ParentName string `json:"parentName,omitempty" tf:"parent_name,omitempty"`
 	// +optional
-	Project     string                    `json:"project,omitempty" tf:"project,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Project string `json:"project,omitempty" tf:"project,omitempty"`
 }
 
 type MonitoringGroupStatus struct {

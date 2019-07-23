@@ -19,9 +19,10 @@ type StoragegatewayCache struct {
 }
 
 type StoragegatewayCacheSpec struct {
-	DiskID      string                    `json:"diskID" tf:"disk_id"`
-	GatewayArn  string                    `json:"gatewayArn" tf:"gateway_arn"`
 	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	DiskID     string `json:"diskID" tf:"disk_id"`
+	GatewayArn string `json:"gatewayArn" tf:"gateway_arn"`
 }
 
 type StoragegatewayCacheStatus struct {

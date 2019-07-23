@@ -51,6 +51,8 @@ type DefaultNetworkACLSpecIngress struct {
 }
 
 type DefaultNetworkACLSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	DefaultNetworkACLID string `json:"defaultNetworkACLID" tf:"default_network_acl_id"`
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
@@ -62,8 +64,7 @@ type DefaultNetworkACLSpec struct {
 	// +kubebuilder:validation:UniqueItems=true
 	SubnetIDS []string `json:"subnetIDS,omitempty" tf:"subnet_ids,omitempty"`
 	// +optional
-	Tags        map[string]string         `json:"tags,omitempty" tf:"tags,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
 type DefaultNetworkACLStatus struct {

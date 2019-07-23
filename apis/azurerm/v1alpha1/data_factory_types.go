@@ -40,6 +40,8 @@ type DataFactorySpecVstsConfiguration struct {
 }
 
 type DataFactorySpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	GithubConfiguration []DataFactorySpecGithubConfiguration `json:"githubConfiguration,omitempty" tf:"github_configuration,omitempty"`
@@ -54,7 +56,6 @@ type DataFactorySpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
 	VstsConfiguration []DataFactorySpecVstsConfiguration `json:"vstsConfiguration,omitempty" tf:"vsts_configuration,omitempty"`
-	ProviderRef       core.LocalObjectReference          `json:"providerRef" tf:"-"`
 }
 
 type DataFactoryStatus struct {

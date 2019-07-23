@@ -20,8 +20,6 @@ type OpsworksApplication struct {
 
 type OpsworksApplicationSpecAppSource struct {
 	// +optional
-	// Sensitive Data. Provide secret name which contains one value only
-	Password core.LocalObjectReference `json:"password,omitempty" tf:"password,omitempty"`
 	// +optional
 	Revision string `json:"revision,omitempty" tf:"revision,omitempty"`
 	// +optional
@@ -44,11 +42,13 @@ type OpsworksApplicationSpecSslConfiguration struct {
 	Certificate string `json:"certificate" tf:"certificate"`
 	// +optional
 	Chain string `json:"chain,omitempty" tf:"chain,omitempty"`
-	// Sensitive Data. Provide secret name which contains one value only
-	PrivateKey core.LocalObjectReference `json:"privateKey" tf:"private_key"`
 }
 
 type OpsworksApplicationSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
+	Secret *core.LocalObjectReference `json:"secret,omitempty" tf:"-"`
+
 	// +optional
 	AppSource []OpsworksApplicationSpecAppSource `json:"appSource,omitempty" tf:"app_source,omitempty"`
 	// +optional
@@ -81,7 +81,6 @@ type OpsworksApplicationSpec struct {
 	SslConfiguration []OpsworksApplicationSpecSslConfiguration `json:"sslConfiguration,omitempty" tf:"ssl_configuration,omitempty"`
 	StackID          string                                    `json:"stackID" tf:"stack_id"`
 	Type             string                                    `json:"type" tf:"type"`
-	ProviderRef      core.LocalObjectReference                 `json:"providerRef" tf:"-"`
 }
 
 type OpsworksApplicationStatus struct {

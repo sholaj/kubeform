@@ -26,6 +26,8 @@ type MacieS3BucketAssociationSpecClassificationType struct {
 }
 
 type MacieS3BucketAssociationSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	BucketName string `json:"bucketName" tf:"bucket_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -33,8 +35,7 @@ type MacieS3BucketAssociationSpec struct {
 	// +optional
 	MemberAccountID string `json:"memberAccountID,omitempty" tf:"member_account_id,omitempty"`
 	// +optional
-	Prefix      string                    `json:"prefix,omitempty" tf:"prefix,omitempty"`
-	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+	Prefix string `json:"prefix,omitempty" tf:"prefix,omitempty"`
 }
 
 type MacieS3BucketAssociationStatus struct {

@@ -19,6 +19,8 @@ type DxHostedPublicVirtualInterface struct {
 }
 
 type DxHostedPublicVirtualInterfaceSpec struct {
+	ProviderRef core.LocalObjectReference `json:"providerRef" tf:"-"`
+
 	AddressFamily string `json:"addressFamily" tf:"address_family"`
 	// +optional
 	AmazonAddress string `json:"amazonAddress,omitempty" tf:"amazon_address,omitempty"`
@@ -32,9 +34,8 @@ type DxHostedPublicVirtualInterfaceSpec struct {
 	OwnerAccountID  string `json:"ownerAccountID" tf:"owner_account_id"`
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:UniqueItems=true
-	RouteFilterPrefixes []string                  `json:"routeFilterPrefixes" tf:"route_filter_prefixes"`
-	Vlan                int                       `json:"vlan" tf:"vlan"`
-	ProviderRef         core.LocalObjectReference `json:"providerRef" tf:"-"`
+	RouteFilterPrefixes []string `json:"routeFilterPrefixes" tf:"route_filter_prefixes"`
+	Vlan                int      `json:"vlan" tf:"vlan"`
 }
 
 type DxHostedPublicVirtualInterfaceStatus struct {
