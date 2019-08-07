@@ -401,6 +401,8 @@ spec:
               type: string
             azureFirewallName:
               type: string
+            id:
+              type: string
             name:
               type: string
             priority:
@@ -476,8 +478,97 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                action:
+                  type: string
+                azureFirewallName:
+                  type: string
+                id:
+                  type: string
+                name:
+                  type: string
+                priority:
+                  type: integer
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                rule:
+                  items:
+                    properties:
+                      description:
+                        type: string
+                      destinationAddresses:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      destinationPorts:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      name:
+                        type: string
+                      protocols:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      sourceAddresses:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      translatedAddress:
+                        type: string
+                      translatedPort:
+                        type: string
+                    required:
+                    - destinationAddresses
+                    - destinationPorts
+                    - name
+                    - protocols
+                    - sourceAddresses
+                    - translatedAddress
+                    - translatedPort
+                    type: object
+                  minItems: 1
+                  type: array
+                  uniqueItems: true
+              required:
+              - action
+              - azureFirewallName
+              - name
+              - priority
+              - providerRef
+              - resourceGroupName
+              - rule
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

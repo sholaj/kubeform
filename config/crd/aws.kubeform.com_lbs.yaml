@@ -411,12 +411,20 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            arn:
+              type: string
+            arnSuffix:
+              type: string
+            dnsName:
+              type: string
             enableCrossZoneLoadBalancing:
               type: boolean
             enableDeletionProtection:
               type: boolean
             enableHttp2:
               type: boolean
+            id:
+              type: string
             idleTimeout:
               type: integer
             internal:
@@ -464,6 +472,10 @@ spec:
               additionalProperties:
                 type: string
               type: object
+            vpcID:
+              type: string
+            zoneID:
+              type: string
           required:
           - providerRef
           type: object
@@ -475,8 +487,106 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                accessLogs:
+                  items:
+                    properties:
+                      bucket:
+                        type: string
+                      enabled:
+                        type: boolean
+                      prefix:
+                        type: string
+                    required:
+                    - bucket
+                    type: object
+                  maxItems: 1
+                  type: array
+                arn:
+                  type: string
+                arnSuffix:
+                  type: string
+                dnsName:
+                  type: string
+                enableCrossZoneLoadBalancing:
+                  type: boolean
+                enableDeletionProtection:
+                  type: boolean
+                enableHttp2:
+                  type: boolean
+                id:
+                  type: string
+                idleTimeout:
+                  type: integer
+                internal:
+                  type: boolean
+                ipAddressType:
+                  type: string
+                loadBalancerType:
+                  type: string
+                name:
+                  type: string
+                namePrefix:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                securityGroups:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                subnetMapping:
+                  items:
+                    properties:
+                      allocationID:
+                        type: string
+                      subnetID:
+                        type: string
+                    required:
+                    - subnetID
+                    type: object
+                  type: array
+                  uniqueItems: true
+                subnets:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                vpcID:
+                  type: string
+                zoneID:
+                  type: string
+              required:
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

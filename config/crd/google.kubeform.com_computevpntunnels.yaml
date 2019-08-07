@@ -397,10 +397,18 @@ spec:
           type: object
         spec:
           properties:
+            creationTimestamp:
+              type: string
             description:
+              type: string
+            detailedStatus:
+              type: string
+            id:
               type: string
             ikeVersion:
               type: integer
+            labelFingerprint:
+              type: string
             labels:
               additionalProperties:
                 type: string
@@ -443,6 +451,10 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            selfLink:
+              type: string
+            sharedSecretHash:
+              type: string
             targetVPNGateway:
               type: string
           required:
@@ -459,8 +471,90 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                creationTimestamp:
+                  type: string
+                description:
+                  type: string
+                detailedStatus:
+                  type: string
+                id:
+                  type: string
+                ikeVersion:
+                  type: integer
+                labelFingerprint:
+                  type: string
+                labels:
+                  additionalProperties:
+                    type: string
+                  type: object
+                localTrafficSelector:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                name:
+                  type: string
+                peerIP:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                region:
+                  type: string
+                remoteTrafficSelector:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                router:
+                  type: string
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                selfLink:
+                  type: string
+                sharedSecretHash:
+                  type: string
+                targetVPNGateway:
+                  type: string
+              required:
+              - name
+              - peerIP
+              - providerRef
+              - targetVPNGateway
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

@@ -397,6 +397,8 @@ spec:
           type: object
         spec:
           properties:
+            creationTimestamp:
+              type: string
             description:
               type: string
             diskEncryptionKey:
@@ -404,15 +406,28 @@ spec:
                 properties:
                   rawKey:
                     type: string
+                  sha256:
+                    type: string
                 type: object
               maxItems: 1
               type: array
+            diskEncryptionKeySha256:
+              description: Deprecated
+              type: string
+            id:
+              type: string
             image:
+              type: string
+            labelFingerprint:
               type: string
             labels:
               additionalProperties:
                 type: string
               type: object
+            lastAttachTimestamp:
+              type: string
+            lastDetachTimestamp:
+              type: string
             name:
               type: string
             project:
@@ -435,6 +450,8 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            selfLink:
+              type: string
             size:
               type: integer
             snapshot:
@@ -444,19 +461,31 @@ spec:
                 properties:
                   rawKey:
                     type: string
+                  sha256:
+                    type: string
                 type: object
               maxItems: 1
               type: array
+            sourceImageID:
+              type: string
             sourceSnapshotEncryptionKey:
               items:
                 properties:
                   rawKey:
                     type: string
+                  sha256:
+                    type: string
                 type: object
               maxItems: 1
               type: array
+            sourceSnapshotID:
+              type: string
             type:
               type: string
+            users:
+              items:
+                type: string
+              type: array
             zone:
               type: string
           required:
@@ -471,8 +500,119 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                creationTimestamp:
+                  type: string
+                description:
+                  type: string
+                diskEncryptionKey:
+                  items:
+                    properties:
+                      rawKey:
+                        type: string
+                      sha256:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                diskEncryptionKeySha256:
+                  description: Deprecated
+                  type: string
+                id:
+                  type: string
+                image:
+                  type: string
+                labelFingerprint:
+                  type: string
+                labels:
+                  additionalProperties:
+                    type: string
+                  type: object
+                lastAttachTimestamp:
+                  type: string
+                lastDetachTimestamp:
+                  type: string
+                name:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                selfLink:
+                  type: string
+                size:
+                  type: integer
+                snapshot:
+                  type: string
+                sourceImageEncryptionKey:
+                  items:
+                    properties:
+                      rawKey:
+                        type: string
+                      sha256:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                sourceImageID:
+                  type: string
+                sourceSnapshotEncryptionKey:
+                  items:
+                    properties:
+                      rawKey:
+                        type: string
+                      sha256:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                sourceSnapshotID:
+                  type: string
+                type:
+                  type: string
+                users:
+                  items:
+                    type: string
+                  type: array
+                zone:
+                  type: string
+              required:
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

@@ -399,6 +399,8 @@ spec:
           properties:
             bucket:
               type: string
+            id:
+              type: string
             lambdaFunction:
               items:
                 properties:
@@ -482,8 +484,103 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                bucket:
+                  type: string
+                id:
+                  type: string
+                lambdaFunction:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      events:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      filterPrefix:
+                        type: string
+                      filterSuffix:
+                        type: string
+                      lambdaFunctionArn:
+                        type: string
+                    required:
+                    - events
+                    type: object
+                  type: array
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                queue:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      events:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      filterPrefix:
+                        type: string
+                      filterSuffix:
+                        type: string
+                      queueArn:
+                        type: string
+                    required:
+                    - events
+                    - queueArn
+                    type: object
+                  type: array
+                topic:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      events:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      filterPrefix:
+                        type: string
+                      filterSuffix:
+                        type: string
+                      topicArn:
+                        type: string
+                    required:
+                    - events
+                    - topicArn
+                    type: object
+                  type: array
+              required:
+              - bucket
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

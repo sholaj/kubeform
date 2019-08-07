@@ -399,6 +399,8 @@ spec:
           properties:
             applyImmediately:
               type: boolean
+            arn:
+              type: string
             availabilityZones:
               items:
                 type: string
@@ -417,6 +419,8 @@ spec:
                 type: string
               type: array
               uniqueItems: true
+            clusterResourceID:
+              type: string
             copyTagsToSnapshot:
               type: boolean
             databaseName:
@@ -431,6 +435,8 @@ spec:
               items:
                 type: string
               type: array
+            endpoint:
+              type: string
             engine:
               type: string
             engineMode:
@@ -441,6 +447,8 @@ spec:
               type: string
             globalClusterIdentifier:
               type: string
+            hostedZoneID:
+              type: string
             iamDatabaseAuthenticationEnabled:
               type: boolean
             iamRoles:
@@ -448,6 +456,8 @@ spec:
                 type: string
               type: array
               uniqueItems: true
+            id:
+              type: string
             kmsKeyID:
               type: string
             masterUsername:
@@ -467,6 +477,8 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            readerEndpoint:
+              type: string
             replicationSourceIdentifier:
               type: string
             s3Import:
@@ -541,8 +553,172 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                applyImmediately:
+                  type: boolean
+                arn:
+                  type: string
+                availabilityZones:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                backtrackWindow:
+                  type: integer
+                backupRetentionPeriod:
+                  type: integer
+                clusterIdentifier:
+                  type: string
+                clusterIdentifierPrefix:
+                  type: string
+                clusterMembers:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                clusterResourceID:
+                  type: string
+                copyTagsToSnapshot:
+                  type: boolean
+                databaseName:
+                  type: string
+                dbClusterParameterGroupName:
+                  type: string
+                dbSubnetGroupName:
+                  type: string
+                deletionProtection:
+                  type: boolean
+                enabledCloudwatchLogsExports:
+                  items:
+                    type: string
+                  type: array
+                endpoint:
+                  type: string
+                engine:
+                  type: string
+                engineMode:
+                  type: string
+                engineVersion:
+                  type: string
+                finalSnapshotIdentifier:
+                  type: string
+                globalClusterIdentifier:
+                  type: string
+                hostedZoneID:
+                  type: string
+                iamDatabaseAuthenticationEnabled:
+                  type: boolean
+                iamRoles:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                id:
+                  type: string
+                kmsKeyID:
+                  type: string
+                masterUsername:
+                  type: string
+                port:
+                  type: integer
+                preferredBackupWindow:
+                  type: string
+                preferredMaintenanceWindow:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                readerEndpoint:
+                  type: string
+                replicationSourceIdentifier:
+                  type: string
+                s3Import:
+                  items:
+                    properties:
+                      bucketName:
+                        type: string
+                      bucketPrefix:
+                        type: string
+                      ingestionRole:
+                        type: string
+                      sourceEngine:
+                        type: string
+                      sourceEngineVersion:
+                        type: string
+                    required:
+                    - bucketName
+                    - ingestionRole
+                    - sourceEngine
+                    - sourceEngineVersion
+                    type: object
+                  maxItems: 1
+                  type: array
+                scalingConfiguration:
+                  items:
+                    properties:
+                      autoPause:
+                        type: boolean
+                      maxCapacity:
+                        type: integer
+                      minCapacity:
+                        type: integer
+                      secondsUntilAutoPause:
+                        type: integer
+                    type: object
+                  maxItems: 1
+                  type: array
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                skipFinalSnapshot:
+                  type: boolean
+                snapshotIdentifier:
+                  type: string
+                sourceRegion:
+                  type: string
+                storageEncrypted:
+                  type: boolean
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                vpcSecurityGroupIDS:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+              required:
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

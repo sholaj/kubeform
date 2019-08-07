@@ -397,7 +397,11 @@ spec:
           type: object
         spec:
           properties:
+            azureAsn:
+              type: integer
             expressRouteCircuitName:
+              type: string
+            id:
               type: string
             microsoftPeeringConfig:
               items:
@@ -415,6 +419,8 @@ spec:
               type: integer
             peeringType:
               type: string
+            primaryAzurePort:
+              type: string
             primaryPeerAddressPrefix:
               type: string
             providerRef:
@@ -427,6 +433,8 @@ spec:
                   type: string
               type: object
             resourceGroupName:
+              type: string
+            secondaryAzurePort:
               type: string
             secondaryPeerAddressPrefix:
               type: string
@@ -448,6 +456,7 @@ spec:
           - providerRef
           - resourceGroupName
           - secondaryPeerAddressPrefix
+          - vlanID
           type: object
         status:
           properties:
@@ -457,8 +466,85 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                azureAsn:
+                  type: integer
+                expressRouteCircuitName:
+                  type: string
+                id:
+                  type: string
+                microsoftPeeringConfig:
+                  items:
+                    properties:
+                      advertisedPublicPrefixes:
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - advertisedPublicPrefixes
+                    type: object
+                  maxItems: 1
+                  type: array
+                peerAsn:
+                  type: integer
+                peeringType:
+                  type: string
+                primaryAzurePort:
+                  type: string
+                primaryPeerAddressPrefix:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                secondaryAzurePort:
+                  type: string
+                secondaryPeerAddressPrefix:
+                  type: string
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                vlanID:
+                  type: integer
+              required:
+              - expressRouteCircuitName
+              - peeringType
+              - primaryPeerAddressPrefix
+              - providerRef
+              - resourceGroupName
+              - secondaryPeerAddressPrefix
+              - vlanID
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

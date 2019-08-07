@@ -397,11 +397,15 @@ spec:
           type: object
         spec:
           properties:
+            associationID:
+              type: string
             associationName:
               type: string
             complianceSeverity:
               type: string
             documentVersion:
+              type: string
+            id:
               type: string
             instanceID:
               type: string
@@ -465,8 +469,88 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                associationID:
+                  type: string
+                associationName:
+                  type: string
+                complianceSeverity:
+                  type: string
+                documentVersion:
+                  type: string
+                id:
+                  type: string
+                instanceID:
+                  type: string
+                maxConcurrency:
+                  type: string
+                maxErrors:
+                  type: string
+                name:
+                  type: string
+                outputLocation:
+                  items:
+                    properties:
+                      s3BucketName:
+                        type: string
+                      s3KeyPrefix:
+                        type: string
+                    required:
+                    - s3BucketName
+                    type: object
+                  maxItems: 1
+                  type: array
+                parameters:
+                  additionalProperties:
+                    type: string
+                  type: object
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                scheduleExpression:
+                  type: string
+                targets:
+                  items:
+                    properties:
+                      key:
+                        type: string
+                      values:
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - key
+                    - values
+                    type: object
+                  maxItems: 5
+                  type: array
+              required:
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

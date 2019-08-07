@@ -419,6 +419,14 @@ spec:
                 - type
                 type: object
               type: array
+            eventHubEventsEndpoint:
+              type: string
+            eventHubEventsPath:
+              type: string
+            eventHubOperationsEndpoint:
+              type: string
+            eventHubOperationsPath:
+              type: string
             fallbackRoute:
               items:
                 properties:
@@ -435,6 +443,10 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            hostname:
+              type: string
+            id:
+              type: string
             ipFilterRule:
               items:
                 properties:
@@ -497,6 +509,15 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            sharedAccessPolicy:
+              items:
+                properties:
+                  keyName:
+                    type: string
+                  permissions:
+                    type: string
+                type: object
+              type: array
             sku:
               items:
                 properties:
@@ -517,6 +538,8 @@ spec:
               additionalProperties:
                 type: string
               type: object
+            type:
+              type: string
           required:
           - location
           - name
@@ -532,8 +555,174 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                endpoint:
+                  items:
+                    properties:
+                      batchFrequencyInSeconds:
+                        type: integer
+                      containerName:
+                        type: string
+                      encoding:
+                        type: string
+                      fileNameFormat:
+                        type: string
+                      maxChunkSizeInBytes:
+                        type: integer
+                      name:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - name
+                    - type
+                    type: object
+                  type: array
+                eventHubEventsEndpoint:
+                  type: string
+                eventHubEventsPath:
+                  type: string
+                eventHubOperationsEndpoint:
+                  type: string
+                eventHubOperationsPath:
+                  type: string
+                fallbackRoute:
+                  items:
+                    properties:
+                      condition:
+                        type: string
+                      enabled:
+                        type: boolean
+                      endpointNames:
+                        items:
+                          type: string
+                        type: array
+                      source:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                hostname:
+                  type: string
+                id:
+                  type: string
+                ipFilterRule:
+                  items:
+                    properties:
+                      action:
+                        type: string
+                      ipMask:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                    - action
+                    - ipMask
+                    - name
+                    type: object
+                  type: array
+                  uniqueItems: true
+                location:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                route:
+                  items:
+                    properties:
+                      condition:
+                        type: string
+                      enabled:
+                        type: boolean
+                      endpointNames:
+                        items:
+                          type: string
+                        type: array
+                      name:
+                        type: string
+                      source:
+                        type: string
+                    required:
+                    - enabled
+                    - endpointNames
+                    - name
+                    - source
+                    type: object
+                  type: array
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                sharedAccessPolicy:
+                  items:
+                    properties:
+                      keyName:
+                        type: string
+                      permissions:
+                        type: string
+                    type: object
+                  type: array
+                sku:
+                  items:
+                    properties:
+                      capacity:
+                        type: integer
+                      name:
+                        type: string
+                      tier:
+                        type: string
+                    required:
+                    - capacity
+                    - name
+                    - tier
+                    type: object
+                  maxItems: 1
+                  type: array
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                type:
+                  type: string
+              required:
+              - location
+              - name
+              - providerRef
+              - resourceGroupName
+              - sku
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

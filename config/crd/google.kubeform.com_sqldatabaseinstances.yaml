@@ -397,8 +397,23 @@ spec:
           type: object
         spec:
           properties:
+            connectionName:
+              type: string
             databaseVersion:
               type: string
+            firstIPAddress:
+              type: string
+            id:
+              type: string
+            ipAddress:
+              items:
+                properties:
+                  ipAddress:
+                    type: string
+                  timeToRetire:
+                    type: string
+                type: object
+              type: array
             masterInstanceName:
               type: string
             name:
@@ -451,6 +466,26 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            selfLink:
+              type: string
+            serverCaCert:
+              items:
+                properties:
+                  cert:
+                    type: string
+                  commonName:
+                    type: string
+                  createTime:
+                    type: string
+                  expirationTime:
+                    type: string
+                  sha1Fingerprint:
+                    type: string
+                type: object
+              maxItems: 1
+              type: array
+            serviceAccountEmailAddress:
+              type: string
             settings:
               items:
                 properties:
@@ -547,6 +582,8 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  version:
+                    type: integer
                 required:
                 - tier
                 type: object
@@ -564,8 +601,220 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                connectionName:
+                  type: string
+                databaseVersion:
+                  type: string
+                firstIPAddress:
+                  type: string
+                id:
+                  type: string
+                ipAddress:
+                  items:
+                    properties:
+                      ipAddress:
+                        type: string
+                      timeToRetire:
+                        type: string
+                    type: object
+                  type: array
+                masterInstanceName:
+                  type: string
+                name:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                region:
+                  type: string
+                replicaConfiguration:
+                  items:
+                    properties:
+                      caCertificate:
+                        type: string
+                      clientCertificate:
+                        type: string
+                      clientKey:
+                        type: string
+                      connectRetryInterval:
+                        type: integer
+                      dumpFilePath:
+                        type: string
+                      failoverTarget:
+                        type: boolean
+                      masterHeartbeatPeriod:
+                        type: integer
+                      sslCipher:
+                        type: string
+                      username:
+                        type: string
+                      verifyServerCertificate:
+                        type: boolean
+                    type: object
+                  maxItems: 1
+                  type: array
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                selfLink:
+                  type: string
+                serverCaCert:
+                  items:
+                    properties:
+                      cert:
+                        type: string
+                      commonName:
+                        type: string
+                      createTime:
+                        type: string
+                      expirationTime:
+                        type: string
+                      sha1Fingerprint:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                serviceAccountEmailAddress:
+                  type: string
+                settings:
+                  items:
+                    properties:
+                      activationPolicy:
+                        type: string
+                      authorizedGaeApplications:
+                        items:
+                          type: string
+                        type: array
+                      availabilityType:
+                        type: string
+                      backupConfiguration:
+                        items:
+                          properties:
+                            binaryLogEnabled:
+                              type: boolean
+                            enabled:
+                              type: boolean
+                            startTime:
+                              type: string
+                          type: object
+                        maxItems: 1
+                        type: array
+                      crashSafeReplication:
+                        type: boolean
+                      databaseFlags:
+                        items:
+                          properties:
+                            name:
+                              type: string
+                            value:
+                              type: string
+                          type: object
+                        type: array
+                      diskAutoresize:
+                        type: boolean
+                      diskSize:
+                        type: integer
+                      diskType:
+                        type: string
+                      ipConfiguration:
+                        items:
+                          properties:
+                            authorizedNetworks:
+                              items:
+                                properties:
+                                  expirationTime:
+                                    type: string
+                                  name:
+                                    type: string
+                                  value:
+                                    type: string
+                                type: object
+                              type: array
+                              uniqueItems: true
+                            ipv4Enabled:
+                              type: boolean
+                            privateNetwork:
+                              type: string
+                            requireSsl:
+                              type: boolean
+                          type: object
+                        maxItems: 1
+                        type: array
+                      locationPreference:
+                        items:
+                          properties:
+                            followGaeApplication:
+                              type: string
+                            zone:
+                              type: string
+                          type: object
+                        maxItems: 1
+                        type: array
+                      maintenanceWindow:
+                        items:
+                          properties:
+                            day:
+                              type: integer
+                            hour:
+                              type: integer
+                            updateTrack:
+                              type: string
+                          type: object
+                        maxItems: 1
+                        type: array
+                      pricingPlan:
+                        type: string
+                      replicationType:
+                        type: string
+                      tier:
+                        type: string
+                      userLabels:
+                        additionalProperties:
+                          type: string
+                        type: object
+                      version:
+                        type: integer
+                    required:
+                    - tier
+                    type: object
+                  maxItems: 1
+                  type: array
+              required:
+              - providerRef
+              - settings
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

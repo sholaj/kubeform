@@ -399,6 +399,10 @@ spec:
           properties:
             curve:
               type: string
+            e:
+              type: string
+            id:
+              type: string
             keyOpts:
               items:
                 type: string
@@ -408,6 +412,8 @@ spec:
             keyType:
               type: string
             keyVaultID:
+              type: string
+            "n":
               type: string
             name:
               type: string
@@ -427,6 +433,12 @@ spec:
             vaultURI:
               description: Deprecated
               type: string
+            version:
+              type: string
+            x:
+              type: string
+            "y":
+              type: string
           required:
           - keyOpts
           - keyType
@@ -441,8 +453,72 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                curve:
+                  type: string
+                e:
+                  type: string
+                id:
+                  type: string
+                keyOpts:
+                  items:
+                    type: string
+                  type: array
+                keySize:
+                  type: integer
+                keyType:
+                  type: string
+                keyVaultID:
+                  type: string
+                "n":
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                vaultURI:
+                  description: Deprecated
+                  type: string
+                version:
+                  type: string
+                x:
+                  type: string
+                "y":
+                  type: string
+              required:
+              - keyOpts
+              - keyType
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

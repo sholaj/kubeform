@@ -399,6 +399,8 @@ spec:
           properties:
             checkIntervalSec:
               type: integer
+            creationTimestamp:
+              type: string
             description:
               type: string
             healthyThreshold:
@@ -435,6 +437,8 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            id:
+              type: string
             name:
               type: string
             project:
@@ -448,6 +452,8 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            selfLink:
+              type: string
             sslHealthCheck:
               items:
                 properties:
@@ -478,6 +484,8 @@ spec:
               type: array
             timeoutSec:
               type: integer
+            type:
+              type: string
             unhealthyThreshold:
               type: integer
           required:
@@ -492,8 +500,119 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                checkIntervalSec:
+                  type: integer
+                creationTimestamp:
+                  type: string
+                description:
+                  type: string
+                healthyThreshold:
+                  type: integer
+                httpHealthCheck:
+                  items:
+                    properties:
+                      host:
+                        type: string
+                      port:
+                        type: integer
+                      proxyHeader:
+                        type: string
+                      requestPath:
+                        type: string
+                      response:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                httpsHealthCheck:
+                  items:
+                    properties:
+                      host:
+                        type: string
+                      port:
+                        type: integer
+                      proxyHeader:
+                        type: string
+                      requestPath:
+                        type: string
+                      response:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                id:
+                  type: string
+                name:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                selfLink:
+                  type: string
+                sslHealthCheck:
+                  items:
+                    properties:
+                      port:
+                        type: integer
+                      proxyHeader:
+                        type: string
+                      request:
+                        type: string
+                      response:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                tcpHealthCheck:
+                  items:
+                    properties:
+                      port:
+                        type: integer
+                      proxyHeader:
+                        type: string
+                      request:
+                        type: string
+                      response:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                timeoutSec:
+                  type: integer
+                type:
+                  type: string
+                unhealthyThreshold:
+                  type: integer
+              required:
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

@@ -399,6 +399,8 @@ spec:
           properties:
             allowUnauthenticatedIdentities:
               type: boolean
+            arn:
+              type: string
             cognitoIdentityProviders:
               items:
                 properties:
@@ -412,6 +414,8 @@ spec:
               type: array
               uniqueItems: true
             developerProviderName:
+              type: string
+            id:
               type: string
             identityPoolName:
               type: string
@@ -448,8 +452,71 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                allowUnauthenticatedIdentities:
+                  type: boolean
+                arn:
+                  type: string
+                cognitoIdentityProviders:
+                  items:
+                    properties:
+                      clientID:
+                        type: string
+                      providerName:
+                        type: string
+                      serverSideTokenCheck:
+                        type: boolean
+                    type: object
+                  type: array
+                  uniqueItems: true
+                developerProviderName:
+                  type: string
+                id:
+                  type: string
+                identityPoolName:
+                  type: string
+                openidConnectProviderArns:
+                  items:
+                    type: string
+                  type: array
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                samlProviderArns:
+                  items:
+                    type: string
+                  type: array
+                supportedLoginProviders:
+                  additionalProperties:
+                    type: string
+                  type: object
+              required:
+              - identityPoolName
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

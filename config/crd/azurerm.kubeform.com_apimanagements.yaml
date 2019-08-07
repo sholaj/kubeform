@@ -400,8 +400,14 @@ spec:
             additionalLocation:
               items:
                 properties:
+                  gatewayRegionalURL:
+                    type: string
                   location:
                     type: string
+                  publicIPAddresses:
+                    items:
+                      type: string
+                    type: array
                 required:
                 - location
                 type: object
@@ -417,6 +423,10 @@ spec:
                 type: object
               maxItems: 10
               type: array
+            gatewayRegionalURL:
+              type: string
+            gatewayURL:
+              type: string
             hostnameConfiguration:
               items:
                 properties:
@@ -429,6 +439,8 @@ spec:
                           type: string
                         negotiateClientCertificate:
                           type: boolean
+                      required:
+                      - hostName
                       type: object
                     type: array
                   portal:
@@ -440,6 +452,8 @@ spec:
                           type: string
                         negotiateClientCertificate:
                           type: boolean
+                      required:
+                      - hostName
                       type: object
                     type: array
                   proxy:
@@ -466,14 +480,22 @@ spec:
                           type: string
                         negotiateClientCertificate:
                           type: boolean
+                      required:
+                      - hostName
                       type: object
                     type: array
                 type: object
               maxItems: 1
               type: array
+            id:
+              type: string
             identity:
               items:
                 properties:
+                  principalID:
+                    type: string
+                  tenantID:
+                    type: string
                   type:
                     type: string
                 required:
@@ -482,6 +504,8 @@ spec:
               maxItems: 1
               type: array
             location:
+              type: string
+            managementAPIURL:
               type: string
             name:
               type: string
@@ -497,6 +521,8 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            portalURL:
+              type: string
             providerRef:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
@@ -506,11 +532,17 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            publicIPAddresses:
+              items:
+                type: string
+              type: array
             publisherEmail:
               type: string
             publisherName:
               type: string
             resourceGroupName:
+              type: string
+            scmURL:
               type: string
             secret:
               description: LocalObjectReference contains enough information to let
@@ -614,8 +646,265 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                additionalLocation:
+                  items:
+                    properties:
+                      gatewayRegionalURL:
+                        type: string
+                      location:
+                        type: string
+                      publicIPAddresses:
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - location
+                    type: object
+                  maxItems: 1
+                  type: array
+                certificate:
+                  items:
+                    properties:
+                      storeName:
+                        type: string
+                    required:
+                    - storeName
+                    type: object
+                  maxItems: 10
+                  type: array
+                gatewayRegionalURL:
+                  type: string
+                gatewayURL:
+                  type: string
+                hostnameConfiguration:
+                  items:
+                    properties:
+                      management:
+                        items:
+                          properties:
+                            hostName:
+                              type: string
+                            keyVaultID:
+                              type: string
+                            negotiateClientCertificate:
+                              type: boolean
+                          required:
+                          - hostName
+                          type: object
+                        type: array
+                      portal:
+                        items:
+                          properties:
+                            hostName:
+                              type: string
+                            keyVaultID:
+                              type: string
+                            negotiateClientCertificate:
+                              type: boolean
+                          required:
+                          - hostName
+                          type: object
+                        type: array
+                      proxy:
+                        items:
+                          properties:
+                            defaultSslBinding:
+                              type: boolean
+                            hostName:
+                              type: string
+                            keyVaultID:
+                              type: string
+                            negotiateClientCertificate:
+                              type: boolean
+                          required:
+                          - hostName
+                          type: object
+                        type: array
+                      scm:
+                        items:
+                          properties:
+                            hostName:
+                              type: string
+                            keyVaultID:
+                              type: string
+                            negotiateClientCertificate:
+                              type: boolean
+                          required:
+                          - hostName
+                          type: object
+                        type: array
+                    type: object
+                  maxItems: 1
+                  type: array
+                id:
+                  type: string
+                identity:
+                  items:
+                    properties:
+                      principalID:
+                        type: string
+                      tenantID:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - type
+                    type: object
+                  maxItems: 1
+                  type: array
+                location:
+                  type: string
+                managementAPIURL:
+                  type: string
+                name:
+                  type: string
+                notificationSenderEmail:
+                  type: string
+                policy:
+                  items:
+                    properties:
+                      xmlContent:
+                        type: string
+                      xmlLink:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                portalURL:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                publicIPAddresses:
+                  items:
+                    type: string
+                  type: array
+                publisherEmail:
+                  type: string
+                publisherName:
+                  type: string
+                resourceGroupName:
+                  type: string
+                scmURL:
+                  type: string
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                security:
+                  items:
+                    properties:
+                      disableBackendSsl30:
+                        type: boolean
+                      disableBackendTls10:
+                        type: boolean
+                      disableBackendTls11:
+                        type: boolean
+                      disableFrontendSsl30:
+                        type: boolean
+                      disableFrontendTls10:
+                        type: boolean
+                      disableFrontendTls11:
+                        type: boolean
+                      disableTripleDESChipers:
+                        description: Deprecated
+                        type: boolean
+                      disableTripleDESCiphers:
+                        type: boolean
+                    type: object
+                  maxItems: 1
+                  type: array
+                signIn:
+                  items:
+                    properties:
+                      enabled:
+                        type: boolean
+                    required:
+                    - enabled
+                    type: object
+                  maxItems: 1
+                  type: array
+                signUp:
+                  items:
+                    properties:
+                      enabled:
+                        type: boolean
+                      termsOfService:
+                        items:
+                          properties:
+                            consentRequired:
+                              type: boolean
+                            enabled:
+                              type: boolean
+                            text:
+                              type: string
+                          required:
+                          - consentRequired
+                          - enabled
+                          type: object
+                        maxItems: 1
+                        type: array
+                    required:
+                    - enabled
+                    - termsOfService
+                    type: object
+                  maxItems: 1
+                  type: array
+                sku:
+                  items:
+                    properties:
+                      capacity:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - capacity
+                    - name
+                    type: object
+                  maxItems: 1
+                  type: array
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+              required:
+              - location
+              - name
+              - providerRef
+              - publisherEmail
+              - publisherName
+              - resourceGroupName
+              - sku
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

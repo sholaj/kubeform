@@ -417,15 +417,23 @@ spec:
                 - type
                 type: object
               type: array
+            defaultHostname:
+              type: string
             enableBuiltinLogging:
               type: boolean
             enabled:
               type: boolean
             httpsOnly:
               type: boolean
+            id:
+              type: string
             identity:
               items:
                 properties:
+                  principalID:
+                    type: string
+                  tenantID:
+                    type: string
                   type:
                     type: string
                 required:
@@ -433,9 +441,15 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            kind:
+              type: string
             location:
               type: string
             name:
+              type: string
+            outboundIPAddresses:
+              type: string
+            possibleOutboundIPAddresses:
               type: string
             providerRef:
               description: LocalObjectReference contains enough information to let
@@ -471,6 +485,14 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            siteCredential:
+              items:
+                properties:
+                  username:
+                    type: string
+                type: object
+              maxItems: 1
+              type: array
             tags:
               additionalProperties:
                 type: string
@@ -492,8 +514,133 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                appServicePlanID:
+                  type: string
+                appSettings:
+                  additionalProperties:
+                    type: string
+                  type: object
+                clientAffinityEnabled:
+                  type: boolean
+                connectionString:
+                  items:
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - name
+                    - type
+                    type: object
+                  type: array
+                defaultHostname:
+                  type: string
+                enableBuiltinLogging:
+                  type: boolean
+                enabled:
+                  type: boolean
+                httpsOnly:
+                  type: boolean
+                id:
+                  type: string
+                identity:
+                  items:
+                    properties:
+                      principalID:
+                        type: string
+                      tenantID:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - type
+                    type: object
+                  maxItems: 1
+                  type: array
+                kind:
+                  type: string
+                location:
+                  type: string
+                name:
+                  type: string
+                outboundIPAddresses:
+                  type: string
+                possibleOutboundIPAddresses:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                siteConfig:
+                  items:
+                    properties:
+                      alwaysOn:
+                        type: boolean
+                      linuxFxVersion:
+                        type: string
+                      use32BitWorkerProcess:
+                        type: boolean
+                      websocketsEnabled:
+                        type: boolean
+                    type: object
+                  maxItems: 1
+                  type: array
+                siteCredential:
+                  items:
+                    properties:
+                      username:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                version:
+                  type: string
+              required:
+              - appServicePlanID
+              - location
+              - name
+              - providerRef
+              - resourceGroupName
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

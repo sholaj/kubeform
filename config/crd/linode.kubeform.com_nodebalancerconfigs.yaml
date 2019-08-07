@@ -415,6 +415,17 @@ spec:
               type: integer
             cipherSuite:
               type: string
+            id:
+              type: string
+            nodeStatus:
+              additionalProperties:
+                properties:
+                  statusDown:
+                    type: integer
+                  statusUp:
+                    type: integer
+                type: object
+              type: object
             nodebalancerID:
               type: integer
             port:
@@ -441,6 +452,10 @@ spec:
               type: object
             sslCert:
               type: string
+            sslCommonname:
+              type: string
+            sslFingerprint:
+              type: string
             stickiness:
               type: string
           required:
@@ -455,8 +470,89 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                algorithm:
+                  type: string
+                check:
+                  type: string
+                checkAttempts:
+                  type: integer
+                checkBody:
+                  type: string
+                checkInterval:
+                  type: integer
+                checkPassive:
+                  type: boolean
+                checkPath:
+                  type: string
+                checkTimeout:
+                  type: integer
+                cipherSuite:
+                  type: string
+                id:
+                  type: string
+                nodeStatus:
+                  additionalProperties:
+                    properties:
+                      statusDown:
+                        type: integer
+                      statusUp:
+                        type: integer
+                    type: object
+                  type: object
+                nodebalancerID:
+                  type: integer
+                port:
+                  type: integer
+                protocol:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                sslCert:
+                  type: string
+                sslCommonname:
+                  type: string
+                sslFingerprint:
+                  type: string
+                stickiness:
+                  type: string
+              required:
+              - nodebalancerID
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

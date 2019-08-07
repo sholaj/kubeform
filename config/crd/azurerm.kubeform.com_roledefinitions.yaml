@@ -403,6 +403,8 @@ spec:
               type: array
             description:
               type: string
+            id:
+              type: string
             name:
               type: string
             permissions:
@@ -456,8 +458,77 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                assignableScopes:
+                  items:
+                    type: string
+                  type: array
+                description:
+                  type: string
+                id:
+                  type: string
+                name:
+                  type: string
+                permissions:
+                  items:
+                    properties:
+                      actions:
+                        items:
+                          type: string
+                        type: array
+                      dataActions:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      notActions:
+                        items:
+                          type: string
+                        type: array
+                      notDataActions:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                    type: object
+                  type: array
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                roleDefinitionID:
+                  type: string
+                scope:
+                  type: string
+              required:
+              - assignableScopes
+              - name
+              - permissions
+              - providerRef
+              - scope
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

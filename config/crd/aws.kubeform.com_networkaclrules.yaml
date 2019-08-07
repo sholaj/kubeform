@@ -407,6 +407,8 @@ spec:
               type: string
             icmpType:
               type: string
+            id:
+              type: string
             ipv6CIDRBlock:
               type: string
             networkACLID:
@@ -443,8 +445,64 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                cidrBlock:
+                  type: string
+                egress:
+                  type: boolean
+                fromPort:
+                  type: integer
+                icmpCode:
+                  type: string
+                icmpType:
+                  type: string
+                id:
+                  type: string
+                ipv6CIDRBlock:
+                  type: string
+                networkACLID:
+                  type: string
+                protocol:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                ruleAction:
+                  type: string
+                ruleNumber:
+                  type: integer
+                toPort:
+                  type: integer
+              required:
+              - networkACLID
+              - protocol
+              - providerRef
+              - ruleAction
+              - ruleNumber
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

@@ -422,6 +422,8 @@ spec:
               uniqueItems: true
             ebsOptimized:
               type: boolean
+            id:
+              type: string
             instanceCount:
               type: integer
             instanceType:
@@ -437,6 +439,10 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            runningInstanceCount:
+              type: integer
+            status:
+              type: string
           required:
           - clusterID
           - instanceType
@@ -450,8 +456,75 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                autoscalingPolicy:
+                  type: string
+                bidPrice:
+                  type: string
+                clusterID:
+                  type: string
+                ebsConfig:
+                  items:
+                    properties:
+                      iops:
+                        type: integer
+                      size:
+                        type: integer
+                      type:
+                        type: string
+                      volumesPerInstance:
+                        type: integer
+                    required:
+                    - size
+                    - type
+                    type: object
+                  type: array
+                  uniqueItems: true
+                ebsOptimized:
+                  type: boolean
+                id:
+                  type: string
+                instanceCount:
+                  type: integer
+                instanceType:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                runningInstanceCount:
+                  type: integer
+                status:
+                  type: string
+              required:
+              - clusterID
+              - instanceType
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

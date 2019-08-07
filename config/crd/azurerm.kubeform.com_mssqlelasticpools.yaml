@@ -397,6 +397,30 @@ spec:
           type: object
         spec:
           properties:
+            elasticPoolProperties:
+              description: Deprecated
+              items:
+                properties:
+                  creationDate:
+                    description: Deprecated
+                    type: string
+                  licenseType:
+                    description: Deprecated
+                    type: string
+                  maxSizeBytes:
+                    description: Deprecated
+                    type: integer
+                  state:
+                    description: Deprecated
+                    type: string
+                  zoneRedundant:
+                    description: Deprecated
+                    type: boolean
+                type: object
+              maxItems: 1
+              type: array
+            id:
+              type: string
             location:
               type: string
             maxSizeBytes:
@@ -475,8 +499,118 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                elasticPoolProperties:
+                  description: Deprecated
+                  items:
+                    properties:
+                      creationDate:
+                        description: Deprecated
+                        type: string
+                      licenseType:
+                        description: Deprecated
+                        type: string
+                      maxSizeBytes:
+                        description: Deprecated
+                        type: integer
+                      state:
+                        description: Deprecated
+                        type: string
+                      zoneRedundant:
+                        description: Deprecated
+                        type: boolean
+                    type: object
+                  maxItems: 1
+                  type: array
+                id:
+                  type: string
+                location:
+                  type: string
+                maxSizeBytes:
+                  type: integer
+                maxSizeGb:
+                  description: A Number represents a JSON number literal.
+                  type: string
+                name:
+                  type: string
+                perDatabaseSettings:
+                  items:
+                    properties:
+                      maxCapacity:
+                        description: A Number represents a JSON number literal.
+                        type: string
+                      minCapacity:
+                        description: A Number represents a JSON number literal.
+                        type: string
+                    required:
+                    - maxCapacity
+                    - minCapacity
+                    type: object
+                  maxItems: 1
+                  type: array
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                serverName:
+                  type: string
+                sku:
+                  items:
+                    properties:
+                      capacity:
+                        type: integer
+                      family:
+                        type: string
+                      name:
+                        type: string
+                      tier:
+                        type: string
+                    required:
+                    - capacity
+                    - name
+                    - tier
+                    type: object
+                  maxItems: 1
+                  type: array
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                zoneRedundant:
+                  type: boolean
+              required:
+              - location
+              - name
+              - perDatabaseSettings
+              - providerRef
+              - resourceGroupName
+              - serverName
+              - sku
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

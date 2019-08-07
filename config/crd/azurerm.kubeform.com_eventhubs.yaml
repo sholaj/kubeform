@@ -436,6 +436,8 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            id:
+              type: string
             location:
               description: Deprecated
               type: string
@@ -447,6 +449,11 @@ spec:
               type: string
             partitionCount:
               type: integer
+            partitionIDS:
+              items:
+                type: string
+              type: array
+              uniqueItems: true
             providerRef:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
@@ -474,8 +481,100 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                captureDescription:
+                  items:
+                    properties:
+                      destination:
+                        items:
+                          properties:
+                            archiveNameFormat:
+                              type: string
+                            blobContainerName:
+                              type: string
+                            name:
+                              type: string
+                            storageAccountID:
+                              type: string
+                          required:
+                          - archiveNameFormat
+                          - blobContainerName
+                          - name
+                          - storageAccountID
+                          type: object
+                        maxItems: 1
+                        type: array
+                      enabled:
+                        type: boolean
+                      encoding:
+                        type: string
+                      intervalInSeconds:
+                        type: integer
+                      sizeLimitInBytes:
+                        type: integer
+                      skipEmptyArchives:
+                        type: boolean
+                    required:
+                    - destination
+                    - enabled
+                    - encoding
+                    type: object
+                  maxItems: 1
+                  type: array
+                id:
+                  type: string
+                location:
+                  description: Deprecated
+                  type: string
+                messageRetention:
+                  type: integer
+                name:
+                  type: string
+                namespaceName:
+                  type: string
+                partitionCount:
+                  type: integer
+                partitionIDS:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+              required:
+              - messageRetention
+              - name
+              - namespaceName
+              - partitionCount
+              - providerRef
+              - resourceGroupName
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

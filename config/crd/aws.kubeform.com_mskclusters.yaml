@@ -397,6 +397,12 @@ spec:
           type: object
         spec:
           properties:
+            arn:
+              type: string
+            bootstrapBrokers:
+              type: string
+            bootstrapBrokersTls:
+              type: string
             brokerNodeGroupInfo:
               items:
                 properties:
@@ -454,6 +460,8 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            currentVersion:
+              type: string
             encryptionInfo:
               items:
                 properties:
@@ -474,6 +482,8 @@ spec:
               type: array
             enhancedMonitoring:
               type: string
+            id:
+              type: string
             kafkaVersion:
               type: string
             numberOfBrokerNodes:
@@ -491,6 +501,8 @@ spec:
               additionalProperties:
                 type: string
               type: object
+            zookeeperConnectString:
+              type: string
           required:
           - brokerNodeGroupInfo
           - clusterName
@@ -506,8 +518,137 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                arn:
+                  type: string
+                bootstrapBrokers:
+                  type: string
+                bootstrapBrokersTls:
+                  type: string
+                brokerNodeGroupInfo:
+                  items:
+                    properties:
+                      azDistribution:
+                        type: string
+                      clientSubnets:
+                        items:
+                          type: string
+                        type: array
+                      ebsVolumeSize:
+                        type: integer
+                      instanceType:
+                        type: string
+                      securityGroups:
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - clientSubnets
+                    - ebsVolumeSize
+                    - instanceType
+                    - securityGroups
+                    type: object
+                  maxItems: 1
+                  type: array
+                clientAuthentication:
+                  items:
+                    properties:
+                      tls:
+                        items:
+                          properties:
+                            certificateAuthorityArns:
+                              items:
+                                type: string
+                              type: array
+                              uniqueItems: true
+                          type: object
+                        maxItems: 1
+                        type: array
+                    type: object
+                  maxItems: 1
+                  type: array
+                clusterName:
+                  type: string
+                configurationInfo:
+                  items:
+                    properties:
+                      arn:
+                        type: string
+                      revision:
+                        type: integer
+                    required:
+                    - arn
+                    - revision
+                    type: object
+                  maxItems: 1
+                  type: array
+                currentVersion:
+                  type: string
+                encryptionInfo:
+                  items:
+                    properties:
+                      encryptionAtRestKmsKeyArn:
+                        type: string
+                      encryptionInTransit:
+                        items:
+                          properties:
+                            clientBroker:
+                              type: string
+                            inCluster:
+                              type: boolean
+                          type: object
+                        maxItems: 1
+                        type: array
+                    type: object
+                  maxItems: 1
+                  type: array
+                enhancedMonitoring:
+                  type: string
+                id:
+                  type: string
+                kafkaVersion:
+                  type: string
+                numberOfBrokerNodes:
+                  type: integer
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                zookeeperConnectString:
+                  type: string
+              required:
+              - brokerNodeGroupInfo
+              - clusterName
+              - kafkaVersion
+              - numberOfBrokerNodes
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

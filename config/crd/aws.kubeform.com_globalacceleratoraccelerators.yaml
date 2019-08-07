@@ -411,8 +411,21 @@ spec:
               type: array
             enabled:
               type: boolean
+            id:
+              type: string
             ipAddressType:
               type: string
+            ipSets:
+              items:
+                properties:
+                  ipAddresses:
+                    items:
+                      type: string
+                    type: array
+                  ipFamily:
+                    type: string
+                type: object
+              type: array
             name:
               type: string
             providerRef:
@@ -436,8 +449,68 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                attributes:
+                  items:
+                    properties:
+                      flowLogsEnabled:
+                        type: boolean
+                      flowLogsS3Bucket:
+                        type: string
+                      flowLogsS3Prefix:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                enabled:
+                  type: boolean
+                id:
+                  type: string
+                ipAddressType:
+                  type: string
+                ipSets:
+                  items:
+                    properties:
+                      ipAddresses:
+                        items:
+                          type: string
+                        type: array
+                      ipFamily:
+                        type: string
+                    type: object
+                  type: array
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+              required:
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

@@ -443,6 +443,8 @@ spec:
               type: string
             enabled:
               type: boolean
+            id:
+              type: string
             name:
               type: string
             providerRef:
@@ -481,8 +483,102 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                action:
+                  items:
+                    properties:
+                      actionGroupID:
+                        type: string
+                      webhookProperties:
+                        additionalProperties:
+                          type: string
+                        type: object
+                    required:
+                    - actionGroupID
+                    type: object
+                  type: array
+                  uniqueItems: true
+                criteria:
+                  items:
+                    properties:
+                      caller:
+                        type: string
+                      category:
+                        type: string
+                      level:
+                        type: string
+                      operationName:
+                        type: string
+                      resourceGroup:
+                        type: string
+                      resourceID:
+                        type: string
+                      resourceProvider:
+                        type: string
+                      resourceType:
+                        type: string
+                      status:
+                        type: string
+                      subStatus:
+                        type: string
+                    required:
+                    - category
+                    type: object
+                  maxItems: 1
+                  type: array
+                description:
+                  type: string
+                enabled:
+                  type: boolean
+                id:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                scopes:
+                  items:
+                    type: string
+                  minItems: 1
+                  type: array
+                  uniqueItems: true
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+              required:
+              - criteria
+              - name
+              - providerRef
+              - resourceGroupName
+              - scopes
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

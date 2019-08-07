@@ -399,6 +399,8 @@ spec:
           properties:
             icmpIdleTimeoutSec:
               type: integer
+            id:
+              type: string
             minPortsPerVm:
               type: integer
             name:
@@ -467,8 +469,88 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                icmpIdleTimeoutSec:
+                  type: integer
+                id:
+                  type: string
+                minPortsPerVm:
+                  type: integer
+                name:
+                  type: string
+                natIPAllocateOption:
+                  type: string
+                natIPS:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                region:
+                  type: string
+                router:
+                  type: string
+                sourceSubnetworkIPRangesToNAT:
+                  type: string
+                subnetwork:
+                  items:
+                    properties:
+                      name:
+                        type: string
+                      secondaryIPRangeNames:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      sourceIPRangesToNAT:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                    required:
+                    - name
+                    type: object
+                  type: array
+                  uniqueItems: true
+                tcpEstablishedIdleTimeoutSec:
+                  type: integer
+                tcpTransitoryIdleTimeoutSec:
+                  type: integer
+                udpIdleTimeoutSec:
+                  type: integer
+              required:
+              - name
+              - natIPAllocateOption
+              - providerRef
+              - router
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

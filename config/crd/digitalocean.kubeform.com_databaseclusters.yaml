@@ -397,7 +397,13 @@ spec:
           type: object
         spec:
           properties:
+            database:
+              type: string
             engine:
+              type: string
+            host:
+              type: string
+            id:
               type: string
             maintenanceWindow:
               items:
@@ -416,6 +422,10 @@ spec:
               type: string
             nodeCount:
               type: integer
+            password:
+              type: string
+            port:
+              type: integer
             providerRef:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
@@ -428,6 +438,10 @@ spec:
             region:
               type: string
             size:
+              type: string
+            uri:
+              type: string
+            user:
               type: string
             version:
               type: string
@@ -448,8 +462,81 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                database:
+                  type: string
+                engine:
+                  type: string
+                host:
+                  type: string
+                id:
+                  type: string
+                maintenanceWindow:
+                  items:
+                    properties:
+                      day:
+                        type: string
+                      hour:
+                        type: string
+                    required:
+                    - day
+                    - hour
+                    type: object
+                  minItems: 1
+                  type: array
+                name:
+                  type: string
+                nodeCount:
+                  type: integer
+                password:
+                  type: string
+                port:
+                  type: integer
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                region:
+                  type: string
+                size:
+                  type: string
+                uri:
+                  type: string
+                user:
+                  type: string
+                version:
+                  type: string
+              required:
+              - engine
+              - name
+              - nodeCount
+              - providerRef
+              - region
+              - size
+              - version
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

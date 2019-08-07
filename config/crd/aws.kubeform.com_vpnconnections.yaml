@@ -397,7 +397,11 @@ spec:
           type: object
         spec:
           properties:
+            customerGatewayConfiguration:
+              type: string
             customerGatewayID:
+              type: string
+            id:
               type: string
             providerRef:
               description: LocalObjectReference contains enough information to let
@@ -408,6 +412,18 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            routes:
+              items:
+                properties:
+                  destinationCIDRBlock:
+                    type: string
+                  source:
+                    type: string
+                  state:
+                    type: string
+                type: object
+              type: array
+              uniqueItems: true
             secret:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
@@ -423,19 +439,58 @@ spec:
               additionalProperties:
                 type: string
               type: object
+            transitGatewayAttachmentID:
+              type: string
             transitGatewayID:
+              type: string
+            tunnel1Address:
+              type: string
+            tunnel1BGPAsn:
+              type: string
+            tunnel1BGPHoldtime:
+              type: integer
+            tunnel1CgwInsideAddress:
               type: string
             tunnel1InsideCIDR:
               type: string
+            tunnel1VgwInsideAddress:
+              type: string
+            tunnel2Address:
+              type: string
+            tunnel2BGPAsn:
+              type: string
+            tunnel2BGPHoldtime:
+              type: integer
+            tunnel2CgwInsideAddress:
+              type: string
             tunnel2InsideCIDR:
+              type: string
+            tunnel2VgwInsideAddress:
               type: string
             type:
               type: string
+            vgwTelemetry:
+              items:
+                properties:
+                  acceptedRouteCount:
+                    type: integer
+                  lastStatusChange:
+                    type: string
+                  outsideIPAddress:
+                    type: string
+                  status:
+                    type: string
+                  statusMessage:
+                    type: string
+                type: object
+              type: array
+              uniqueItems: true
             vpnGatewayID:
               type: string
           required:
           - customerGatewayID
           - providerRef
+          - type
           type: object
         status:
           properties:
@@ -445,8 +500,119 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                customerGatewayConfiguration:
+                  type: string
+                customerGatewayID:
+                  type: string
+                id:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                routes:
+                  items:
+                    properties:
+                      destinationCIDRBlock:
+                        type: string
+                      source:
+                        type: string
+                      state:
+                        type: string
+                    type: object
+                  type: array
+                  uniqueItems: true
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                staticRoutesOnly:
+                  type: boolean
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                transitGatewayAttachmentID:
+                  type: string
+                transitGatewayID:
+                  type: string
+                tunnel1Address:
+                  type: string
+                tunnel1BGPAsn:
+                  type: string
+                tunnel1BGPHoldtime:
+                  type: integer
+                tunnel1CgwInsideAddress:
+                  type: string
+                tunnel1InsideCIDR:
+                  type: string
+                tunnel1VgwInsideAddress:
+                  type: string
+                tunnel2Address:
+                  type: string
+                tunnel2BGPAsn:
+                  type: string
+                tunnel2BGPHoldtime:
+                  type: integer
+                tunnel2CgwInsideAddress:
+                  type: string
+                tunnel2InsideCIDR:
+                  type: string
+                tunnel2VgwInsideAddress:
+                  type: string
+                type:
+                  type: string
+                vgwTelemetry:
+                  items:
+                    properties:
+                      acceptedRouteCount:
+                        type: integer
+                      lastStatusChange:
+                        type: string
+                      outsideIPAddress:
+                        type: string
+                      status:
+                        type: string
+                      statusMessage:
+                        type: string
+                    type: object
+                  type: array
+                  uniqueItems: true
+                vpnGatewayID:
+                  type: string
+              required:
+              - customerGatewayID
+              - providerRef
+              - type
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

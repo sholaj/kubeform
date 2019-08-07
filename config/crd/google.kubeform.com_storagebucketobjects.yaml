@@ -411,7 +411,13 @@ spec:
               type: string
             contentType:
               type: string
+            crc32c:
+              type: string
             detectMd5hash:
+              type: string
+            id:
+              type: string
+            md5hash:
               type: string
             name:
               type: string
@@ -441,8 +447,66 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                bucket:
+                  type: string
+                cacheControl:
+                  type: string
+                content:
+                  type: string
+                contentDisposition:
+                  type: string
+                contentEncoding:
+                  type: string
+                contentLanguage:
+                  type: string
+                contentType:
+                  type: string
+                crc32c:
+                  type: string
+                detectMd5hash:
+                  type: string
+                id:
+                  type: string
+                md5hash:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                source:
+                  type: string
+                storageClass:
+                  type: string
+              required:
+              - bucket
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

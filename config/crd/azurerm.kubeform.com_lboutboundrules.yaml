@@ -406,6 +406,8 @@ spec:
             frontendIPConfiguration:
               items:
                 properties:
+                  ID:
+                    type: string
                   name:
                     type: string
                 required:
@@ -413,6 +415,8 @@ spec:
                 type: object
               minItems: 1
               type: array
+            id:
+              type: string
             idleTimeoutInMinutes:
               type: integer
             loadbalancerID:
@@ -448,8 +452,71 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                allocatedOutboundPorts:
+                  type: integer
+                backendAddressPoolID:
+                  type: string
+                enableTcpReset:
+                  type: boolean
+                frontendIPConfiguration:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  minItems: 1
+                  type: array
+                id:
+                  type: string
+                idleTimeoutInMinutes:
+                  type: integer
+                loadbalancerID:
+                  type: string
+                name:
+                  type: string
+                protocol:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+              required:
+              - backendAddressPoolID
+              - loadbalancerID
+              - name
+              - protocol
+              - providerRef
+              - resourceGroupName
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

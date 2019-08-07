@@ -397,6 +397,10 @@ spec:
           type: object
         spec:
           properties:
+            arn:
+              type: string
+            certificate:
+              type: string
             certificateAuthorityConfiguration:
               items:
                 properties:
@@ -443,8 +447,18 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            certificateChain:
+              type: string
+            certificateSigningRequest:
+              type: string
             enabled:
               type: boolean
+            id:
+              type: string
+            notAfter:
+              type: string
+            notBefore:
+              type: string
             permanentDeletionTimeInDays:
               type: integer
             providerRef:
@@ -478,6 +492,10 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            serial:
+              type: string
+            status:
+              type: string
             tags:
               additionalProperties:
                 type: string
@@ -496,8 +514,133 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                arn:
+                  type: string
+                certificate:
+                  type: string
+                certificateAuthorityConfiguration:
+                  items:
+                    properties:
+                      keyAlgorithm:
+                        type: string
+                      signingAlgorithm:
+                        type: string
+                      subject:
+                        items:
+                          properties:
+                            commonName:
+                              type: string
+                            country:
+                              type: string
+                            distinguishedNameQualifier:
+                              type: string
+                            generationQualifier:
+                              type: string
+                            givenName:
+                              type: string
+                            initials:
+                              type: string
+                            locality:
+                              type: string
+                            organization:
+                              type: string
+                            organizationalUnit:
+                              type: string
+                            pseudonym:
+                              type: string
+                            state:
+                              type: string
+                            surname:
+                              type: string
+                            title:
+                              type: string
+                          type: object
+                        maxItems: 1
+                        type: array
+                    required:
+                    - keyAlgorithm
+                    - signingAlgorithm
+                    - subject
+                    type: object
+                  maxItems: 1
+                  type: array
+                certificateChain:
+                  type: string
+                certificateSigningRequest:
+                  type: string
+                enabled:
+                  type: boolean
+                id:
+                  type: string
+                notAfter:
+                  type: string
+                notBefore:
+                  type: string
+                permanentDeletionTimeInDays:
+                  type: integer
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                revocationConfiguration:
+                  items:
+                    properties:
+                      crlConfiguration:
+                        items:
+                          properties:
+                            customCname:
+                              type: string
+                            enabled:
+                              type: boolean
+                            expirationInDays:
+                              type: integer
+                            s3BucketName:
+                              type: string
+                          required:
+                          - expirationInDays
+                          type: object
+                        maxItems: 1
+                        type: array
+                    type: object
+                  maxItems: 1
+                  type: array
+                serial:
+                  type: string
+                status:
+                  type: string
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                type:
+                  type: string
+              required:
+              - certificateAuthorityConfiguration
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

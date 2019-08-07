@@ -397,6 +397,12 @@ spec:
           type: object
         spec:
           properties:
+            dnsSupport:
+              type: string
+            id:
+              type: string
+            ipv6Support:
+              type: string
             providerRef:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
@@ -406,6 +412,11 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            subnetIDS:
+              items:
+                type: string
+              type: array
+              uniqueItems: true
             tags:
               additionalProperties:
                 type: string
@@ -416,6 +427,12 @@ spec:
               type: boolean
             transitGatewayDefaultRouteTablePropagation:
               type: boolean
+            transitGatewayID:
+              type: string
+            vpcID:
+              type: string
+            vpcOwnerID:
+              type: string
           required:
           - providerRef
           - transitGatewayAttachmentID
@@ -428,8 +445,64 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                dnsSupport:
+                  type: string
+                id:
+                  type: string
+                ipv6Support:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                subnetIDS:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                transitGatewayAttachmentID:
+                  type: string
+                transitGatewayDefaultRouteTableAssociation:
+                  type: boolean
+                transitGatewayDefaultRouteTablePropagation:
+                  type: boolean
+                transitGatewayID:
+                  type: string
+                vpcID:
+                  type: string
+                vpcOwnerID:
+                  type: string
+              required:
+              - providerRef
+              - transitGatewayAttachmentID
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

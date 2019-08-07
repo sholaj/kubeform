@@ -403,6 +403,8 @@ spec:
               type: string
             applicationSuccessFeedbackSampleRate:
               type: integer
+            arn:
+              type: string
             deliveryPolicy:
               type: string
             displayName:
@@ -413,6 +415,8 @@ spec:
               type: string
             httpSuccessFeedbackSampleRate:
               type: integer
+            id:
+              type: string
             kmsMasterKeyID:
               type: string
             lambdaFailureFeedbackRoleArn:
@@ -457,8 +461,80 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                applicationFailureFeedbackRoleArn:
+                  type: string
+                applicationSuccessFeedbackRoleArn:
+                  type: string
+                applicationSuccessFeedbackSampleRate:
+                  type: integer
+                arn:
+                  type: string
+                deliveryPolicy:
+                  type: string
+                displayName:
+                  type: string
+                httpFailureFeedbackRoleArn:
+                  type: string
+                httpSuccessFeedbackRoleArn:
+                  type: string
+                httpSuccessFeedbackSampleRate:
+                  type: integer
+                id:
+                  type: string
+                kmsMasterKeyID:
+                  type: string
+                lambdaFailureFeedbackRoleArn:
+                  type: string
+                lambdaSuccessFeedbackRoleArn:
+                  type: string
+                lambdaSuccessFeedbackSampleRate:
+                  type: integer
+                name:
+                  type: string
+                namePrefix:
+                  type: string
+                policy:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                sqsFailureFeedbackRoleArn:
+                  type: string
+                sqsSuccessFeedbackRoleArn:
+                  type: string
+                sqsSuccessFeedbackSampleRate:
+                  type: integer
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+              required:
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

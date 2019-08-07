@@ -397,7 +397,11 @@ spec:
           type: object
         spec:
           properties:
+            arn:
+              type: string
             description:
+              type: string
+            id:
               type: string
             name:
               type: string
@@ -437,8 +441,60 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                arn:
+                  type: string
+                description:
+                  type: string
+                id:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                routingStrategy:
+                  items:
+                    properties:
+                      fleetID:
+                        type: string
+                      message:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - type
+                    type: object
+                  maxItems: 1
+                  type: array
+              required:
+              - name
+              - providerRef
+              - routingStrategy
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

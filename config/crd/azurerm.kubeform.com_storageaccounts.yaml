@@ -428,9 +428,15 @@ spec:
               type: boolean
             enableHTTPSTrafficOnly:
               type: boolean
+            id:
+              type: string
             identity:
               items:
                 properties:
+                  principalID:
+                    type: string
+                  tenantID:
+                    type: string
                   type:
                     type: string
                 required:
@@ -467,6 +473,32 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            primaryBlobEndpoint:
+              type: string
+            primaryBlobHost:
+              type: string
+            primaryDfsEndpoint:
+              type: string
+            primaryDfsHost:
+              type: string
+            primaryFileEndpoint:
+              type: string
+            primaryFileHost:
+              type: string
+            primaryLocation:
+              type: string
+            primaryQueueEndpoint:
+              type: string
+            primaryQueueHost:
+              type: string
+            primaryTableEndpoint:
+              type: string
+            primaryTableHost:
+              type: string
+            primaryWebEndpoint:
+              type: string
+            primaryWebHost:
+              type: string
             providerRef:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
@@ -478,6 +510,41 @@ spec:
               type: object
             resourceGroupName:
               type: string
+            secondaryBlobEndpoint:
+              type: string
+            secondaryBlobHost:
+              type: string
+            secondaryDfsEndpoint:
+              type: string
+            secondaryDfsHost:
+              type: string
+            secondaryFileEndpoint:
+              type: string
+            secondaryFileHost:
+              type: string
+            secondaryLocation:
+              type: string
+            secondaryQueueEndpoint:
+              type: string
+            secondaryQueueHost:
+              type: string
+            secondaryTableEndpoint:
+              type: string
+            secondaryTableHost:
+              type: string
+            secondaryWebEndpoint:
+              type: string
+            secondaryWebHost:
+              type: string
+            secret:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
@@ -498,8 +565,184 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                accessTier:
+                  type: string
+                accountEncryptionSource:
+                  type: string
+                accountKind:
+                  type: string
+                accountReplicationType:
+                  type: string
+                accountTier:
+                  type: string
+                accountType:
+                  description: Deprecated
+                  type: string
+                customDomain:
+                  items:
+                    properties:
+                      name:
+                        type: string
+                      useSubdomain:
+                        type: boolean
+                    required:
+                    - name
+                    type: object
+                  maxItems: 1
+                  type: array
+                enableBlobEncryption:
+                  type: boolean
+                enableFileEncryption:
+                  type: boolean
+                enableHTTPSTrafficOnly:
+                  type: boolean
+                id:
+                  type: string
+                identity:
+                  items:
+                    properties:
+                      principalID:
+                        type: string
+                      tenantID:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - type
+                    type: object
+                  maxItems: 1
+                  type: array
+                isHnsEnabled:
+                  type: boolean
+                location:
+                  type: string
+                name:
+                  type: string
+                networkRules:
+                  items:
+                    properties:
+                      bypass:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      defaultAction:
+                        type: string
+                      ipRules:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      virtualNetworkSubnetIDS:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                    type: object
+                  maxItems: 1
+                  type: array
+                primaryBlobEndpoint:
+                  type: string
+                primaryBlobHost:
+                  type: string
+                primaryDfsEndpoint:
+                  type: string
+                primaryDfsHost:
+                  type: string
+                primaryFileEndpoint:
+                  type: string
+                primaryFileHost:
+                  type: string
+                primaryLocation:
+                  type: string
+                primaryQueueEndpoint:
+                  type: string
+                primaryQueueHost:
+                  type: string
+                primaryTableEndpoint:
+                  type: string
+                primaryTableHost:
+                  type: string
+                primaryWebEndpoint:
+                  type: string
+                primaryWebHost:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                secondaryBlobEndpoint:
+                  type: string
+                secondaryBlobHost:
+                  type: string
+                secondaryDfsEndpoint:
+                  type: string
+                secondaryDfsHost:
+                  type: string
+                secondaryFileEndpoint:
+                  type: string
+                secondaryFileHost:
+                  type: string
+                secondaryLocation:
+                  type: string
+                secondaryQueueEndpoint:
+                  type: string
+                secondaryQueueHost:
+                  type: string
+                secondaryTableEndpoint:
+                  type: string
+                secondaryTableHost:
+                  type: string
+                secondaryWebEndpoint:
+                  type: string
+                secondaryWebHost:
+                  type: string
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+              required:
+              - accountReplicationType
+              - accountTier
+              - location
+              - name
+              - providerRef
+              - resourceGroupName
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

@@ -423,6 +423,8 @@ spec:
                 type: object
               type: array
               uniqueItems: true
+            clusterState:
+              type: string
             configurations:
               type: string
             configurationsJSON:
@@ -433,6 +435,8 @@ spec:
             coreInstanceGroup:
               items:
                 properties:
+                  ID:
+                    type: string
                   autoscalingPolicy:
                     type: string
                   bidPrice:
@@ -496,10 +500,14 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            id:
+              type: string
             instanceGroup:
               description: Deprecated
               items:
                 properties:
+                  ID:
+                    type: string
                   autoscalingPolicy:
                     type: string
                   bidPrice:
@@ -544,6 +552,8 @@ spec:
                     type: string
                   realm:
                     type: string
+                required:
+                - realm
                 type: object
               maxItems: 1
               type: array
@@ -552,6 +562,8 @@ spec:
             masterInstanceGroup:
               items:
                 properties:
+                  ID:
+                    type: string
                   bidPrice:
                     type: string
                   ebsConfig:
@@ -582,6 +594,8 @@ spec:
               type: array
             masterInstanceType:
               description: Deprecated
+              type: string
+            masterPublicDNS:
               type: string
             name:
               type: string
@@ -666,8 +680,299 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                additionalInfo:
+                  type: string
+                applications:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                autoscalingRole:
+                  type: string
+                bootstrapAction:
+                  items:
+                    properties:
+                      args:
+                        items:
+                          type: string
+                        type: array
+                      name:
+                        type: string
+                      path:
+                        type: string
+                    required:
+                    - name
+                    - path
+                    type: object
+                  type: array
+                  uniqueItems: true
+                clusterState:
+                  type: string
+                configurations:
+                  type: string
+                configurationsJSON:
+                  type: string
+                coreInstanceCount:
+                  description: Deprecated
+                  type: integer
+                coreInstanceGroup:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      autoscalingPolicy:
+                        type: string
+                      bidPrice:
+                        type: string
+                      ebsConfig:
+                        items:
+                          properties:
+                            iops:
+                              type: integer
+                            size:
+                              type: integer
+                            type:
+                              type: string
+                            volumesPerInstance:
+                              type: integer
+                          required:
+                          - size
+                          - type
+                          type: object
+                        type: array
+                        uniqueItems: true
+                      instanceCount:
+                        type: integer
+                      instanceType:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                    - instanceType
+                    type: object
+                  maxItems: 1
+                  type: array
+                coreInstanceType:
+                  description: Deprecated
+                  type: string
+                customAmiID:
+                  type: string
+                ebsRootVolumeSize:
+                  type: integer
+                ec2Attributes:
+                  items:
+                    properties:
+                      additionalMasterSecurityGroups:
+                        type: string
+                      additionalSlaveSecurityGroups:
+                        type: string
+                      emrManagedMasterSecurityGroup:
+                        type: string
+                      emrManagedSlaveSecurityGroup:
+                        type: string
+                      instanceProfile:
+                        type: string
+                      keyName:
+                        type: string
+                      serviceAccessSecurityGroup:
+                        type: string
+                      subnetID:
+                        type: string
+                    required:
+                    - instanceProfile
+                    type: object
+                  maxItems: 1
+                  type: array
+                id:
+                  type: string
+                instanceGroup:
+                  description: Deprecated
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      autoscalingPolicy:
+                        type: string
+                      bidPrice:
+                        type: string
+                      ebsConfig:
+                        items:
+                          properties:
+                            iops:
+                              type: integer
+                            size:
+                              type: integer
+                            type:
+                              type: string
+                            volumesPerInstance:
+                              type: integer
+                          required:
+                          - size
+                          - type
+                          type: object
+                        type: array
+                        uniqueItems: true
+                      instanceCount:
+                        type: integer
+                      instanceRole:
+                        type: string
+                      instanceType:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                    - instanceRole
+                    - instanceType
+                    type: object
+                  type: array
+                  uniqueItems: true
+                keepJobFlowAliveWhenNoSteps:
+                  type: boolean
+                kerberosAttributes:
+                  items:
+                    properties:
+                      adDomainJoinUser:
+                        type: string
+                      realm:
+                        type: string
+                    required:
+                    - realm
+                    type: object
+                  maxItems: 1
+                  type: array
+                logURI:
+                  type: string
+                masterInstanceGroup:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      bidPrice:
+                        type: string
+                      ebsConfig:
+                        items:
+                          properties:
+                            iops:
+                              type: integer
+                            size:
+                              type: integer
+                            type:
+                              type: string
+                            volumesPerInstance:
+                              type: integer
+                          required:
+                          - size
+                          - type
+                          type: object
+                        type: array
+                        uniqueItems: true
+                      instanceType:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                    - instanceType
+                    type: object
+                  maxItems: 1
+                  type: array
+                masterInstanceType:
+                  description: Deprecated
+                  type: string
+                masterPublicDNS:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                releaseLabel:
+                  type: string
+                scaleDownBehavior:
+                  type: string
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                securityConfiguration:
+                  type: string
+                serviceRole:
+                  type: string
+                step:
+                  items:
+                    properties:
+                      actionOnFailure:
+                        type: string
+                      hadoopJarStep:
+                        items:
+                          properties:
+                            args:
+                              items:
+                                type: string
+                              type: array
+                            jar:
+                              type: string
+                            mainClass:
+                              type: string
+                            properties:
+                              additionalProperties:
+                                type: string
+                              type: object
+                          required:
+                          - jar
+                          type: object
+                        maxItems: 1
+                        type: array
+                      name:
+                        type: string
+                    required:
+                    - actionOnFailure
+                    - hadoopJarStep
+                    - name
+                    type: object
+                  type: array
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                terminationProtection:
+                  type: boolean
+                visibleToAllUsers:
+                  type: boolean
+              required:
+              - name
+              - providerRef
+              - releaseLabel
+              - serviceRole
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

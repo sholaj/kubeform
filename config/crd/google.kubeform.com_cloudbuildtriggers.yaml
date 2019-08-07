@@ -424,6 +424,8 @@ spec:
               type: string
             filename:
               type: string
+            id:
+              type: string
             project:
               type: string
             providerRef:
@@ -468,8 +470,89 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                build:
+                  items:
+                    properties:
+                      images:
+                        items:
+                          type: string
+                        type: array
+                      step:
+                        items:
+                          properties:
+                            args:
+                              type: string
+                            name:
+                              type: string
+                          type: object
+                        type: array
+                      tags:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                  maxItems: 1
+                  type: array
+                description:
+                  type: string
+                filename:
+                  type: string
+                id:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                substitutions:
+                  additionalProperties:
+                    type: string
+                  type: object
+                triggerTemplate:
+                  items:
+                    properties:
+                      branchName:
+                        type: string
+                      commitSha:
+                        type: string
+                      dir:
+                        type: string
+                      project:
+                        type: string
+                      repoName:
+                        type: string
+                      tagName:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+              required:
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

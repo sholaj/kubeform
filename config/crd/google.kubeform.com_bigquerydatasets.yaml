@@ -428,18 +428,26 @@ spec:
                     type: array
                 type: object
               type: array
+            creationTime:
+              type: integer
             datasetID:
               type: string
             defaultTableExpirationMs:
               type: integer
             description:
               type: string
+            etag:
+              type: string
             friendlyName:
+              type: string
+            id:
               type: string
             labels:
               additionalProperties:
                 type: string
               type: object
+            lastModifiedTime:
+              type: integer
             location:
               type: string
             project:
@@ -453,6 +461,8 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            selfLink:
+              type: string
           required:
           - datasetID
           - providerRef
@@ -465,8 +475,94 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                access:
+                  items:
+                    properties:
+                      domain:
+                        type: string
+                      groupByEmail:
+                        type: string
+                      role:
+                        type: string
+                      specialGroup:
+                        type: string
+                      userByEmail:
+                        type: string
+                      view:
+                        items:
+                          properties:
+                            datasetID:
+                              type: string
+                            projectID:
+                              type: string
+                            tableID:
+                              type: string
+                          required:
+                          - datasetID
+                          - projectID
+                          - tableID
+                          type: object
+                        maxItems: 1
+                        type: array
+                    type: object
+                  type: array
+                creationTime:
+                  type: integer
+                datasetID:
+                  type: string
+                defaultTableExpirationMs:
+                  type: integer
+                description:
+                  type: string
+                etag:
+                  type: string
+                friendlyName:
+                  type: string
+                id:
+                  type: string
+                labels:
+                  additionalProperties:
+                    type: string
+                  type: object
+                lastModifiedTime:
+                  type: integer
+                location:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                selfLink:
+                  type: string
+              required:
+              - datasetID
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

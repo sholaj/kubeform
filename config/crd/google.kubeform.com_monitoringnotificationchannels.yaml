@@ -403,10 +403,14 @@ spec:
               type: string
             enabled:
               type: boolean
+            id:
+              type: string
             labels:
               additionalProperties:
                 type: string
               type: object
+            name:
+              type: string
             project:
               type: string
             providerRef:
@@ -424,6 +428,8 @@ spec:
               additionalProperties:
                 type: string
               type: object
+            verificationStatus:
+              type: string
           required:
           - displayName
           - providerRef
@@ -437,8 +443,62 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                description:
+                  type: string
+                displayName:
+                  type: string
+                enabled:
+                  type: boolean
+                id:
+                  type: string
+                labels:
+                  additionalProperties:
+                    type: string
+                  type: object
+                name:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                type:
+                  type: string
+                userLabels:
+                  additionalProperties:
+                    type: string
+                  type: object
+                verificationStatus:
+                  type: string
+              required:
+              - displayName
+              - providerRef
+              - type
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

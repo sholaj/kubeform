@@ -422,6 +422,8 @@ spec:
               minItems: 1
               type: array
               uniqueItems: true
+            id:
+              type: string
             name:
               type: string
             providerRef:
@@ -450,6 +452,8 @@ spec:
               type: string
             targetPipeline:
               type: string
+            url:
+              type: string
           required:
           - authentication
           - filter
@@ -466,8 +470,89 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                authentication:
+                  type: string
+                authenticationConfiguration:
+                  items:
+                    properties:
+                      allowedIPRange:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  minItems: 1
+                  type: array
+                filter:
+                  items:
+                    properties:
+                      jsonPath:
+                        type: string
+                      matchEquals:
+                        type: string
+                    required:
+                    - jsonPath
+                    - matchEquals
+                    type: object
+                  minItems: 1
+                  type: array
+                  uniqueItems: true
+                id:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                targetAction:
+                  type: string
+                targetPipeline:
+                  type: string
+                url:
+                  type: string
+              required:
+              - authentication
+              - filter
+              - name
+              - providerRef
+              - targetAction
+              - targetPipeline
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

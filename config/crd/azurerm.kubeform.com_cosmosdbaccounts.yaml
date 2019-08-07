@@ -425,6 +425,8 @@ spec:
               type: boolean
             enableMultipleWriteLocations:
               type: boolean
+            endpoint:
+              type: string
             failoverPolicy:
               description: Deprecated
               items:
@@ -444,6 +446,8 @@ spec:
             geoLocation:
               items:
                 properties:
+                  ID:
+                    type: string
                   failoverPriority:
                     type: integer
                   location:
@@ -456,6 +460,8 @@ spec:
                 type: object
               type: array
               uniqueItems: true
+            id:
+              type: string
             ipRangeFilter:
               type: string
             isVirtualNetworkFilterEnabled:
@@ -477,8 +483,21 @@ spec:
                     TODO: Add other useful fields. apiVersion, kind, uid?'
                   type: string
               type: object
+            readEndpoints:
+              items:
+                type: string
+              type: array
             resourceGroupName:
               type: string
+            secret:
+              description: LocalObjectReference contains enough information to let
+                you locate the referenced object inside the same namespace.
+              properties:
+                name:
+                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  type: string
+              type: object
             tags:
               additionalProperties:
                 type: string
@@ -493,8 +512,11 @@ spec:
                 type: object
               type: array
               uniqueItems: true
+            writeEndpoints:
+              items:
+                type: string
+              type: array
           required:
-          - consistencyPolicy
           - location
           - name
           - offerType
@@ -509,8 +531,150 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                capabilities:
+                  items:
+                    properties:
+                      name:
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  type: array
+                  uniqueItems: true
+                consistencyPolicy:
+                  items:
+                    properties:
+                      consistencyLevel:
+                        type: string
+                      maxIntervalInSeconds:
+                        type: integer
+                      maxStalenessPrefix:
+                        type: integer
+                    required:
+                    - consistencyLevel
+                    type: object
+                  maxItems: 1
+                  type: array
+                enableAutomaticFailover:
+                  type: boolean
+                enableMultipleWriteLocations:
+                  type: boolean
+                endpoint:
+                  type: string
+                failoverPolicy:
+                  description: Deprecated
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      location:
+                        type: string
+                      priority:
+                        type: integer
+                    required:
+                    - location
+                    - priority
+                    type: object
+                  type: array
+                  uniqueItems: true
+                geoLocation:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      failoverPriority:
+                        type: integer
+                      location:
+                        type: string
+                      prefix:
+                        type: string
+                    required:
+                    - failoverPriority
+                    - location
+                    type: object
+                  type: array
+                  uniqueItems: true
+                id:
+                  type: string
+                ipRangeFilter:
+                  type: string
+                isVirtualNetworkFilterEnabled:
+                  type: boolean
+                kind:
+                  type: string
+                location:
+                  type: string
+                name:
+                  type: string
+                offerType:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                readEndpoints:
+                  items:
+                    type: string
+                  type: array
+                resourceGroupName:
+                  type: string
+                secret:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                virtualNetworkRule:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                    required:
+                    - ID
+                    type: object
+                  type: array
+                  uniqueItems: true
+                writeEndpoints:
+                  items:
+                    type: string
+                  type: array
+              required:
+              - location
+              - name
+              - offerType
+              - providerRef
+              - resourceGroupName
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

@@ -399,13 +399,33 @@ spec:
           properties:
             backups:
               type: boolean
+            disk:
+              type: integer
+            id:
+              type: string
             image:
+              type: string
+            ipv4Address:
+              type: string
+            ipv4AddressPrivate:
               type: string
             ipv6:
               type: boolean
+            ipv6Address:
+              type: string
+            locked:
+              type: boolean
+            memory:
+              type: integer
             monitoring:
               type: boolean
             name:
+              type: string
+            priceHourly:
+              description: A Number represents a JSON number literal.
+              type: string
+            priceMonthly:
+              description: A Number represents a JSON number literal.
               type: string
             privateNetworking:
               type: boolean
@@ -429,13 +449,19 @@ spec:
                 type: string
               type: array
               uniqueItems: true
+            status:
+              type: string
             tags:
               items:
                 type: string
               type: array
               uniqueItems: true
+            urn:
+              type: string
             userData:
               type: string
+            vcpus:
+              type: integer
             volumeIDS:
               items:
                 type: string
@@ -456,8 +482,101 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                backups:
+                  type: boolean
+                disk:
+                  type: integer
+                id:
+                  type: string
+                image:
+                  type: string
+                ipv4Address:
+                  type: string
+                ipv4AddressPrivate:
+                  type: string
+                ipv6:
+                  type: boolean
+                ipv6Address:
+                  type: string
+                locked:
+                  type: boolean
+                memory:
+                  type: integer
+                monitoring:
+                  type: boolean
+                name:
+                  type: string
+                priceHourly:
+                  description: A Number represents a JSON number literal.
+                  type: string
+                priceMonthly:
+                  description: A Number represents a JSON number literal.
+                  type: string
+                privateNetworking:
+                  type: boolean
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                region:
+                  type: string
+                resizeDisk:
+                  type: boolean
+                size:
+                  type: string
+                sshKeys:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                status:
+                  type: string
+                tags:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+                urn:
+                  type: string
+                userData:
+                  type: string
+                vcpus:
+                  type: integer
+                volumeIDS:
+                  items:
+                    type: string
+                  type: array
+                  uniqueItems: true
+              required:
+              - image
+              - name
+              - providerRef
+              - region
+              - size
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

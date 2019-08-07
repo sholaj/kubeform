@@ -400,6 +400,12 @@ spec:
             config:
               items:
                 properties:
+                  airflowURI:
+                    type: string
+                  dagGcsPrefix:
+                    type: string
+                  gkeCluster:
+                    type: string
                   nodeConfig:
                     items:
                       properties:
@@ -441,6 +447,8 @@ spec:
                           additionalProperties:
                             type: string
                           type: object
+                        imageVersion:
+                          type: string
                         pypiPackages:
                           additionalProperties:
                             type: string
@@ -451,6 +459,8 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            id:
+              type: string
             labels:
               additionalProperties:
                 type: string
@@ -482,8 +492,111 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                config:
+                  items:
+                    properties:
+                      airflowURI:
+                        type: string
+                      dagGcsPrefix:
+                        type: string
+                      gkeCluster:
+                        type: string
+                      nodeConfig:
+                        items:
+                          properties:
+                            diskSizeGb:
+                              type: integer
+                            machineType:
+                              type: string
+                            network:
+                              type: string
+                            oauthScopes:
+                              items:
+                                type: string
+                              type: array
+                              uniqueItems: true
+                            serviceAccount:
+                              type: string
+                            subnetwork:
+                              type: string
+                            tags:
+                              items:
+                                type: string
+                              type: array
+                              uniqueItems: true
+                            zone:
+                              type: string
+                          type: object
+                        maxItems: 1
+                        type: array
+                      nodeCount:
+                        type: integer
+                      softwareConfig:
+                        items:
+                          properties:
+                            airflowConfigOverrides:
+                              additionalProperties:
+                                type: string
+                              type: object
+                            envVariables:
+                              additionalProperties:
+                                type: string
+                              type: object
+                            imageVersion:
+                              type: string
+                            pypiPackages:
+                              additionalProperties:
+                                type: string
+                              type: object
+                          type: object
+                        maxItems: 1
+                        type: array
+                    type: object
+                  maxItems: 1
+                  type: array
+                id:
+                  type: string
+                labels:
+                  additionalProperties:
+                    type: string
+                  type: object
+                name:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                region:
+                  type: string
+              required:
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

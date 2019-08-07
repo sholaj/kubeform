@@ -397,6 +397,8 @@ spec:
           type: object
         spec:
           properties:
+            id:
+              type: string
             location:
               type: string
             name:
@@ -492,8 +494,113 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                id:
+                  type: string
+                location:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                securityRule:
+                  items:
+                    properties:
+                      access:
+                        type: string
+                      description:
+                        type: string
+                      destinationAddressPrefix:
+                        type: string
+                      destinationAddressPrefixes:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      destinationApplicationSecurityGroupIDS:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      destinationPortRange:
+                        type: string
+                      destinationPortRanges:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      direction:
+                        type: string
+                      name:
+                        type: string
+                      priority:
+                        type: integer
+                      protocol:
+                        type: string
+                      sourceAddressPrefix:
+                        type: string
+                      sourceAddressPrefixes:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      sourceApplicationSecurityGroupIDS:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                      sourcePortRange:
+                        type: string
+                      sourcePortRanges:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                    required:
+                    - access
+                    - direction
+                    - name
+                    - priority
+                    - protocol
+                    type: object
+                  type: array
+                  uniqueItems: true
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+              required:
+              - location
+              - name
+              - providerRef
+              - resourceGroupName
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

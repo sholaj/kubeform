@@ -88,13 +88,13 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 		value := s[key]
 		id := flect.Capitalize(flect.Camelize(key))
 
-		if (value.Computed && !value.Optional) || value.Removed != "" {
+		if value.Removed != "" {
 			continue
 		}
 
 		jk := flect.Camelize(key) // json key
 		tk := key                 // terraform key
-		if value.Optional {
+		if value.Optional || value.Computed {
 			statements = append(statements, Comment("// +optional"))
 			jk = jk + ",omitempty"
 			tk = tk + ",omitempty"
@@ -113,11 +113,11 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 		}
 
 		if value.Sensitive {
-			//if value.Type == schema.TypeString {
-			//	statements = append(statements, Comment("// Sensitive Data. Provide secret name which contains one value only"))
-			//} else if value.Type == schema.TypeMap {
-			//	statements = append(statements, Comment("// Sensitive Data. Provide secret name which contains one or more values"))
-			//}
+			if value.Type == schema.TypeString {
+				statements = append(statements, Id(id).String().Tag(map[string]string{"json": "-", "tf": tk, "sensitive": "true"}))
+			} else if value.Type == schema.TypeMap {
+				statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": "-", "tf": tk, "sensitive": "true"}))
+			}
 			*genSecret = true
 			continue
 		}
@@ -179,8 +179,9 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 
 	if genProviderRef {
 		if *genSecret {
-			statements = append(Statement{Id("Secret").Id("*core.LocalObjectReference").Tag(map[string]string{"json": "secret,omitempty", "tf": "-"}).Line()}, statements...)
+			statements = append(Statement{Id("KubeFormSecret").Id("*core.LocalObjectReference").Tag(map[string]string{"json": "secret,omitempty", "tf": "-"}).Line()}, statements...)
 		}
+		statements = append(Statement{Id("ID").Id("string").Tag(map[string]string{"json": "id,omitempty", "tf": "id,omitempty"}).Line()}, statements...)
 		statements = append(Statement{Id("ProviderRef").Id("core.LocalObjectReference").Tag(map[string]string{"json": "providerRef", "tf": "-"}).Line()}, statements...)
 	}
 

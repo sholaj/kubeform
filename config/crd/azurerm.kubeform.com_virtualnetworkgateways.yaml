@@ -415,6 +415,8 @@ spec:
               type: string
             enableBGP:
               type: boolean
+            id:
+              type: string
             ipConfiguration:
               items:
                 properties:
@@ -520,8 +522,141 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                activeActive:
+                  type: boolean
+                bgpSettings:
+                  items:
+                    properties:
+                      asn:
+                        type: integer
+                      peerWeight:
+                        type: integer
+                      peeringAddress:
+                        type: string
+                    type: object
+                  maxItems: 1
+                  type: array
+                defaultLocalNetworkGatewayID:
+                  type: string
+                enableBGP:
+                  type: boolean
+                id:
+                  type: string
+                ipConfiguration:
+                  items:
+                    properties:
+                      name:
+                        type: string
+                      privateIPAddressAllocation:
+                        type: string
+                      publicIPAddressID:
+                        type: string
+                      subnetID:
+                        type: string
+                    required:
+                    - subnetID
+                    type: object
+                  maxItems: 2
+                  type: array
+                location:
+                  type: string
+                name:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                resourceGroupName:
+                  type: string
+                sku:
+                  type: string
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                type:
+                  type: string
+                vpnClientConfiguration:
+                  items:
+                    properties:
+                      addressSpace:
+                        items:
+                          type: string
+                        type: array
+                      radiusServerAddress:
+                        type: string
+                      radiusServerSecret:
+                        type: string
+                      revokedCertificate:
+                        items:
+                          properties:
+                            name:
+                              type: string
+                            thumbprint:
+                              type: string
+                          required:
+                          - name
+                          - thumbprint
+                          type: object
+                        type: array
+                        uniqueItems: true
+                      rootCertificate:
+                        items:
+                          properties:
+                            name:
+                              type: string
+                            publicCertData:
+                              type: string
+                          required:
+                          - name
+                          - publicCertData
+                          type: object
+                        type: array
+                        uniqueItems: true
+                      vpnClientProtocols:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                    required:
+                    - addressSpace
+                    type: object
+                  maxItems: 1
+                  type: array
+                vpnType:
+                  type: string
+              required:
+              - ipConfiguration
+              - location
+              - name
+              - providerRef
+              - resourceGroupName
+              - sku
+              - type
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

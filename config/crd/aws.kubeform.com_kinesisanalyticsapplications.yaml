@@ -397,9 +397,13 @@ spec:
           type: object
         spec:
           properties:
+            arn:
+              type: string
             cloudwatchLoggingOptions:
               items:
                 properties:
+                  ID:
+                    type: string
                   logStreamArn:
                     type: string
                   roleArn:
@@ -412,11 +416,17 @@ spec:
               type: array
             code:
               type: string
+            createTimestamp:
+              type: string
             description:
+              type: string
+            id:
               type: string
             inputs:
               items:
                 properties:
+                  ID:
+                    type: string
                   kinesisFirehose:
                     items:
                       properties:
@@ -527,6 +537,8 @@ spec:
                                   type: object
                                 maxItems: 1
                                 type: array
+                              recordFormatType:
+                                type: string
                             type: object
                           maxItems: 1
                           type: array
@@ -536,17 +548,33 @@ spec:
                       type: object
                     maxItems: 1
                     type: array
+                  startingPositionConfiguration:
+                    items:
+                      properties:
+                        startingPosition:
+                          type: string
+                      type: object
+                    type: array
+                  streamNames:
+                    items:
+                      type: string
+                    type: array
+                    uniqueItems: true
                 required:
                 - namePrefix
                 - schema
                 type: object
               maxItems: 1
               type: array
+            lastUpdateTimestamp:
+              type: string
             name:
               type: string
             outputs:
               items:
                 properties:
+                  ID:
+                    type: string
                   kinesisFirehose:
                     items:
                       properties:
@@ -614,6 +642,8 @@ spec:
             referenceDataSources:
               items:
                 properties:
+                  ID:
+                    type: string
                   s3:
                     items:
                       properties:
@@ -681,6 +711,8 @@ spec:
                                   type: object
                                 maxItems: 1
                                 type: array
+                              recordFormatType:
+                                type: string
                             type: object
                           maxItems: 1
                           type: array
@@ -699,10 +731,14 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            status:
+              type: string
             tags:
               additionalProperties:
                 type: string
               type: object
+            version:
+              type: integer
           required:
           - name
           - providerRef
@@ -715,8 +751,370 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                arn:
+                  type: string
+                cloudwatchLoggingOptions:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      logStreamArn:
+                        type: string
+                      roleArn:
+                        type: string
+                    required:
+                    - logStreamArn
+                    - roleArn
+                    type: object
+                  maxItems: 1
+                  type: array
+                code:
+                  type: string
+                createTimestamp:
+                  type: string
+                description:
+                  type: string
+                id:
+                  type: string
+                inputs:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      kinesisFirehose:
+                        items:
+                          properties:
+                            resourceArn:
+                              type: string
+                            roleArn:
+                              type: string
+                          required:
+                          - resourceArn
+                          - roleArn
+                          type: object
+                        maxItems: 1
+                        type: array
+                      kinesisStream:
+                        items:
+                          properties:
+                            resourceArn:
+                              type: string
+                            roleArn:
+                              type: string
+                          required:
+                          - resourceArn
+                          - roleArn
+                          type: object
+                        maxItems: 1
+                        type: array
+                      namePrefix:
+                        type: string
+                      parallelism:
+                        items:
+                          properties:
+                            count:
+                              type: integer
+                          required:
+                          - count
+                          type: object
+                        maxItems: 1
+                        type: array
+                      processingConfiguration:
+                        items:
+                          properties:
+                            lambda:
+                              items:
+                                properties:
+                                  resourceArn:
+                                    type: string
+                                  roleArn:
+                                    type: string
+                                required:
+                                - resourceArn
+                                - roleArn
+                                type: object
+                              maxItems: 1
+                              type: array
+                          required:
+                          - lambda
+                          type: object
+                        maxItems: 1
+                        type: array
+                      schema:
+                        items:
+                          properties:
+                            recordColumns:
+                              items:
+                                properties:
+                                  mapping:
+                                    type: string
+                                  name:
+                                    type: string
+                                  sqlType:
+                                    type: string
+                                required:
+                                - name
+                                - sqlType
+                                type: object
+                              type: array
+                            recordEncoding:
+                              type: string
+                            recordFormat:
+                              items:
+                                properties:
+                                  mappingParameters:
+                                    items:
+                                      properties:
+                                        csv:
+                                          items:
+                                            properties:
+                                              recordColumnDelimiter:
+                                                type: string
+                                              recordRowDelimiter:
+                                                type: string
+                                            required:
+                                            - recordColumnDelimiter
+                                            - recordRowDelimiter
+                                            type: object
+                                          maxItems: 1
+                                          type: array
+                                        json:
+                                          items:
+                                            properties:
+                                              recordRowPath:
+                                                type: string
+                                            required:
+                                            - recordRowPath
+                                            type: object
+                                          maxItems: 1
+                                          type: array
+                                      type: object
+                                    maxItems: 1
+                                    type: array
+                                  recordFormatType:
+                                    type: string
+                                type: object
+                              maxItems: 1
+                              type: array
+                          required:
+                          - recordColumns
+                          - recordFormat
+                          type: object
+                        maxItems: 1
+                        type: array
+                      startingPositionConfiguration:
+                        items:
+                          properties:
+                            startingPosition:
+                              type: string
+                          type: object
+                        type: array
+                      streamNames:
+                        items:
+                          type: string
+                        type: array
+                        uniqueItems: true
+                    required:
+                    - namePrefix
+                    - schema
+                    type: object
+                  maxItems: 1
+                  type: array
+                lastUpdateTimestamp:
+                  type: string
+                name:
+                  type: string
+                outputs:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      kinesisFirehose:
+                        items:
+                          properties:
+                            resourceArn:
+                              type: string
+                            roleArn:
+                              type: string
+                          required:
+                          - resourceArn
+                          - roleArn
+                          type: object
+                        maxItems: 1
+                        type: array
+                      kinesisStream:
+                        items:
+                          properties:
+                            resourceArn:
+                              type: string
+                            roleArn:
+                              type: string
+                          required:
+                          - resourceArn
+                          - roleArn
+                          type: object
+                        maxItems: 1
+                        type: array
+                      lambda:
+                        items:
+                          properties:
+                            resourceArn:
+                              type: string
+                            roleArn:
+                              type: string
+                          required:
+                          - resourceArn
+                          - roleArn
+                          type: object
+                        maxItems: 1
+                        type: array
+                      name:
+                        type: string
+                      schema:
+                        items:
+                          properties:
+                            recordFormatType:
+                              type: string
+                          type: object
+                        maxItems: 1
+                        type: array
+                    required:
+                    - name
+                    - schema
+                    type: object
+                  maxItems: 3
+                  type: array
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                referenceDataSources:
+                  items:
+                    properties:
+                      ID:
+                        type: string
+                      s3:
+                        items:
+                          properties:
+                            bucketArn:
+                              type: string
+                            fileKey:
+                              type: string
+                            roleArn:
+                              type: string
+                          required:
+                          - bucketArn
+                          - fileKey
+                          - roleArn
+                          type: object
+                        maxItems: 1
+                        type: array
+                      schema:
+                        items:
+                          properties:
+                            recordColumns:
+                              items:
+                                properties:
+                                  mapping:
+                                    type: string
+                                  name:
+                                    type: string
+                                  sqlType:
+                                    type: string
+                                required:
+                                - name
+                                - sqlType
+                                type: object
+                              type: array
+                            recordEncoding:
+                              type: string
+                            recordFormat:
+                              items:
+                                properties:
+                                  mappingParameters:
+                                    items:
+                                      properties:
+                                        csv:
+                                          items:
+                                            properties:
+                                              recordColumnDelimiter:
+                                                type: string
+                                              recordRowDelimiter:
+                                                type: string
+                                            required:
+                                            - recordColumnDelimiter
+                                            - recordRowDelimiter
+                                            type: object
+                                          maxItems: 1
+                                          type: array
+                                        json:
+                                          items:
+                                            properties:
+                                              recordRowPath:
+                                                type: string
+                                            required:
+                                            - recordRowPath
+                                            type: object
+                                          maxItems: 1
+                                          type: array
+                                      type: object
+                                    maxItems: 1
+                                    type: array
+                                  recordFormatType:
+                                    type: string
+                                type: object
+                              maxItems: 1
+                              type: array
+                          required:
+                          - recordColumns
+                          - recordFormat
+                          type: object
+                        maxItems: 1
+                        type: array
+                      tableName:
+                        type: string
+                    required:
+                    - s3
+                    - schema
+                    - tableName
+                    type: object
+                  maxItems: 1
+                  type: array
+                status:
+                  type: string
+                tags:
+                  additionalProperties:
+                    type: string
+                  type: object
+                version:
+                  type: integer
+              required:
+              - name
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object

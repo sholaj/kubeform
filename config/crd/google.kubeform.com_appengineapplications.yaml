@@ -399,6 +399,12 @@ spec:
           properties:
             authDomain:
               type: string
+            codeBucket:
+              type: string
+            defaultBucket:
+              type: string
+            defaultHostname:
+              type: string
             featureSettings:
               items:
                 properties:
@@ -407,7 +413,13 @@ spec:
                 type: object
               maxItems: 1
               type: array
+            gcrDomain:
+              type: string
+            id:
+              type: string
             locationID:
+              type: string
+            name:
               type: string
             project:
               type: string
@@ -422,6 +434,17 @@ spec:
               type: object
             servingStatus:
               type: string
+            urlDispatchRule:
+              items:
+                properties:
+                  domain:
+                    type: string
+                  path:
+                    type: string
+                  service:
+                    type: string
+                type: object
+              type: array
           required:
           - locationID
           - providerRef
@@ -434,8 +457,76 @@ spec:
               format: int64
               type: integer
             output:
+              properties:
+                authDomain:
+                  type: string
+                codeBucket:
+                  type: string
+                defaultBucket:
+                  type: string
+                defaultHostname:
+                  type: string
+                featureSettings:
+                  items:
+                    properties:
+                      splitHealthChecks:
+                        type: boolean
+                    type: object
+                  maxItems: 1
+                  type: array
+                gcrDomain:
+                  type: string
+                id:
+                  type: string
+                locationID:
+                  type: string
+                name:
+                  type: string
+                project:
+                  type: string
+                providerRef:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                servingStatus:
+                  type: string
+                urlDispatchRule:
+                  items:
+                    properties:
+                      domain:
+                        type: string
+                      path:
+                        type: string
+                      service:
+                        type: string
+                    type: object
+                  type: array
+              required:
+              - locationID
+              - providerRef
               type: object
-            tfState:
+            state:
+              properties:
+                lineage:
+                  type: string
+                serial:
+                  format: int64
+                  type: integer
+                terraform_version:
+                  type: string
+                version:
+                  description: A Number represents a JSON number literal.
+                  type: string
+              required:
+              - lineage
+              - serial
+              - terraform_version
+              - version
               type: object
           type: object
       type: object
