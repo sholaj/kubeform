@@ -475,7 +475,7 @@ spec:
               type: object
             publiclyAccessible:
               type: boolean
-            secret:
+            secretRef:
               description: LocalObjectReference contains enough information to let
                 you locate the referenced object inside the same namespace.
               properties:
@@ -611,7 +611,7 @@ spec:
                   type: object
                 publiclyAccessible:
                   type: boolean
-                secret:
+                secretRef:
                   description: LocalObjectReference contains enough information to
                     let you locate the referenced object inside the same namespace.
                   properties:
@@ -684,9 +684,3 @@ spec:
   - name: v1alpha1
     served: true
     storage: true
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []
