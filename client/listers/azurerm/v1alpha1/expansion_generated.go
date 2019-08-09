@@ -18,6 +18,14 @@ limitations under the License.
 
 package v1alpha1
 
+// AnalysisServicesServerListerExpansion allows custom methods to be added to
+// AnalysisServicesServerLister.
+type AnalysisServicesServerListerExpansion interface{}
+
+// AnalysisServicesServerNamespaceListerExpansion allows custom methods to be added to
+// AnalysisServicesServerNamespaceLister.
+type AnalysisServicesServerNamespaceListerExpansion interface{}
+
 // ApiManagementListerExpansion allows custom methods to be added to
 // ApiManagementLister.
 type ApiManagementListerExpansion interface{}
@@ -81,6 +89,14 @@ type ApiManagementAuthorizationServerListerExpansion interface{}
 // ApiManagementAuthorizationServerNamespaceListerExpansion allows custom methods to be added to
 // ApiManagementAuthorizationServerNamespaceLister.
 type ApiManagementAuthorizationServerNamespaceListerExpansion interface{}
+
+// ApiManagementBackendListerExpansion allows custom methods to be added to
+// ApiManagementBackendLister.
+type ApiManagementBackendListerExpansion interface{}
+
+// ApiManagementBackendNamespaceListerExpansion allows custom methods to be added to
+// ApiManagementBackendNamespaceLister.
+type ApiManagementBackendNamespaceListerExpansion interface{}
 
 // ApiManagementCertificateListerExpansion allows custom methods to be added to
 // ApiManagementCertificateLister.
@@ -393,6 +409,14 @@ type BatchAccountListerExpansion interface{}
 // BatchAccountNamespaceListerExpansion allows custom methods to be added to
 // BatchAccountNamespaceLister.
 type BatchAccountNamespaceListerExpansion interface{}
+
+// BatchApplicationListerExpansion allows custom methods to be added to
+// BatchApplicationLister.
+type BatchApplicationListerExpansion interface{}
+
+// BatchApplicationNamespaceListerExpansion allows custom methods to be added to
+// BatchApplicationNamespaceLister.
+type BatchApplicationNamespaceListerExpansion interface{}
 
 // BatchCertificateListerExpansion allows custom methods to be added to
 // BatchCertificateLister.
@@ -818,14 +842,6 @@ type EventhubConsumerGroupListerExpansion interface{}
 // EventhubConsumerGroupNamespaceLister.
 type EventhubConsumerGroupNamespaceListerExpansion interface{}
 
-// EventhubNamespaceListerExpansion allows custom methods to be added to
-// EventhubNamespaceLister.
-type EventhubNamespaceListerExpansion interface{}
-
-// EventhubNamespaceNamespaceListerExpansion allows custom methods to be added to
-// EventhubNamespaceNamespaceLister.
-type EventhubNamespaceNamespaceListerExpansion interface{}
-
 // EventhubNamespaceAuthorizationRuleListerExpansion allows custom methods to be added to
 // EventhubNamespaceAuthorizationRuleLister.
 type EventhubNamespaceAuthorizationRuleListerExpansion interface{}
@@ -833,6 +849,14 @@ type EventhubNamespaceAuthorizationRuleListerExpansion interface{}
 // EventhubNamespaceAuthorizationRuleNamespaceListerExpansion allows custom methods to be added to
 // EventhubNamespaceAuthorizationRuleNamespaceLister.
 type EventhubNamespaceAuthorizationRuleNamespaceListerExpansion interface{}
+
+// EventhubNamespace_ListerExpansion allows custom methods to be added to
+// EventhubNamespace_Lister.
+type EventhubNamespace_ListerExpansion interface{}
+
+// EventhubNamespace_NamespaceListerExpansion allows custom methods to be added to
+// EventhubNamespace_NamespaceLister.
+type EventhubNamespace_NamespaceListerExpansion interface{}
 
 // ExpressRouteCircuitListerExpansion allows custom methods to be added to
 // ExpressRouteCircuitLister.
@@ -1226,6 +1250,14 @@ type ManagementLockListerExpansion interface{}
 // ManagementLockNamespaceLister.
 type ManagementLockNamespaceListerExpansion interface{}
 
+// MapsAccountListerExpansion allows custom methods to be added to
+// MapsAccountLister.
+type MapsAccountListerExpansion interface{}
+
+// MapsAccountNamespaceListerExpansion allows custom methods to be added to
+// MapsAccountNamespaceLister.
+type MapsAccountNamespaceListerExpansion interface{}
+
 // MariadbDatabaseListerExpansion allows custom methods to be added to
 // MariadbDatabaseLister.
 type MariadbDatabaseListerExpansion interface{}
@@ -1482,13 +1514,13 @@ type NotificationHubAuthorizationRuleListerExpansion interface{}
 // NotificationHubAuthorizationRuleNamespaceLister.
 type NotificationHubAuthorizationRuleNamespaceListerExpansion interface{}
 
-// NotificationHubNamespaceListerExpansion allows custom methods to be added to
-// NotificationHubNamespaceLister.
-type NotificationHubNamespaceListerExpansion interface{}
+// NotificationHubNamespace_ListerExpansion allows custom methods to be added to
+// NotificationHubNamespace_Lister.
+type NotificationHubNamespace_ListerExpansion interface{}
 
-// NotificationHubNamespaceNamespaceListerExpansion allows custom methods to be added to
-// NotificationHubNamespaceNamespaceLister.
-type NotificationHubNamespaceNamespaceListerExpansion interface{}
+// NotificationHubNamespace_NamespaceListerExpansion allows custom methods to be added to
+// NotificationHubNamespace_NamespaceLister.
+type NotificationHubNamespace_NamespaceListerExpansion interface{}
 
 // PacketCaptureListerExpansion allows custom methods to be added to
 // PacketCaptureLister.
@@ -1561,6 +1593,14 @@ type PostgresqlVirtualNetworkRuleListerExpansion interface{}
 // PostgresqlVirtualNetworkRuleNamespaceListerExpansion allows custom methods to be added to
 // PostgresqlVirtualNetworkRuleNamespaceLister.
 type PostgresqlVirtualNetworkRuleNamespaceListerExpansion interface{}
+
+// PrivateDNSARecordListerExpansion allows custom methods to be added to
+// PrivateDNSARecordLister.
+type PrivateDNSARecordListerExpansion interface{}
+
+// PrivateDNSARecordNamespaceListerExpansion allows custom methods to be added to
+// PrivateDNSARecordNamespaceLister.
+type PrivateDNSARecordNamespaceListerExpansion interface{}
 
 // PrivateDNSZoneListerExpansion allows custom methods to be added to
 // PrivateDNSZoneLister.
@@ -1922,6 +1962,14 @@ type StorageShareListerExpansion interface{}
 // StorageShareNamespaceLister.
 type StorageShareNamespaceListerExpansion interface{}
 
+// StorageShareDirectoryListerExpansion allows custom methods to be added to
+// StorageShareDirectoryLister.
+type StorageShareDirectoryListerExpansion interface{}
+
+// StorageShareDirectoryNamespaceListerExpansion allows custom methods to be added to
+// StorageShareDirectoryNamespaceLister.
+type StorageShareDirectoryNamespaceListerExpansion interface{}
+
 // StorageTableListerExpansion allows custom methods to be added to
 // StorageTableLister.
 type StorageTableListerExpansion interface{}
@@ -1929,6 +1977,14 @@ type StorageTableListerExpansion interface{}
 // StorageTableNamespaceListerExpansion allows custom methods to be added to
 // StorageTableNamespaceLister.
 type StorageTableNamespaceListerExpansion interface{}
+
+// StorageTableEntityListerExpansion allows custom methods to be added to
+// StorageTableEntityLister.
+type StorageTableEntityListerExpansion interface{}
+
+// StorageTableEntityNamespaceListerExpansion allows custom methods to be added to
+// StorageTableEntityNamespaceLister.
+type StorageTableEntityNamespaceListerExpansion interface{}
 
 // StreamAnalyticsFunctionJavascriptUdfListerExpansion allows custom methods to be added to
 // StreamAnalyticsFunctionJavascriptUdfLister.

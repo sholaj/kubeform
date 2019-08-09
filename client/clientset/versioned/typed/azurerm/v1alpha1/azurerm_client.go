@@ -27,6 +27,7 @@ import (
 
 type AzurermV1alpha1Interface interface {
 	RESTClient() rest.Interface
+	AnalysisServicesServersGetter
 	ApiManagementsGetter
 	ApiManagementAPIsGetter
 	ApiManagementAPIOperationsGetter
@@ -35,6 +36,7 @@ type AzurermV1alpha1Interface interface {
 	ApiManagementAPISchemasGetter
 	ApiManagementAPIVersionSetsGetter
 	ApiManagementAuthorizationServersGetter
+	ApiManagementBackendsGetter
 	ApiManagementCertificatesGetter
 	ApiManagementGroupsGetter
 	ApiManagementGroupUsersGetter
@@ -74,6 +76,7 @@ type AzurermV1alpha1Interface interface {
 	AzureadServicePrincipalsGetter
 	AzureadServicePrincipalPasswordsGetter
 	BatchAccountsGetter
+	BatchApplicationsGetter
 	BatchCertificatesGetter
 	BatchPoolsGetter
 	CdnEndpointsGetter
@@ -127,8 +130,8 @@ type AzurermV1alpha1Interface interface {
 	EventhubsGetter
 	EventhubAuthorizationRulesGetter
 	EventhubConsumerGroupsGetter
-	EventhubNamespacesGetter
 	EventhubNamespaceAuthorizationRulesGetter
+	EventhubNamespace_sGetter
 	ExpressRouteCircuitsGetter
 	ExpressRouteCircuitAuthorizationsGetter
 	ExpressRouteCircuitPeeringsGetter
@@ -178,6 +181,7 @@ type AzurermV1alpha1Interface interface {
 	ManagedDisksGetter
 	ManagementGroupsGetter
 	ManagementLocksGetter
+	MapsAccountsGetter
 	MariadbDatabasesGetter
 	MariadbFirewallRulesGetter
 	MariadbServersGetter
@@ -210,7 +214,7 @@ type AzurermV1alpha1Interface interface {
 	NetworkWatchersGetter
 	NotificationHubsGetter
 	NotificationHubAuthorizationRulesGetter
-	NotificationHubNamespacesGetter
+	NotificationHubNamespace_sGetter
 	PacketCapturesGetter
 	PolicyAssignmentsGetter
 	PolicyDefinitionsGetter
@@ -220,6 +224,7 @@ type AzurermV1alpha1Interface interface {
 	PostgresqlFirewallRulesGetter
 	PostgresqlServersGetter
 	PostgresqlVirtualNetworkRulesGetter
+	PrivateDNSARecordsGetter
 	PrivateDNSZonesGetter
 	PublicIPsGetter
 	PublicIPPrefixesGetter
@@ -265,7 +270,9 @@ type AzurermV1alpha1Interface interface {
 	StorageContainersGetter
 	StorageQueuesGetter
 	StorageSharesGetter
+	StorageShareDirectoriesGetter
 	StorageTablesGetter
+	StorageTableEntitiesGetter
 	StreamAnalyticsFunctionJavascriptUdvesGetter
 	StreamAnalyticsJobsGetter
 	StreamAnalyticsOutputBlobsGetter
@@ -295,6 +302,10 @@ type AzurermV1alpha1Interface interface {
 // AzurermV1alpha1Client is used to interact with features provided by the azurerm.kubeform.com group.
 type AzurermV1alpha1Client struct {
 	restClient rest.Interface
+}
+
+func (c *AzurermV1alpha1Client) AnalysisServicesServers(namespace string) AnalysisServicesServerInterface {
+	return newAnalysisServicesServers(c, namespace)
 }
 
 func (c *AzurermV1alpha1Client) ApiManagements(namespace string) ApiManagementInterface {
@@ -327,6 +338,10 @@ func (c *AzurermV1alpha1Client) ApiManagementAPIVersionSets(namespace string) Ap
 
 func (c *AzurermV1alpha1Client) ApiManagementAuthorizationServers(namespace string) ApiManagementAuthorizationServerInterface {
 	return newApiManagementAuthorizationServers(c, namespace)
+}
+
+func (c *AzurermV1alpha1Client) ApiManagementBackends(namespace string) ApiManagementBackendInterface {
+	return newApiManagementBackends(c, namespace)
 }
 
 func (c *AzurermV1alpha1Client) ApiManagementCertificates(namespace string) ApiManagementCertificateInterface {
@@ -483,6 +498,10 @@ func (c *AzurermV1alpha1Client) AzureadServicePrincipalPasswords(namespace strin
 
 func (c *AzurermV1alpha1Client) BatchAccounts(namespace string) BatchAccountInterface {
 	return newBatchAccounts(c, namespace)
+}
+
+func (c *AzurermV1alpha1Client) BatchApplications(namespace string) BatchApplicationInterface {
+	return newBatchApplications(c, namespace)
 }
 
 func (c *AzurermV1alpha1Client) BatchCertificates(namespace string) BatchCertificateInterface {
@@ -697,12 +716,12 @@ func (c *AzurermV1alpha1Client) EventhubConsumerGroups(namespace string) Eventhu
 	return newEventhubConsumerGroups(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) EventhubNamespaces(namespace string) EventhubNamespaceInterface {
-	return newEventhubNamespaces(c, namespace)
-}
-
 func (c *AzurermV1alpha1Client) EventhubNamespaceAuthorizationRules(namespace string) EventhubNamespaceAuthorizationRuleInterface {
 	return newEventhubNamespaceAuthorizationRules(c, namespace)
+}
+
+func (c *AzurermV1alpha1Client) EventhubNamespace_s(namespace string) EventhubNamespace_Interface {
+	return newEventhubNamespace_s(c, namespace)
 }
 
 func (c *AzurermV1alpha1Client) ExpressRouteCircuits(namespace string) ExpressRouteCircuitInterface {
@@ -901,6 +920,10 @@ func (c *AzurermV1alpha1Client) ManagementLocks(namespace string) ManagementLock
 	return newManagementLocks(c, namespace)
 }
 
+func (c *AzurermV1alpha1Client) MapsAccounts(namespace string) MapsAccountInterface {
+	return newMapsAccounts(c, namespace)
+}
+
 func (c *AzurermV1alpha1Client) MariadbDatabases(namespace string) MariadbDatabaseInterface {
 	return newMariadbDatabases(c, namespace)
 }
@@ -1029,8 +1052,8 @@ func (c *AzurermV1alpha1Client) NotificationHubAuthorizationRules(namespace stri
 	return newNotificationHubAuthorizationRules(c, namespace)
 }
 
-func (c *AzurermV1alpha1Client) NotificationHubNamespaces(namespace string) NotificationHubNamespaceInterface {
-	return newNotificationHubNamespaces(c, namespace)
+func (c *AzurermV1alpha1Client) NotificationHubNamespace_s(namespace string) NotificationHubNamespace_Interface {
+	return newNotificationHubNamespace_s(c, namespace)
 }
 
 func (c *AzurermV1alpha1Client) PacketCaptures(namespace string) PacketCaptureInterface {
@@ -1067,6 +1090,10 @@ func (c *AzurermV1alpha1Client) PostgresqlServers(namespace string) PostgresqlSe
 
 func (c *AzurermV1alpha1Client) PostgresqlVirtualNetworkRules(namespace string) PostgresqlVirtualNetworkRuleInterface {
 	return newPostgresqlVirtualNetworkRules(c, namespace)
+}
+
+func (c *AzurermV1alpha1Client) PrivateDNSARecords(namespace string) PrivateDNSARecordInterface {
+	return newPrivateDNSARecords(c, namespace)
 }
 
 func (c *AzurermV1alpha1Client) PrivateDNSZones(namespace string) PrivateDNSZoneInterface {
@@ -1249,8 +1276,16 @@ func (c *AzurermV1alpha1Client) StorageShares(namespace string) StorageShareInte
 	return newStorageShares(c, namespace)
 }
 
+func (c *AzurermV1alpha1Client) StorageShareDirectories(namespace string) StorageShareDirectoryInterface {
+	return newStorageShareDirectories(c, namespace)
+}
+
 func (c *AzurermV1alpha1Client) StorageTables(namespace string) StorageTableInterface {
 	return newStorageTables(c, namespace)
+}
+
+func (c *AzurermV1alpha1Client) StorageTableEntities(namespace string) StorageTableEntityInterface {
+	return newStorageTableEntities(c, namespace)
 }
 
 func (c *AzurermV1alpha1Client) StreamAnalyticsFunctionJavascriptUdves(namespace string) StreamAnalyticsFunctionJavascriptUdfInterface {
