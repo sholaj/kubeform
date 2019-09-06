@@ -1,10 +1,8 @@
 package v1alpha1
 
 import (
-    "encoding/json"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	core "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"kubeform.dev/kubeform/apis"
 )
 
@@ -25,29 +23,33 @@ type CdnSpec struct {
 
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
+	// ID of a DigitalOcean managed TLS certificate for use with custom domains
 	// +optional
 	CertificateID string `json:"certificateID,omitempty" tf:"certificate_id,omitempty"`
+	// The date and time (ISO8601) of when the CDN endpoint was created.
 	// +optional
 	CreatedAt string `json:"createdAt,omitempty" tf:"created_at,omitempty"`
+	// fully qualified domain name (FQDN) for custom subdomain, (requires certificate_id)
 	// +optional
 	CustomDomain string `json:"customDomain,omitempty" tf:"custom_domain,omitempty"`
+	// fully qualified domain name (FQDN) to serve the CDN content
 	// +optional
 	Endpoint string `json:"endpoint,omitempty" tf:"endpoint,omitempty"`
-	Origin   string `json:"origin" tf:"origin"`
+	// fully qualified domain name (FQDN) for the origin server
+	Origin string `json:"origin" tf:"origin"`
+	// The amount of time the content is cached in the CDN
 	// +optional
 	Ttl int `json:"ttl,omitempty" tf:"ttl,omitempty"`
 }
 
-
-
 type CdnStatus struct {
-    // Resource generation, which is updated on mutation by the API Server.
+	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
-	ObservedGeneration int64  `json:"observedGeneration,omitempty"`
+	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 	// +optional
-    Output *CdnSpec `json:"output,omitempty"`
-    // +optional
-    State *apis.State `json:"state,omitempty"`
+	Output *CdnSpec `json:"output,omitempty"`
+	// +optional
+	State *apis.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

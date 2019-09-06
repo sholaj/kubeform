@@ -1,10 +1,8 @@
 package v1alpha1
 
 import (
-    "encoding/json"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	core "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"kubeform.dev/kubeform/apis"
 )
 
@@ -25,31 +23,36 @@ type VolumeSpec struct {
 
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
+	// The full filesystem path for the Volume based on the Volume's label. Path is /dev/disk/by-id/scsi-0Linode_Volume_ + Volume label.
 	// +optional
 	FilesystemPath string `json:"filesystemPath,omitempty" tf:"filesystem_path,omitempty"`
-	Label          string `json:"label" tf:"label"`
+	// The label of the Linode Volume.
+	Label string `json:"label" tf:"label"`
+	// The Linode ID where the Volume should be attached.
 	// +optional
-	LinodeID int    `json:"linodeID,omitempty" tf:"linode_id,omitempty"`
-	Region   string `json:"region" tf:"region"`
+	LinodeID int `json:"linodeID,omitempty" tf:"linode_id,omitempty"`
+	// The region where this volume will be deployed.
+	Region string `json:"region" tf:"region"`
+	// Size of the Volume in GB
 	// +optional
 	Size int `json:"size,omitempty" tf:"size,omitempty"`
+	// The status of the volume, indicating the current readiness state.
 	// +optional
 	Status string `json:"status,omitempty" tf:"status,omitempty"`
+	// An array of tags applied to this object. Tags are for organizational purposes only.
 	// +optional
 	// +kubebuilder:validation:UniqueItems=true
 	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
-
-
 type VolumeStatus struct {
-    // Resource generation, which is updated on mutation by the API Server.
+	// Resource generation, which is updated on mutation by the API Server.
 	// +optional
-	ObservedGeneration int64  `json:"observedGeneration,omitempty"`
+	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 	// +optional
-    Output *VolumeSpec `json:"output,omitempty"`
-    // +optional
-    State *apis.State `json:"state,omitempty"`
+	Output *VolumeSpec `json:"output,omitempty"`
+	// +optional
+	State *apis.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
