@@ -172,10 +172,12 @@ gen-crd-docs:
 		-template-dir ~/go/src/github.com/ahmetb/gen-crd-api-reference-docs/template \
 		-api-dir kubeform.dev/kubeform/apis          \
 		-out-dir ../docs/docs/reference/
+	# find docs/reference/ -name "*.md" -exec sed -i 's/^Appears\ on:.*$/\\n&\\n/g' {} \;
+	find ../docs/docs/reference/ -name "*.md" -exec sed -i 's/^Appears\ on:.*$$/\n&\n/g' {} \;
 	hugo-tools add-frontmatter                              \
 		~/go/src/kubeform.dev/docs/docs/reference           \
 		--product=docs                                      \
-		--version=v0.0.1                                    \
+		--version='{{ .version }}'                            \
 		--shared=false                                      \
 		--skipDir=true
 
