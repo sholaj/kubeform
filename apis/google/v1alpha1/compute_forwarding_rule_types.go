@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -51,7 +51,6 @@ type ComputeForwardingRuleSpec struct {
 	PortRange string `json:"portRange,omitempty" tf:"port_range,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=5
-	// +kubebuilder:validation:UniqueItems=true
 	Ports []string `json:"ports,omitempty" tf:"ports,omitempty"`
 	// +optional
 	Project string `json:"project,omitempty" tf:"project,omitempty"`
@@ -78,7 +77,7 @@ type ComputeForwardingRuleStatus struct {
 	// +optional
 	Output *ComputeForwardingRuleSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

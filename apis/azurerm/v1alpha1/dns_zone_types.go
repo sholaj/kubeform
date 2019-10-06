@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -27,7 +27,6 @@ type DnsZoneSpec struct {
 	MaxNumberOfRecordSets int    `json:"maxNumberOfRecordSets,omitempty" tf:"max_number_of_record_sets,omitempty"`
 	Name                  string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	NameServers []string `json:"nameServers,omitempty" tf:"name_servers,omitempty"`
 	// +optional
 	NumberOfRecordSets int `json:"numberOfRecordSets,omitempty" tf:"number_of_record_sets,omitempty"`
@@ -49,7 +48,7 @@ type DnsZoneStatus struct {
 	// +optional
 	Output *DnsZoneSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

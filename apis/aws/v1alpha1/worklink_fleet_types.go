@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -24,11 +24,9 @@ type WorklinkFleetSpecIdentityProvider struct {
 }
 
 type WorklinkFleetSpecNetwork struct {
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroupIDS []string `json:"securityGroupIDS" tf:"security_group_ids"`
-	// +kubebuilder:validation:UniqueItems=true
-	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
-	VpcID     string   `json:"vpcID" tf:"vpc_id"`
+	SubnetIDS        []string `json:"subnetIDS" tf:"subnet_ids"`
+	VpcID            string   `json:"vpcID" tf:"vpc_id"`
 }
 
 type WorklinkFleetSpec struct {
@@ -68,7 +66,7 @@ type WorklinkFleetStatus struct {
 	// +optional
 	Output *WorklinkFleetSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

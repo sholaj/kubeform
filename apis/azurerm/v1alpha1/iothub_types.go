@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -118,7 +118,6 @@ type IothubSpec struct {
 	// +optional
 	Hostname string `json:"hostname,omitempty" tf:"hostname,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	IpFilterRule      []IothubSpecIpFilterRule `json:"ipFilterRule,omitempty" tf:"ip_filter_rule,omitempty"`
 	Location          string                   `json:"location" tf:"location"`
 	Name              string                   `json:"name" tf:"name"`
@@ -142,7 +141,7 @@ type IothubStatus struct {
 	// +optional
 	Output *IothubSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

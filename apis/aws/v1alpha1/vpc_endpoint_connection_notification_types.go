@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -24,7 +24,6 @@ type VpcEndpointConnectionNotificationSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	ConnectionEvents          []string `json:"connectionEvents" tf:"connection_events"`
 	ConnectionNotificationArn string   `json:"connectionNotificationArn" tf:"connection_notification_arn"`
 	// +optional
@@ -44,7 +43,7 @@ type VpcEndpointConnectionNotificationStatus struct {
 	// +optional
 	Output *VpcEndpointConnectionNotificationSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -27,7 +27,6 @@ type ContainerRegistrySpecNetworkRuleSet struct {
 	// +optional
 	DefaultAction string `json:"defaultAction,omitempty" tf:"default_action,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	IpRule []ContainerRegistrySpecNetworkRuleSetIpRule `json:"ipRule,omitempty" tf:"ip_rule,omitempty"`
 }
 
@@ -51,7 +50,6 @@ type ContainerRegistrySpec struct {
 	AdminUsername string `json:"adminUsername,omitempty" tf:"admin_username,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	GeoreplicationLocations []string `json:"georeplicationLocations,omitempty" tf:"georeplication_locations,omitempty"`
 	Location                string   `json:"location" tf:"location"`
 	// +optional
@@ -80,7 +78,7 @@ type ContainerRegistryStatus struct {
 	// +optional
 	Output *ContainerRegistrySpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -26,7 +26,6 @@ type WafregionalXssMatchSetSpecXssMatchTupleFieldToMatch struct {
 
 type WafregionalXssMatchSetSpecXssMatchTuple struct {
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	FieldToMatch       []WafregionalXssMatchSetSpecXssMatchTupleFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
 	TextTransformation string                                                `json:"textTransformation" tf:"text_transformation"`
 }
@@ -38,7 +37,6 @@ type WafregionalXssMatchSetSpec struct {
 
 	Name string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	XssMatchTuple []WafregionalXssMatchSetSpecXssMatchTuple `json:"xssMatchTuple,omitempty" tf:"xss_match_tuple,omitempty"`
 }
 
@@ -49,7 +47,7 @@ type WafregionalXssMatchSetStatus struct {
 	// +optional
 	Output *WafregionalXssMatchSetSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -56,15 +56,12 @@ type NetworkACLSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Egress []NetworkACLSpecEgress `json:"egress,omitempty" tf:"egress,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Ingress []NetworkACLSpecIngress `json:"ingress,omitempty" tf:"ingress,omitempty"`
 	// +optional
 	OwnerID string `json:"ownerID,omitempty" tf:"owner_id,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SubnetIDS []string `json:"subnetIDS,omitempty" tf:"subnet_ids,omitempty"`
 	// +optional
 	Tags  map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -78,7 +75,7 @@ type NetworkACLStatus struct {
 	// +optional
 	Output *NetworkACLSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

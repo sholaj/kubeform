@@ -414,7 +414,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             resourceGroupName:
               type: string
             tags:
@@ -459,7 +458,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 resourceGroupName:
                   type: string
                 tags:

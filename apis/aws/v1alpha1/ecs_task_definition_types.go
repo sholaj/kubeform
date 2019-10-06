@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -69,10 +69,8 @@ type EcsTaskDefinitionSpec struct {
 	PidMode string `json:"pidMode,omitempty" tf:"pid_mode,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
-	// +kubebuilder:validation:UniqueItems=true
 	PlacementConstraints []EcsTaskDefinitionSpecPlacementConstraints `json:"placementConstraints,omitempty" tf:"placement_constraints,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RequiresCompatibilities []string `json:"requiresCompatibilities,omitempty" tf:"requires_compatibilities,omitempty"`
 	// +optional
 	Revision int `json:"revision,omitempty" tf:"revision,omitempty"`
@@ -81,7 +79,6 @@ type EcsTaskDefinitionSpec struct {
 	// +optional
 	TaskRoleArn string `json:"taskRoleArn,omitempty" tf:"task_role_arn,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Volume []EcsTaskDefinitionSpecVolume `json:"volume,omitempty" tf:"volume,omitempty"`
 }
 
@@ -92,7 +89,7 @@ type EcsTaskDefinitionStatus struct {
 	// +optional
 	Output *EcsTaskDefinitionSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

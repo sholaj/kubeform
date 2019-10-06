@@ -5,7 +5,7 @@ import (
 
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -49,7 +49,6 @@ type MonitorMetricAlertSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Action []MonitorMetricAlertSpecAction `json:"action,omitempty" tf:"action,omitempty"`
 	// +optional
 	AutoMitigate bool `json:"autoMitigate,omitempty" tf:"auto_mitigate,omitempty"`
@@ -65,7 +64,6 @@ type MonitorMetricAlertSpec struct {
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MaxItems=1
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Scopes []string `json:"scopes" tf:"scopes"`
 	// +optional
 	Severity int `json:"severity,omitempty" tf:"severity,omitempty"`
@@ -82,7 +80,7 @@ type MonitorMetricAlertStatus struct {
 	// +optional
 	Output *MonitorMetricAlertSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

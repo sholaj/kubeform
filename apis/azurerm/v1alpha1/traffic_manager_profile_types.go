@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -35,11 +35,9 @@ type TrafficManagerProfileSpec struct {
 
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
-	// +kubebuilder:validation:UniqueItems=true
 	DnsConfig []TrafficManagerProfileSpecDnsConfig `json:"dnsConfig" tf:"dns_config"`
 	// +optional
-	Fqdn string `json:"fqdn,omitempty" tf:"fqdn,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
+	Fqdn          string                                   `json:"fqdn,omitempty" tf:"fqdn,omitempty"`
 	MonitorConfig []TrafficManagerProfileSpecMonitorConfig `json:"monitorConfig" tf:"monitor_config"`
 	Name          string                                   `json:"name" tf:"name"`
 	// +optional
@@ -57,7 +55,7 @@ type TrafficManagerProfileStatus struct {
 	// +optional
 	Output *TrafficManagerProfileSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

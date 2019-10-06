@@ -405,7 +405,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             loadbalancerID:
               type: string
             location:
@@ -456,7 +455,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 loadbalancerID:
                   type: string
                 location:

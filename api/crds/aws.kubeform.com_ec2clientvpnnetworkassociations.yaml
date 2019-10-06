@@ -414,7 +414,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             status:
               type: string
             subnetID:
@@ -452,7 +451,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 status:
                   type: string
                 subnetID:

@@ -404,19 +404,16 @@ spec:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   loadBalancerRules:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   name:
                     type: string
                   outboundRules:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   privateIPAddress:
                     type: string
                   privateIPAddressAllocation:
@@ -488,19 +485,16 @@ spec:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       loadBalancerRules:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       name:
                         type: string
                       outboundRules:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       privateIPAddress:
                         type: string
                       privateIPAddressAllocation:

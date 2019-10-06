@@ -404,7 +404,6 @@ spec:
                 format: int64
                 type: integer
               type: array
-              uniqueItems: true
             filesystemLabel:
               type: string
             filesystemType:
@@ -458,7 +457,6 @@ spec:
                     format: int64
                     type: integer
                   type: array
-                  uniqueItems: true
                 filesystemLabel:
                   type: string
                 filesystemType:

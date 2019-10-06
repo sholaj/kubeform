@@ -435,7 +435,6 @@ spec:
                 - textTransformation
                 type: object
               type: array
-              uniqueItems: true
           required:
           - name
           - providerRef
@@ -487,7 +486,6 @@ spec:
                     - textTransformation
                     type: object
                   type: array
-                  uniqueItems: true
               required:
               - name
               - providerRef

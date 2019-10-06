@@ -409,7 +409,6 @@ spec:
                 type: string
               minItems: 1
               type: array
-              uniqueItems: true
             project:
               type: string
             providerRef:
@@ -454,7 +453,6 @@ spec:
                     type: string
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 project:
                   type: string
                 providerRef:

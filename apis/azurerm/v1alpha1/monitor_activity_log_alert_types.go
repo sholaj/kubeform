@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -52,7 +52,6 @@ type MonitorActivityLogAlertSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Action []MonitorActivityLogAlertSpecAction `json:"action,omitempty" tf:"action,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	Criteria []MonitorActivityLogAlertSpecCriteria `json:"criteria" tf:"criteria"`
@@ -63,7 +62,6 @@ type MonitorActivityLogAlertSpec struct {
 	Name              string `json:"name" tf:"name"`
 	ResourceGroupName string `json:"resourceGroupName" tf:"resource_group_name"`
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Scopes []string `json:"scopes" tf:"scopes"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -76,7 +74,7 @@ type MonitorActivityLogAlertStatus struct {
 	// +optional
 	Output *MonitorActivityLogAlertSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -425,7 +425,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             uniqueID:
               type: string
           required:
@@ -468,7 +467,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 uniqueID:
                   type: string
               required:

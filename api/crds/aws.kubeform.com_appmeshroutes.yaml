@@ -441,7 +441,6 @@ spec:
                                 maxItems: 10
                                 minItems: 1
                                 type: array
-                                uniqueItems: true
                             required:
                             - weightedTarget
                             type: object
@@ -485,7 +484,6 @@ spec:
                                 maxItems: 10
                                 minItems: 1
                                 type: array
-                                uniqueItems: true
                             required:
                             - weightedTarget
                             type: object
@@ -563,7 +561,6 @@ spec:
                                     maxItems: 10
                                     minItems: 1
                                     type: array
-                                    uniqueItems: true
                                 required:
                                 - weightedTarget
                                 type: object
@@ -607,7 +604,6 @@ spec:
                                     maxItems: 10
                                     minItems: 1
                                     type: array
-                                    uniqueItems: true
                                 required:
                                 - weightedTarget
                                 type: object

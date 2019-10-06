@@ -406,7 +406,6 @@ spec:
                     type: string
                 type: object
               type: array
-              uniqueItems: true
             connectionDrainingTimeoutSec:
               type: integer
             description:
@@ -419,7 +418,6 @@ spec:
               maxItems: 1
               minItems: 1
               type: array
-              uniqueItems: true
             id:
               type: string
             name:
@@ -468,7 +466,6 @@ spec:
                         type: string
                     type: object
                   type: array
-                  uniqueItems: true
                 connectionDrainingTimeoutSec:
                   type: integer
                 description:
@@ -481,7 +478,6 @@ spec:
                   maxItems: 1
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 id:
                   type: string
                 name:

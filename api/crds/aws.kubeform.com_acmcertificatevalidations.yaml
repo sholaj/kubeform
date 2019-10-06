@@ -414,7 +414,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
           required:
           - certificateArn
           - providerRef
@@ -445,7 +444,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
               required:
               - certificateArn
               - providerRef

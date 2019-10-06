@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -41,7 +41,6 @@ type ContainerServiceSpecLinuxProfileSshKey struct {
 type ContainerServiceSpecLinuxProfile struct {
 	AdminUsername string `json:"adminUsername" tf:"admin_username"`
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	SshKey []ContainerServiceSpecLinuxProfileSshKey `json:"sshKey" tf:"ssh_key"`
 }
 
@@ -66,24 +65,19 @@ type ContainerServiceSpec struct {
 	SecretRef *core.LocalObjectReference `json:"secretRef,omitempty" tf:"-"`
 
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	AgentPoolProfile []ContainerServiceSpecAgentPoolProfile `json:"agentPoolProfile" tf:"agent_pool_profile"`
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	DiagnosticsProfile []ContainerServiceSpecDiagnosticsProfile `json:"diagnosticsProfile" tf:"diagnostics_profile"`
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	LinuxProfile []ContainerServiceSpecLinuxProfile `json:"linuxProfile" tf:"linux_profile"`
 	Location     string                             `json:"location" tf:"location"`
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	MasterProfile         []ContainerServiceSpecMasterProfile `json:"masterProfile" tf:"master_profile"`
 	Name                  string                              `json:"name" tf:"name"`
 	OrchestrationPlatform string                              `json:"orchestrationPlatform" tf:"orchestration_platform"`
 	ResourceGroupName     string                              `json:"resourceGroupName" tf:"resource_group_name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	ServicePrincipal []ContainerServiceSpecServicePrincipal `json:"servicePrincipal,omitempty" tf:"service_principal,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -96,7 +90,7 @@ type ContainerServiceStatus struct {
 	// +optional
 	Output *ContainerServiceSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

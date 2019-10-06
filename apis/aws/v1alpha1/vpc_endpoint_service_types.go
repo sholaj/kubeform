@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -25,16 +25,12 @@ type VpcEndpointServiceSpec struct {
 
 	AcceptanceRequired bool `json:"acceptanceRequired" tf:"acceptance_required"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AllowedPrincipals []string `json:"allowedPrincipals,omitempty" tf:"allowed_principals,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AvailabilityZones []string `json:"availabilityZones,omitempty" tf:"availability_zones,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	BaseEndpointDNSNames []string `json:"baseEndpointDNSNames,omitempty" tf:"base_endpoint_dns_names,omitempty"`
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	NetworkLoadBalancerArns []string `json:"networkLoadBalancerArns" tf:"network_load_balancer_arns"`
 	// +optional
 	PrivateDNSName string `json:"privateDNSName,omitempty" tf:"private_dns_name,omitempty"`
@@ -53,7 +49,7 @@ type VpcEndpointServiceStatus struct {
 	// +optional
 	Output *VpcEndpointServiceSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

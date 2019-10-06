@@ -412,7 +412,6 @@ spec:
                     type: boolean
                 type: object
               type: array
-              uniqueItems: true
             developerProviderName:
               type: string
             id:
@@ -468,7 +467,6 @@ spec:
                         type: boolean
                     type: object
                   type: array
-                  uniqueItems: true
                 developerProviderName:
                   type: string
                 id:

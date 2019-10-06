@@ -424,7 +424,6 @@ spec:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                 required:
                 - ID
                 - storeLocation
@@ -590,7 +589,6 @@ spec:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                     required:
                     - ID
                     - storeLocation

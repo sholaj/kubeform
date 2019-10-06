@@ -427,7 +427,6 @@ spec:
                           items:
                             type: string
                           type: array
-                          uniqueItems: true
                       type: object
                     maxItems: 1
                     type: array
@@ -440,7 +439,6 @@ spec:
                           items:
                             type: string
                           type: array
-                          uniqueItems: true
                       type: object
                     maxItems: 1
                     type: array
@@ -516,7 +514,6 @@ spec:
                               items:
                                 type: string
                               type: array
-                              uniqueItems: true
                           type: object
                         maxItems: 1
                         type: array
@@ -529,7 +526,6 @@ spec:
                               items:
                                 type: string
                               type: array
-                              uniqueItems: true
                           type: object
                         maxItems: 1
                         type: array

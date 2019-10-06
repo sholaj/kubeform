@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -36,7 +36,6 @@ type StorageShareSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Acl []StorageShareSpecAcl `json:"acl,omitempty" tf:"acl,omitempty"`
 	// +optional
 	Metadata map[string]string `json:"metadata,omitempty" tf:"metadata,omitempty"`
@@ -58,7 +57,7 @@ type StorageShareStatus struct {
 	// +optional
 	Output *StorageShareSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

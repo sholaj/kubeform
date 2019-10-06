@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -26,12 +26,10 @@ type ComputeSSLPolicySpec struct {
 	// +optional
 	CreationTimestamp string `json:"creationTimestamp,omitempty" tf:"creation_timestamp,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	CustomFeatures []string `json:"customFeatures,omitempty" tf:"custom_features,omitempty"`
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EnabledFeatures []string `json:"enabledFeatures,omitempty" tf:"enabled_features,omitempty"`
 	// +optional
 	Fingerprint string `json:"fingerprint,omitempty" tf:"fingerprint,omitempty"`
@@ -53,7 +51,7 @@ type ComputeSSLPolicyStatus struct {
 	// +optional
 	Output *ComputeSSLPolicySpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

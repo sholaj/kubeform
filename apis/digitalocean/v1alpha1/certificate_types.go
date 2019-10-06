@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -28,7 +28,6 @@ type CertificateSpec struct {
 	// +optional
 	CertificateChain string `json:"certificateChain,omitempty" tf:"certificate_chain,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Domains []string `json:"domains,omitempty" tf:"domains,omitempty"`
 	// +optional
 	LeafCertificate string `json:"leafCertificate,omitempty" tf:"leaf_certificate,omitempty"`
@@ -52,7 +51,7 @@ type CertificateStatus struct {
 	// +optional
 	Output *CertificateSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

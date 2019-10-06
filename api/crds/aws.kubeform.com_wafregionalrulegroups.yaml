@@ -422,7 +422,6 @@ spec:
                 - ruleID
                 type: object
               type: array
-              uniqueItems: true
             id:
               type: string
             metricName:
@@ -477,7 +476,6 @@ spec:
                     - ruleID
                     type: object
                   type: array
-                  uniqueItems: true
                 id:
                   type: string
                 metricName:

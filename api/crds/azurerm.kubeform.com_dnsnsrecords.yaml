@@ -420,7 +420,6 @@ spec:
                 - nsdname
                 type: object
               type: array
-              uniqueItems: true
             records:
               items:
                 type: string
@@ -474,7 +473,6 @@ spec:
                     - nsdname
                     type: object
                   type: array
-                  uniqueItems: true
                 records:
                   items:
                     type: string

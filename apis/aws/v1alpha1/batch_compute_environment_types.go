@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -35,21 +35,18 @@ type BatchComputeEnvironmentSpecComputeResources struct {
 	// +optional
 	Ec2KeyPair string `json:"ec2KeyPair,omitempty" tf:"ec2_key_pair,omitempty"`
 	// +optional
-	ImageID      string `json:"imageID,omitempty" tf:"image_id,omitempty"`
-	InstanceRole string `json:"instanceRole" tf:"instance_role"`
-	// +kubebuilder:validation:UniqueItems=true
+	ImageID      string   `json:"imageID,omitempty" tf:"image_id,omitempty"`
+	InstanceRole string   `json:"instanceRole" tf:"instance_role"`
 	InstanceType []string `json:"instanceType" tf:"instance_type"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	LaunchTemplate []BatchComputeEnvironmentSpecComputeResourcesLaunchTemplate `json:"launchTemplate,omitempty" tf:"launch_template,omitempty"`
-	MaxVcpus       int                                                         `json:"maxVcpus" tf:"max_vcpus"`
-	MinVcpus       int                                                         `json:"minVcpus" tf:"min_vcpus"`
-	// +kubebuilder:validation:UniqueItems=true
-	SecurityGroupIDS []string `json:"securityGroupIDS" tf:"security_group_ids"`
+	LaunchTemplate   []BatchComputeEnvironmentSpecComputeResourcesLaunchTemplate `json:"launchTemplate,omitempty" tf:"launch_template,omitempty"`
+	MaxVcpus         int                                                         `json:"maxVcpus" tf:"max_vcpus"`
+	MinVcpus         int                                                         `json:"minVcpus" tf:"min_vcpus"`
+	SecurityGroupIDS []string                                                    `json:"securityGroupIDS" tf:"security_group_ids"`
 	// +optional
-	SpotIamFleetRole string `json:"spotIamFleetRole,omitempty" tf:"spot_iam_fleet_role,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
-	Subnets []string `json:"subnets" tf:"subnets"`
+	SpotIamFleetRole string   `json:"spotIamFleetRole,omitempty" tf:"spot_iam_fleet_role,omitempty"`
+	Subnets          []string `json:"subnets" tf:"subnets"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	Type string            `json:"type" tf:"type"`
@@ -85,7 +82,7 @@ type BatchComputeEnvironmentStatus struct {
 	// +optional
 	Output *BatchComputeEnvironmentSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

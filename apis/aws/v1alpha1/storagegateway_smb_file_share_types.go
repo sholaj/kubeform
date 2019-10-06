@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -35,7 +35,6 @@ type StoragegatewaySmbFileShareSpec struct {
 	// +optional
 	GuessMimeTypeEnabled bool `json:"guessMimeTypeEnabled,omitempty" tf:"guess_mime_type_enabled,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	InvalidUserList []string `json:"invalidUserList,omitempty" tf:"invalid_user_list,omitempty"`
 	// +optional
 	KmsEncrypted bool `json:"kmsEncrypted,omitempty" tf:"kms_encrypted,omitempty"`
@@ -50,7 +49,6 @@ type StoragegatewaySmbFileShareSpec struct {
 	RequesterPays bool   `json:"requesterPays,omitempty" tf:"requester_pays,omitempty"`
 	RoleArn       string `json:"roleArn" tf:"role_arn"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ValidUserList []string `json:"validUserList,omitempty" tf:"valid_user_list,omitempty"`
 }
 
@@ -61,7 +59,7 @@ type StoragegatewaySmbFileShareStatus struct {
 	// +optional
 	Output *StoragegatewaySmbFileShareSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

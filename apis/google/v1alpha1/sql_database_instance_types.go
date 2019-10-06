@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -90,7 +90,6 @@ type SqlDatabaseInstanceSpecSettingsIpConfigurationAuthorizedNetworks struct {
 
 type SqlDatabaseInstanceSpecSettingsIpConfiguration struct {
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AuthorizedNetworks []SqlDatabaseInstanceSpecSettingsIpConfigurationAuthorizedNetworks `json:"authorizedNetworks,omitempty" tf:"authorized_networks,omitempty"`
 	// +optional
 	Ipv4Enabled bool `json:"ipv4Enabled,omitempty" tf:"ipv4_enabled,omitempty"`
@@ -200,7 +199,7 @@ type SqlDatabaseInstanceStatus struct {
 	// +optional
 	Output *SqlDatabaseInstanceSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

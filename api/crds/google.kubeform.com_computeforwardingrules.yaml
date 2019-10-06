@@ -433,7 +433,6 @@ spec:
                 type: string
               maxItems: 5
               type: array
-              uniqueItems: true
             project:
               type: string
             providerRef:
@@ -508,7 +507,6 @@ spec:
                     type: string
                   maxItems: 5
                   type: array
-                  uniqueItems: true
                 project:
                   type: string
                 providerRef:

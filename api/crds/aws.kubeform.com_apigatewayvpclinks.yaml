@@ -417,7 +417,6 @@ spec:
                 type: string
               maxItems: 1
               type: array
-              uniqueItems: true
           required:
           - name
           - providerRef
@@ -452,7 +451,6 @@ spec:
                     type: string
                   maxItems: 1
                   type: array
-                  uniqueItems: true
               required:
               - name
               - providerRef

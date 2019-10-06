@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -57,10 +57,8 @@ type OrganizationsOrganizationSpec struct {
 	// +optional
 	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AwsServiceAccessPrincipals []string `json:"awsServiceAccessPrincipals,omitempty" tf:"aws_service_access_principals,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EnabledPolicyTypes []string `json:"enabledPolicyTypes,omitempty" tf:"enabled_policy_types,omitempty"`
 	// +optional
 	FeatureSet string `json:"featureSet,omitempty" tf:"feature_set,omitempty"`
@@ -81,7 +79,7 @@ type OrganizationsOrganizationStatus struct {
 	// +optional
 	Output *OrganizationsOrganizationSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

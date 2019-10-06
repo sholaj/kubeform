@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -151,12 +151,10 @@ type CognitoUserPoolSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	AdminCreateUserConfig []CognitoUserPoolSpecAdminCreateUserConfig `json:"adminCreateUserConfig,omitempty" tf:"admin_create_user_config,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AliasAttributes []string `json:"aliasAttributes,omitempty" tf:"alias_attributes,omitempty"`
 	// +optional
 	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AutoVerifiedAttributes []string `json:"autoVerifiedAttributes,omitempty" tf:"auto_verified_attributes,omitempty"`
 	// +optional
 	CreationDate string `json:"creationDate,omitempty" tf:"creation_date,omitempty"`
@@ -186,7 +184,6 @@ type CognitoUserPoolSpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=50
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Schema []CognitoUserPoolSpecSchema `json:"schema,omitempty" tf:"schema,omitempty"`
 	// +optional
 	SmsAuthenticationMessage string `json:"smsAuthenticationMessage,omitempty" tf:"sms_authentication_message,omitempty"`
@@ -214,7 +211,7 @@ type CognitoUserPoolStatus struct {
 	// +optional
 	Output *CognitoUserPoolSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

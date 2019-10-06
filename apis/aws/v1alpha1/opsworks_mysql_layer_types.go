@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -50,7 +50,6 @@ type OpsworksMysqlLayerSpec struct {
 	// +optional
 	CustomJSON string `json:"customJSON,omitempty" tf:"custom_json,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	CustomSecurityGroupIDS []string `json:"customSecurityGroupIDS,omitempty" tf:"custom_security_group_ids,omitempty"`
 	// +optional
 	CustomSetupRecipes []string `json:"customSetupRecipes,omitempty" tf:"custom_setup_recipes,omitempty"`
@@ -61,7 +60,6 @@ type OpsworksMysqlLayerSpec struct {
 	// +optional
 	DrainElbOnShutdown bool `json:"drainElbOnShutdown,omitempty" tf:"drain_elb_on_shutdown,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EbsVolume []OpsworksMysqlLayerSpecEbsVolume `json:"ebsVolume,omitempty" tf:"ebs_volume,omitempty"`
 	// +optional
 	ElasticLoadBalancer string `json:"elasticLoadBalancer,omitempty" tf:"elastic_load_balancer,omitempty"`
@@ -77,7 +75,6 @@ type OpsworksMysqlLayerSpec struct {
 	RootPasswordOnAllInstances bool   `json:"rootPasswordOnAllInstances,omitempty" tf:"root_password_on_all_instances,omitempty"`
 	StackID                    string `json:"stackID" tf:"stack_id"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SystemPackages []string `json:"systemPackages,omitempty" tf:"system_packages,omitempty"`
 	// +optional
 	UseEbsOptimizedInstances bool `json:"useEbsOptimizedInstances,omitempty" tf:"use_ebs_optimized_instances,omitempty"`
@@ -90,7 +87,7 @@ type OpsworksMysqlLayerStatus struct {
 	// +optional
 	Output *OpsworksMysqlLayerSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

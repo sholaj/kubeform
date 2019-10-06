@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -35,7 +35,6 @@ type GlobalacceleratorListenerSpec struct {
 	ClientAffinity string `json:"clientAffinity,omitempty" tf:"client_affinity,omitempty"`
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	PortRange []GlobalacceleratorListenerSpecPortRange `json:"portRange" tf:"port_range"`
 	Protocol  string                                   `json:"protocol" tf:"protocol"`
 }
@@ -47,7 +46,7 @@ type GlobalacceleratorListenerStatus struct {
 	// +optional
 	Output *GlobalacceleratorListenerSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

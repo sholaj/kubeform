@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -26,7 +26,6 @@ type AppmeshRouteSpecSpecHttpRouteActionWeightedTarget struct {
 type AppmeshRouteSpecSpecHttpRouteAction struct {
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	WeightedTarget []AppmeshRouteSpecSpecHttpRouteActionWeightedTarget `json:"weightedTarget" tf:"weighted_target"`
 }
 
@@ -51,7 +50,6 @@ type AppmeshRouteSpecSpecTcpRouteActionWeightedTarget struct {
 type AppmeshRouteSpecSpecTcpRouteAction struct {
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	WeightedTarget []AppmeshRouteSpecSpecTcpRouteActionWeightedTarget `json:"weightedTarget" tf:"weighted_target"`
 }
 
@@ -96,7 +94,7 @@ type AppmeshRouteStatus struct {
 	// +optional
 	Output *AppmeshRouteSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

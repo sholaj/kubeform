@@ -416,12 +416,10 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             enabledPolicyTypes:
               items:
                 type: string
               type: array
-              uniqueItems: true
             featureSet:
               type: string
             id:
@@ -492,12 +490,10 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 enabledPolicyTypes:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 featureSet:
                   type: string
                 id:

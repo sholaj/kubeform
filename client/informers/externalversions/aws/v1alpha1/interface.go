@@ -118,8 +118,6 @@ type Interface interface {
 	AppsyncAPIKeys() AppsyncAPIKeyInformer
 	// AppsyncDatasources returns a AppsyncDatasourceInformer.
 	AppsyncDatasources() AppsyncDatasourceInformer
-	// AppsyncFunctions returns a AppsyncFunctionInformer.
-	AppsyncFunctions() AppsyncFunctionInformer
 	// AppsyncGraphqlAPIs returns a AppsyncGraphqlAPIInformer.
 	AppsyncGraphqlAPIs() AppsyncGraphqlAPIInformer
 	// AppsyncResolvers returns a AppsyncResolverInformer.
@@ -128,8 +126,6 @@ type Interface interface {
 	AthenaDatabases() AthenaDatabaseInformer
 	// AthenaNamedQueries returns a AthenaNamedQueryInformer.
 	AthenaNamedQueries() AthenaNamedQueryInformer
-	// AthenaWorkgroups returns a AthenaWorkgroupInformer.
-	AthenaWorkgroups() AthenaWorkgroupInformer
 	// AutoscalingAttachments returns a AutoscalingAttachmentInformer.
 	AutoscalingAttachments() AutoscalingAttachmentInformer
 	// AutoscalingGroups returns a AutoscalingGroupInformer.
@@ -250,8 +246,6 @@ type Interface interface {
 	CurReportDefinitions() CurReportDefinitionInformer
 	// CustomerGateways returns a CustomerGatewayInformer.
 	CustomerGateways() CustomerGatewayInformer
-	// DatapipelinePipelines returns a DatapipelinePipelineInformer.
-	DatapipelinePipelines() DatapipelinePipelineInformer
 	// DatasyncAgents returns a DatasyncAgentInformer.
 	DatasyncAgents() DatasyncAgentInformer
 	// DatasyncLocationEfses returns a DatasyncLocationEfsInformer.
@@ -304,8 +298,6 @@ type Interface interface {
 	DirectoryServiceConditionalForwarders() DirectoryServiceConditionalForwarderInformer
 	// DirectoryServiceDirectories returns a DirectoryServiceDirectoryInformer.
 	DirectoryServiceDirectories() DirectoryServiceDirectoryInformer
-	// DirectoryServiceLogSubscriptions returns a DirectoryServiceLogSubscriptionInformer.
-	DirectoryServiceLogSubscriptions() DirectoryServiceLogSubscriptionInformer
 	// DlmLifecyclePolicies returns a DlmLifecyclePolicyInformer.
 	DlmLifecyclePolicies() DlmLifecyclePolicyInformer
 	// DmsCertificates returns a DmsCertificateInformer.
@@ -360,10 +352,6 @@ type Interface interface {
 	DynamodbTables() DynamodbTableInformer
 	// DynamodbTableItems returns a DynamodbTableItemInformer.
 	DynamodbTableItems() DynamodbTableItemInformer
-	// EbsDefaultKmsKeys returns a EbsDefaultKmsKeyInformer.
-	EbsDefaultKmsKeys() EbsDefaultKmsKeyInformer
-	// EbsEncryptionByDefaults returns a EbsEncryptionByDefaultInformer.
-	EbsEncryptionByDefaults() EbsEncryptionByDefaultInformer
 	// EbsSnapshots returns a EbsSnapshotInformer.
 	EbsSnapshots() EbsSnapshotInformer
 	// EbsSnapshotCopies returns a EbsSnapshotCopyInformer.
@@ -390,8 +378,6 @@ type Interface interface {
 	Ec2TransitGatewayRouteTablePropagations() Ec2TransitGatewayRouteTablePropagationInformer
 	// Ec2TransitGatewayVpcAttachments returns a Ec2TransitGatewayVpcAttachmentInformer.
 	Ec2TransitGatewayVpcAttachments() Ec2TransitGatewayVpcAttachmentInformer
-	// Ec2TransitGatewayVpcAttachmentAccepters returns a Ec2TransitGatewayVpcAttachmentAccepterInformer.
-	Ec2TransitGatewayVpcAttachmentAccepters() Ec2TransitGatewayVpcAttachmentAccepterInformer
 	// EcrLifecyclePolicies returns a EcrLifecyclePolicyInformer.
 	EcrLifecyclePolicies() EcrLifecyclePolicyInformer
 	// EcrRepositories returns a EcrRepositoryInformer.
@@ -468,8 +454,6 @@ type Interface interface {
 	GlacierVaultLocks() GlacierVaultLockInformer
 	// GlobalacceleratorAccelerators returns a GlobalacceleratorAcceleratorInformer.
 	GlobalacceleratorAccelerators() GlobalacceleratorAcceleratorInformer
-	// GlobalacceleratorEndpointGroups returns a GlobalacceleratorEndpointGroupInformer.
-	GlobalacceleratorEndpointGroups() GlobalacceleratorEndpointGroupInformer
 	// GlobalacceleratorListeners returns a GlobalacceleratorListenerInformer.
 	GlobalacceleratorListeners() GlobalacceleratorListenerInformer
 	// GlueCatalogDatabases returns a GlueCatalogDatabaseInformer.
@@ -654,10 +638,6 @@ type Interface interface {
 	MqBrokers() MqBrokerInformer
 	// MqConfigurations returns a MqConfigurationInformer.
 	MqConfigurations() MqConfigurationInformer
-	// MskClusters returns a MskClusterInformer.
-	MskClusters() MskClusterInformer
-	// MskConfigurations returns a MskConfigurationInformer.
-	MskConfigurations() MskConfigurationInformer
 	// NatGateways returns a NatGatewayInformer.
 	NatGateways() NatGatewayInformer
 	// NeptuneClusters returns a NeptuneClusterInformer.
@@ -868,14 +848,10 @@ type Interface interface {
 	SesDomainIdentityVerifications() SesDomainIdentityVerificationInformer
 	// SesDomainMailFroms returns a SesDomainMailFromInformer.
 	SesDomainMailFroms() SesDomainMailFromInformer
-	// SesEmailIdentities returns a SesEmailIdentityInformer.
-	SesEmailIdentities() SesEmailIdentityInformer
 	// SesEventDestinations returns a SesEventDestinationInformer.
 	SesEventDestinations() SesEventDestinationInformer
 	// SesIdentityNotificationTopics returns a SesIdentityNotificationTopicInformer.
 	SesIdentityNotificationTopics() SesIdentityNotificationTopicInformer
-	// SesIdentityPolicies returns a SesIdentityPolicyInformer.
-	SesIdentityPolicies() SesIdentityPolicyInformer
 	// SesReceiptFilters returns a SesReceiptFilterInformer.
 	SesReceiptFilters() SesReceiptFilterInformer
 	// SesReceiptRules returns a SesReceiptRuleInformer.
@@ -888,8 +864,6 @@ type Interface interface {
 	SfnActivities() SfnActivityInformer
 	// SfnStateMachines returns a SfnStateMachineInformer.
 	SfnStateMachines() SfnStateMachineInformer
-	// ShieldProtections returns a ShieldProtectionInformer.
-	ShieldProtections() ShieldProtectionInformer
 	// SimpledbDomains returns a SimpledbDomainInformer.
 	SimpledbDomains() SimpledbDomainInformer
 	// SnapshotCreateVolumePermissions returns a SnapshotCreateVolumePermissionInformer.
@@ -1300,11 +1274,6 @@ func (v *version) AppsyncDatasources() AppsyncDatasourceInformer {
 	return &appsyncDatasourceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// AppsyncFunctions returns a AppsyncFunctionInformer.
-func (v *version) AppsyncFunctions() AppsyncFunctionInformer {
-	return &appsyncFunctionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
 // AppsyncGraphqlAPIs returns a AppsyncGraphqlAPIInformer.
 func (v *version) AppsyncGraphqlAPIs() AppsyncGraphqlAPIInformer {
 	return &appsyncGraphqlAPIInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -1323,11 +1292,6 @@ func (v *version) AthenaDatabases() AthenaDatabaseInformer {
 // AthenaNamedQueries returns a AthenaNamedQueryInformer.
 func (v *version) AthenaNamedQueries() AthenaNamedQueryInformer {
 	return &athenaNamedQueryInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// AthenaWorkgroups returns a AthenaWorkgroupInformer.
-func (v *version) AthenaWorkgroups() AthenaWorkgroupInformer {
-	return &athenaWorkgroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // AutoscalingAttachments returns a AutoscalingAttachmentInformer.
@@ -1630,11 +1594,6 @@ func (v *version) CustomerGateways() CustomerGatewayInformer {
 	return &customerGatewayInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// DatapipelinePipelines returns a DatapipelinePipelineInformer.
-func (v *version) DatapipelinePipelines() DatapipelinePipelineInformer {
-	return &datapipelinePipelineInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
 // DatasyncAgents returns a DatasyncAgentInformer.
 func (v *version) DatasyncAgents() DatasyncAgentInformer {
 	return &datasyncAgentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -1763,11 +1722,6 @@ func (v *version) DirectoryServiceConditionalForwarders() DirectoryServiceCondit
 // DirectoryServiceDirectories returns a DirectoryServiceDirectoryInformer.
 func (v *version) DirectoryServiceDirectories() DirectoryServiceDirectoryInformer {
 	return &directoryServiceDirectoryInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// DirectoryServiceLogSubscriptions returns a DirectoryServiceLogSubscriptionInformer.
-func (v *version) DirectoryServiceLogSubscriptions() DirectoryServiceLogSubscriptionInformer {
-	return &directoryServiceLogSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // DlmLifecyclePolicies returns a DlmLifecyclePolicyInformer.
@@ -1905,16 +1859,6 @@ func (v *version) DynamodbTableItems() DynamodbTableItemInformer {
 	return &dynamodbTableItemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// EbsDefaultKmsKeys returns a EbsDefaultKmsKeyInformer.
-func (v *version) EbsDefaultKmsKeys() EbsDefaultKmsKeyInformer {
-	return &ebsDefaultKmsKeyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// EbsEncryptionByDefaults returns a EbsEncryptionByDefaultInformer.
-func (v *version) EbsEncryptionByDefaults() EbsEncryptionByDefaultInformer {
-	return &ebsEncryptionByDefaultInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
 // EbsSnapshots returns a EbsSnapshotInformer.
 func (v *version) EbsSnapshots() EbsSnapshotInformer {
 	return &ebsSnapshotInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -1978,11 +1922,6 @@ func (v *version) Ec2TransitGatewayRouteTablePropagations() Ec2TransitGatewayRou
 // Ec2TransitGatewayVpcAttachments returns a Ec2TransitGatewayVpcAttachmentInformer.
 func (v *version) Ec2TransitGatewayVpcAttachments() Ec2TransitGatewayVpcAttachmentInformer {
 	return &ec2TransitGatewayVpcAttachmentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// Ec2TransitGatewayVpcAttachmentAccepters returns a Ec2TransitGatewayVpcAttachmentAccepterInformer.
-func (v *version) Ec2TransitGatewayVpcAttachmentAccepters() Ec2TransitGatewayVpcAttachmentAccepterInformer {
-	return &ec2TransitGatewayVpcAttachmentAccepterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // EcrLifecyclePolicies returns a EcrLifecyclePolicyInformer.
@@ -2173,11 +2112,6 @@ func (v *version) GlacierVaultLocks() GlacierVaultLockInformer {
 // GlobalacceleratorAccelerators returns a GlobalacceleratorAcceleratorInformer.
 func (v *version) GlobalacceleratorAccelerators() GlobalacceleratorAcceleratorInformer {
 	return &globalacceleratorAcceleratorInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// GlobalacceleratorEndpointGroups returns a GlobalacceleratorEndpointGroupInformer.
-func (v *version) GlobalacceleratorEndpointGroups() GlobalacceleratorEndpointGroupInformer {
-	return &globalacceleratorEndpointGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // GlobalacceleratorListeners returns a GlobalacceleratorListenerInformer.
@@ -2638,16 +2572,6 @@ func (v *version) MqBrokers() MqBrokerInformer {
 // MqConfigurations returns a MqConfigurationInformer.
 func (v *version) MqConfigurations() MqConfigurationInformer {
 	return &mqConfigurationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// MskClusters returns a MskClusterInformer.
-func (v *version) MskClusters() MskClusterInformer {
-	return &mskClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// MskConfigurations returns a MskConfigurationInformer.
-func (v *version) MskConfigurations() MskConfigurationInformer {
-	return &mskConfigurationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NatGateways returns a NatGatewayInformer.
@@ -3175,11 +3099,6 @@ func (v *version) SesDomainMailFroms() SesDomainMailFromInformer {
 	return &sesDomainMailFromInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// SesEmailIdentities returns a SesEmailIdentityInformer.
-func (v *version) SesEmailIdentities() SesEmailIdentityInformer {
-	return &sesEmailIdentityInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
 // SesEventDestinations returns a SesEventDestinationInformer.
 func (v *version) SesEventDestinations() SesEventDestinationInformer {
 	return &sesEventDestinationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -3188,11 +3107,6 @@ func (v *version) SesEventDestinations() SesEventDestinationInformer {
 // SesIdentityNotificationTopics returns a SesIdentityNotificationTopicInformer.
 func (v *version) SesIdentityNotificationTopics() SesIdentityNotificationTopicInformer {
 	return &sesIdentityNotificationTopicInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// SesIdentityPolicies returns a SesIdentityPolicyInformer.
-func (v *version) SesIdentityPolicies() SesIdentityPolicyInformer {
-	return &sesIdentityPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SesReceiptFilters returns a SesReceiptFilterInformer.
@@ -3223,11 +3137,6 @@ func (v *version) SfnActivities() SfnActivityInformer {
 // SfnStateMachines returns a SfnStateMachineInformer.
 func (v *version) SfnStateMachines() SfnStateMachineInformer {
 	return &sfnStateMachineInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// ShieldProtections returns a ShieldProtectionInformer.
-func (v *version) ShieldProtections() ShieldProtectionInformer {
-	return &shieldProtectionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // SimpledbDomains returns a SimpledbDomainInformer.

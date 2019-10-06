@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -53,7 +53,6 @@ type KubernetesClusterSpecNodePool struct {
 	Nodes []KubernetesClusterSpecNodePoolNodes `json:"nodes,omitempty" tf:"nodes,omitempty"`
 	Size  string                               `json:"size" tf:"size"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
 }
 
@@ -82,7 +81,6 @@ type KubernetesClusterSpec struct {
 	// +optional
 	Status string `json:"status,omitempty" tf:"status,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	UpdatedAt string `json:"updatedAt,omitempty" tf:"updated_at,omitempty"`
@@ -96,7 +94,7 @@ type KubernetesClusterStatus struct {
 	// +optional
 	Output *KubernetesClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

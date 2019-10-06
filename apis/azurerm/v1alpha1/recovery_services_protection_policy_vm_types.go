@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -22,7 +22,6 @@ type RecoveryServicesProtectionPolicyVmSpecBackup struct {
 	Frequency string `json:"frequency" tf:"frequency"`
 	Time      string `json:"time" tf:"time"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Weekdays []string `json:"weekdays,omitempty" tf:"weekdays,omitempty"`
 }
 
@@ -31,27 +30,21 @@ type RecoveryServicesProtectionPolicyVmSpecRetentionDaily struct {
 }
 
 type RecoveryServicesProtectionPolicyVmSpecRetentionMonthly struct {
-	Count int `json:"count" tf:"count"`
-	// +kubebuilder:validation:UniqueItems=true
+	Count    int      `json:"count" tf:"count"`
 	Weekdays []string `json:"weekdays" tf:"weekdays"`
-	// +kubebuilder:validation:UniqueItems=true
-	Weeks []string `json:"weeks" tf:"weeks"`
+	Weeks    []string `json:"weeks" tf:"weeks"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpecRetentionWeekly struct {
-	Count int `json:"count" tf:"count"`
-	// +kubebuilder:validation:UniqueItems=true
+	Count    int      `json:"count" tf:"count"`
 	Weekdays []string `json:"weekdays" tf:"weekdays"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpecRetentionYearly struct {
-	Count int `json:"count" tf:"count"`
-	// +kubebuilder:validation:UniqueItems=true
-	Months []string `json:"months" tf:"months"`
-	// +kubebuilder:validation:UniqueItems=true
+	Count    int      `json:"count" tf:"count"`
+	Months   []string `json:"months" tf:"months"`
 	Weekdays []string `json:"weekdays" tf:"weekdays"`
-	// +kubebuilder:validation:UniqueItems=true
-	Weeks []string `json:"weeks" tf:"weeks"`
+	Weeks    []string `json:"weeks" tf:"weeks"`
 }
 
 type RecoveryServicesProtectionPolicyVmSpec struct {
@@ -89,7 +82,7 @@ type RecoveryServicesProtectionPolicyVmStatus struct {
 	// +optional
 	Output *RecoveryServicesProtectionPolicyVmSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

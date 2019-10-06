@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -72,27 +72,22 @@ type ElastictranscoderPipelineSpec struct {
 	AwsKmsKeyArn string `json:"awsKmsKeyArn,omitempty" tf:"aws_kms_key_arn,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	ContentConfig []ElastictranscoderPipelineSpecContentConfig `json:"contentConfig,omitempty" tf:"content_config,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ContentConfigPermissions []ElastictranscoderPipelineSpecContentConfigPermissions `json:"contentConfigPermissions,omitempty" tf:"content_config_permissions,omitempty"`
 	InputBucket              string                                                  `json:"inputBucket" tf:"input_bucket"`
 	// +optional
 	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Notifications []ElastictranscoderPipelineSpecNotifications `json:"notifications,omitempty" tf:"notifications,omitempty"`
 	// +optional
 	OutputBucket string `json:"outputBucket,omitempty" tf:"output_bucket,omitempty"`
 	Role         string `json:"role" tf:"role"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	ThumbnailConfig []ElastictranscoderPipelineSpecThumbnailConfig `json:"thumbnailConfig,omitempty" tf:"thumbnail_config,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ThumbnailConfigPermissions []ElastictranscoderPipelineSpecThumbnailConfigPermissions `json:"thumbnailConfigPermissions,omitempty" tf:"thumbnail_config_permissions,omitempty"`
 }
 
@@ -103,7 +98,7 @@ type ElastictranscoderPipelineStatus struct {
 	// +optional
 	Output *ElastictranscoderPipelineSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

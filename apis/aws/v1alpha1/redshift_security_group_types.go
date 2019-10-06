@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -33,10 +33,9 @@ type RedshiftSecurityGroupSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	Description string `json:"description,omitempty" tf:"description,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
-	Ingress []RedshiftSecurityGroupSpecIngress `json:"ingress" tf:"ingress"`
-	Name    string                             `json:"name" tf:"name"`
+	Description string                             `json:"description,omitempty" tf:"description,omitempty"`
+	Ingress     []RedshiftSecurityGroupSpecIngress `json:"ingress" tf:"ingress"`
+	Name        string                             `json:"name" tf:"name"`
 }
 
 type RedshiftSecurityGroupStatus struct {
@@ -46,7 +45,7 @@ type RedshiftSecurityGroupStatus struct {
 	// +optional
 	Output *RedshiftSecurityGroupSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -405,7 +405,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             name:
               type: string
             namedPort:
@@ -460,7 +459,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 name:
                   type: string
                 namedPort:

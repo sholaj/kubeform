@@ -410,7 +410,6 @@ spec:
                     type: string
                 type: object
               type: array
-              uniqueItems: true
             policyName:
               type: string
             policyTypeName:
@@ -452,7 +451,6 @@ spec:
                         type: string
                     type: object
                   type: array
-                  uniqueItems: true
                 policyName:
                   type: string
                 policyTypeName:

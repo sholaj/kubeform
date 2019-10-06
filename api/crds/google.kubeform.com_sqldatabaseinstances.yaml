@@ -540,7 +540,6 @@ spec:
                                 type: string
                             type: object
                           type: array
-                          uniqueItems: true
                         ipv4Enabled:
                           type: boolean
                         privateNetwork:
@@ -745,7 +744,6 @@ spec:
                                     type: string
                                 type: object
                               type: array
-                              uniqueItems: true
                             ipv4Enabled:
                               type: boolean
                             privateNetwork:

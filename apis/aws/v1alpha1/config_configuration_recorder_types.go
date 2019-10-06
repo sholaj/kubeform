@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -24,7 +24,6 @@ type ConfigConfigurationRecorderSpecRecordingGroup struct {
 	// +optional
 	IncludeGlobalResourceTypes bool `json:"includeGlobalResourceTypes,omitempty" tf:"include_global_resource_types,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ResourceTypes []string `json:"resourceTypes,omitempty" tf:"resource_types,omitempty"`
 }
 
@@ -48,7 +47,7 @@ type ConfigConfigurationRecorderStatus struct {
 	// +optional
 	Output *ConfigConfigurationRecorderSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -5,7 +5,7 @@ import (
 
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -38,7 +38,6 @@ type AppautoscalingPolicySpecStepScalingPolicyConfiguration struct {
 	// +optional
 	MinAdjustmentMagnitude int `json:"minAdjustmentMagnitude,omitempty" tf:"min_adjustment_magnitude,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	StepAdjustment []AppautoscalingPolicySpecStepScalingPolicyConfigurationStepAdjustment `json:"stepAdjustment,omitempty" tf:"step_adjustment,omitempty"`
 }
 
@@ -49,7 +48,6 @@ type AppautoscalingPolicySpecTargetTrackingScalingPolicyConfigurationCustomizedM
 
 type AppautoscalingPolicySpecTargetTrackingScalingPolicyConfigurationCustomizedMetricSpecification struct {
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Dimensions []AppautoscalingPolicySpecTargetTrackingScalingPolicyConfigurationCustomizedMetricSpecificationDimensions `json:"dimensions,omitempty" tf:"dimensions,omitempty"`
 	MetricName string                                                                                                    `json:"metricName" tf:"metric_name"`
 	Namespace  string                                                                                                    `json:"namespace" tf:"namespace"`
@@ -110,7 +108,7 @@ type AppautoscalingPolicyStatus struct {
 	// +optional
 	Output *AppautoscalingPolicySpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

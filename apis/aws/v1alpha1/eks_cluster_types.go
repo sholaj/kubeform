@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -29,10 +29,8 @@ type EksClusterSpecVpcConfig struct {
 	// +optional
 	EndpointPublicAccess bool `json:"endpointPublicAccess,omitempty" tf:"endpoint_public_access,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroupIDS []string `json:"securityGroupIDS,omitempty" tf:"security_group_ids,omitempty"`
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
 	// +optional
 	VpcID string `json:"vpcID,omitempty" tf:"vpc_id,omitempty"`
@@ -51,7 +49,6 @@ type EksClusterSpec struct {
 	// +optional
 	CreatedAt string `json:"createdAt,omitempty" tf:"created_at,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EnabledClusterLogTypes []string `json:"enabledClusterLogTypes,omitempty" tf:"enabled_cluster_log_types,omitempty"`
 	// +optional
 	Endpoint string `json:"endpoint,omitempty" tf:"endpoint,omitempty"`
@@ -73,7 +70,7 @@ type EksClusterStatus struct {
 	// +optional
 	Output *EksClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

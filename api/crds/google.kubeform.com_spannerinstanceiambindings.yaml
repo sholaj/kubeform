@@ -407,7 +407,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             project:
               type: string
             providerRef:
@@ -446,7 +445,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 project:
                   type: string
                 providerRef:

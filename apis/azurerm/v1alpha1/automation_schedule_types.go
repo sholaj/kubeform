@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -41,7 +41,6 @@ type AutomationScheduleSpec struct {
 	// +optional
 	Interval int `json:"interval,omitempty" tf:"interval,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	MonthDays []int64 `json:"monthDays,omitempty" tf:"month_days,omitempty"`
 	// +optional
 	MonthlyOccurrence []AutomationScheduleSpecMonthlyOccurrence `json:"monthlyOccurrence,omitempty" tf:"monthly_occurrence,omitempty"`
@@ -52,7 +51,6 @@ type AutomationScheduleSpec struct {
 	// +optional
 	Timezone string `json:"timezone,omitempty" tf:"timezone,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	WeekDays []string `json:"weekDays,omitempty" tf:"week_days,omitempty"`
 }
 
@@ -63,7 +61,7 @@ type AutomationScheduleStatus struct {
 	// +optional
 	Output *AutomationScheduleSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

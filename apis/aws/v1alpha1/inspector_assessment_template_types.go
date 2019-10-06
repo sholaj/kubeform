@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -24,10 +24,9 @@ type InspectorAssessmentTemplateSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	Arn      string `json:"arn,omitempty" tf:"arn,omitempty"`
-	Duration int    `json:"duration" tf:"duration"`
-	Name     string `json:"name" tf:"name"`
-	// +kubebuilder:validation:UniqueItems=true
+	Arn              string   `json:"arn,omitempty" tf:"arn,omitempty"`
+	Duration         int      `json:"duration" tf:"duration"`
+	Name             string   `json:"name" tf:"name"`
 	RulesPackageArns []string `json:"rulesPackageArns" tf:"rules_package_arns"`
 	TargetArn        string   `json:"targetArn" tf:"target_arn"`
 }
@@ -39,7 +38,7 @@ type InspectorAssessmentTemplateStatus struct {
 	// +optional
 	Output *InspectorAssessmentTemplateSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

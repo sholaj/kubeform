@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -56,12 +56,10 @@ type MonitorDiagnosticSettingSpec struct {
 	// +optional
 	EventhubName string `json:"eventhubName,omitempty" tf:"eventhub_name,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Log []MonitorDiagnosticSettingSpecLog `json:"log,omitempty" tf:"log,omitempty"`
 	// +optional
 	LogAnalyticsWorkspaceID string `json:"logAnalyticsWorkspaceID,omitempty" tf:"log_analytics_workspace_id,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Metric []MonitorDiagnosticSettingSpecMetric `json:"metric,omitempty" tf:"metric,omitempty"`
 	Name   string                               `json:"name" tf:"name"`
 	// +optional
@@ -76,7 +74,7 @@ type MonitorDiagnosticSettingStatus struct {
 	// +optional
 	Output *MonitorDiagnosticSettingSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

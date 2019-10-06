@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -27,7 +27,6 @@ type ApiManagementAPIOperationSpecRequestHeader struct {
 	Required    bool   `json:"required" tf:"required"`
 	Type        string `json:"type" tf:"type"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
@@ -40,7 +39,6 @@ type ApiManagementAPIOperationSpecRequestQueryParameter struct {
 	Required    bool   `json:"required" tf:"required"`
 	Type        string `json:"type" tf:"type"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
@@ -53,7 +51,6 @@ type ApiManagementAPIOperationSpecRequestRepresentationFormParameter struct {
 	Required    bool   `json:"required" tf:"required"`
 	Type        string `json:"type" tf:"type"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
@@ -89,7 +86,6 @@ type ApiManagementAPIOperationSpecResponseHeader struct {
 	Required    bool   `json:"required" tf:"required"`
 	Type        string `json:"type" tf:"type"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
@@ -102,7 +98,6 @@ type ApiManagementAPIOperationSpecResponseRepresentationFormParameter struct {
 	Required    bool   `json:"required" tf:"required"`
 	Type        string `json:"type" tf:"type"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
@@ -137,7 +132,6 @@ type ApiManagementAPIOperationSpecTemplateParameter struct {
 	Required    bool   `json:"required" tf:"required"`
 	Type        string `json:"type" tf:"type"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Values []string `json:"values,omitempty" tf:"values,omitempty"`
 }
 
@@ -171,7 +165,7 @@ type ApiManagementAPIOperationStatus struct {
 	// +optional
 	Output *ApiManagementAPIOperationSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

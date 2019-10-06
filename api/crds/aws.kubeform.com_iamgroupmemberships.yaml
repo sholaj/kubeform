@@ -416,7 +416,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
           required:
           - group
           - name
@@ -451,7 +450,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
               required:
               - group
               - name

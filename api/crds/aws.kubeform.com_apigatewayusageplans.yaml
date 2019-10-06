@@ -441,7 +441,6 @@ spec:
                 type: object
               maxItems: 1
               type: array
-              uniqueItems: true
             throttleSettings:
               items:
                 properties:
@@ -453,7 +452,6 @@ spec:
                 type: object
               maxItems: 1
               type: array
-              uniqueItems: true
           required:
           - name
           - providerRef
@@ -511,7 +509,6 @@ spec:
                     type: object
                   maxItems: 1
                   type: array
-                  uniqueItems: true
                 throttleSettings:
                   items:
                     properties:
@@ -523,7 +520,6 @@ spec:
                     type: object
                   maxItems: 1
                   type: array
-                  uniqueItems: true
               required:
               - name
               - providerRef

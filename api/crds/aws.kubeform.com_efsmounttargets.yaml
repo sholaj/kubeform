@@ -422,7 +422,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             subnetID:
               type: string
           required:
@@ -464,7 +463,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 subnetID:
                   type: string
               required:

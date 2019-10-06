@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -38,13 +38,11 @@ type Route53ResolverEndpointSpec struct {
 	HostVpcID string `json:"hostVpcID,omitempty" tf:"host_vpc_id,omitempty"`
 	// +kubebuilder:validation:MaxItems=10
 	// +kubebuilder:validation:MinItems=2
-	// +kubebuilder:validation:UniqueItems=true
 	IpAddress []Route53ResolverEndpointSpecIpAddress `json:"ipAddress" tf:"ip_address"`
 	// +optional
 	Name string `json:"name,omitempty" tf:"name,omitempty"`
 	// +kubebuilder:validation:MaxItems=64
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroupIDS []string `json:"securityGroupIDS" tf:"security_group_ids"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -57,7 +55,7 @@ type Route53ResolverEndpointStatus struct {
 	// +optional
 	Output *Route53ResolverEndpointSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

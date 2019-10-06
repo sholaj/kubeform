@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -33,7 +33,6 @@ type EfsMountTargetSpec struct {
 	// +optional
 	NetworkInterfaceID string `json:"networkInterfaceID,omitempty" tf:"network_interface_id,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroups []string `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
 	SubnetID       string   `json:"subnetID" tf:"subnet_id"`
 }
@@ -45,7 +44,7 @@ type EfsMountTargetStatus struct {
 	// +optional
 	Output *EfsMountTargetSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

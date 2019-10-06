@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -65,17 +65,14 @@ type DynamodbTableSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
+	Arn       string                       `json:"arn,omitempty" tf:"arn,omitempty"`
 	Attribute []DynamodbTableSpecAttribute `json:"attribute" tf:"attribute"`
 	// +optional
 	BillingMode string `json:"billingMode,omitempty" tf:"billing_mode,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	GlobalSecondaryIndex []DynamodbTableSpecGlobalSecondaryIndex `json:"globalSecondaryIndex,omitempty" tf:"global_secondary_index,omitempty"`
 	HashKey              string                                  `json:"hashKey" tf:"hash_key"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	LocalSecondaryIndex []DynamodbTableSpecLocalSecondaryIndex `json:"localSecondaryIndex,omitempty" tf:"local_secondary_index,omitempty"`
 	Name                string                                 `json:"name" tf:"name"`
 	// +optional
@@ -112,7 +109,7 @@ type DynamodbTableStatus struct {
 	// +optional
 	Output *DynamodbTableSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

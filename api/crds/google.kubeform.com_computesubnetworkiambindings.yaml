@@ -405,7 +405,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             project:
               description: Deprecated
               type: string
@@ -449,7 +448,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 project:
                   description: Deprecated
                   type: string

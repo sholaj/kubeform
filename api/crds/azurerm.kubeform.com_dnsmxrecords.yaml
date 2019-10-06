@@ -422,7 +422,6 @@ spec:
                 - preference
                 type: object
               type: array
-              uniqueItems: true
             resourceGroupName:
               type: string
             tags:
@@ -475,7 +474,6 @@ spec:
                     - preference
                     type: object
                   type: array
-                  uniqueItems: true
                 resourceGroupName:
                   type: string
                 tags:

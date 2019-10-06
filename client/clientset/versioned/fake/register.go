@@ -29,6 +29,8 @@ import (
 	digitaloceanv1alpha1 "kubeform.dev/kubeform/apis/digitalocean/v1alpha1"
 	googlev1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 	linodev1alpha1 "kubeform.dev/kubeform/apis/linode/v1alpha1"
+	modulesv1alpha1 "kubeform.dev/kubeform/apis/modules/v1alpha1"
+	basev1alpha1 "kubeform.dev/kubeform/apis/register.go/v1alpha1"
 )
 
 var scheme = runtime.NewScheme()
@@ -37,9 +39,12 @@ var parameterCodec = runtime.NewParameterCodec(scheme)
 var localSchemeBuilder = runtime.SchemeBuilder{
 	awsv1alpha1.AddToScheme,
 	azurermv1alpha1.AddToScheme,
+	basev1alpha1.AddToScheme,
 	digitaloceanv1alpha1.AddToScheme,
 	googlev1alpha1.AddToScheme,
 	linodev1alpha1.AddToScheme,
+	modulesv1alpha1.AddToScheme,
+	basev1alpha1.AddToScheme,
 }
 
 // AddToScheme adds all types of this clientset into the given scheme. This allows composition

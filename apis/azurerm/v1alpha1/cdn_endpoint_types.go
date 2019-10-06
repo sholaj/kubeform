@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -39,7 +39,6 @@ type CdnEndpointSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ContentTypesToCompress []string `json:"contentTypesToCompress,omitempty" tf:"content_types_to_compress,omitempty"`
 	// +optional
 	GeoFilter []CdnEndpointSpecGeoFilter `json:"geoFilter,omitempty" tf:"geo_filter,omitempty"`
@@ -54,9 +53,8 @@ type CdnEndpointSpec struct {
 	Location       string `json:"location" tf:"location"`
 	Name           string `json:"name" tf:"name"`
 	// +optional
-	OptimizationType string `json:"optimizationType,omitempty" tf:"optimization_type,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
-	Origin []CdnEndpointSpecOrigin `json:"origin" tf:"origin"`
+	OptimizationType string                  `json:"optimizationType,omitempty" tf:"optimization_type,omitempty"`
+	Origin           []CdnEndpointSpecOrigin `json:"origin" tf:"origin"`
 	// +optional
 	OriginHostHeader string `json:"originHostHeader,omitempty" tf:"origin_host_header,omitempty"`
 	// +optional
@@ -78,7 +76,7 @@ type CdnEndpointStatus struct {
 	// +optional
 	Output *CdnEndpointSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

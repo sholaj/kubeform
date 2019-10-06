@@ -435,7 +435,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
           required:
           - clusterID
           - name
@@ -490,7 +489,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
               required:
               - clusterID
               - name

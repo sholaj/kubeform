@@ -112,8 +112,6 @@ type AppsyncAPIKeyExpansion interface{}
 
 type AppsyncDatasourceExpansion interface{}
 
-type AppsyncFunctionExpansion interface{}
-
 type AppsyncGraphqlAPIExpansion interface{}
 
 type AppsyncResolverExpansion interface{}
@@ -121,8 +119,6 @@ type AppsyncResolverExpansion interface{}
 type AthenaDatabaseExpansion interface{}
 
 type AthenaNamedQueryExpansion interface{}
-
-type AthenaWorkgroupExpansion interface{}
 
 type AutoscalingAttachmentExpansion interface{}
 
@@ -244,8 +240,6 @@ type CurReportDefinitionExpansion interface{}
 
 type CustomerGatewayExpansion interface{}
 
-type DatapipelinePipelineExpansion interface{}
-
 type DatasyncAgentExpansion interface{}
 
 type DatasyncLocationEfsExpansion interface{}
@@ -297,8 +291,6 @@ type DevicefarmProjectExpansion interface{}
 type DirectoryServiceConditionalForwarderExpansion interface{}
 
 type DirectoryServiceDirectoryExpansion interface{}
-
-type DirectoryServiceLogSubscriptionExpansion interface{}
 
 type DlmLifecyclePolicyExpansion interface{}
 
@@ -354,10 +346,6 @@ type DynamodbTableExpansion interface{}
 
 type DynamodbTableItemExpansion interface{}
 
-type EbsDefaultKmsKeyExpansion interface{}
-
-type EbsEncryptionByDefaultExpansion interface{}
-
 type EbsSnapshotExpansion interface{}
 
 type EbsSnapshotCopyExpansion interface{}
@@ -383,8 +371,6 @@ type Ec2TransitGatewayRouteTableAssociationExpansion interface{}
 type Ec2TransitGatewayRouteTablePropagationExpansion interface{}
 
 type Ec2TransitGatewayVpcAttachmentExpansion interface{}
-
-type Ec2TransitGatewayVpcAttachmentAccepterExpansion interface{}
 
 type EcrLifecyclePolicyExpansion interface{}
 
@@ -461,8 +447,6 @@ type GlacierVaultExpansion interface{}
 type GlacierVaultLockExpansion interface{}
 
 type GlobalacceleratorAcceleratorExpansion interface{}
-
-type GlobalacceleratorEndpointGroupExpansion interface{}
 
 type GlobalacceleratorListenerExpansion interface{}
 
@@ -647,10 +631,6 @@ type MediaStoreContainerPolicyExpansion interface{}
 type MqBrokerExpansion interface{}
 
 type MqConfigurationExpansion interface{}
-
-type MskClusterExpansion interface{}
-
-type MskConfigurationExpansion interface{}
 
 type NatGatewayExpansion interface{}
 
@@ -862,13 +842,9 @@ type SesDomainIdentityVerificationExpansion interface{}
 
 type SesDomainMailFromExpansion interface{}
 
-type SesEmailIdentityExpansion interface{}
-
 type SesEventDestinationExpansion interface{}
 
 type SesIdentityNotificationTopicExpansion interface{}
-
-type SesIdentityPolicyExpansion interface{}
 
 type SesReceiptFilterExpansion interface{}
 
@@ -881,8 +857,6 @@ type SesTemplateExpansion interface{}
 type SfnActivityExpansion interface{}
 
 type SfnStateMachineExpansion interface{}
-
-type ShieldProtectionExpansion interface{}
 
 type SimpledbDomainExpansion interface{}
 

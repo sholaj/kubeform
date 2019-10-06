@@ -450,7 +450,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
           required:
           - providerRef
           - replicationInstanceClass
@@ -518,7 +517,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
               required:
               - providerRef
               - replicationInstanceClass

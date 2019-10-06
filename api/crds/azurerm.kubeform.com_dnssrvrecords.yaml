@@ -428,7 +428,6 @@ spec:
                 - weight
                 type: object
               type: array
-              uniqueItems: true
             resourceGroupName:
               type: string
             tags:
@@ -487,7 +486,6 @@ spec:
                     - weight
                     type: object
                   type: array
-                  uniqueItems: true
                 resourceGroupName:
                   type: string
                 tags:

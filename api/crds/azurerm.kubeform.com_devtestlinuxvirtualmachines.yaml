@@ -438,7 +438,6 @@ spec:
                 - protocol
                 type: object
               type: array
-              uniqueItems: true
             labName:
               type: string
             labSubnetName:
@@ -548,7 +547,6 @@ spec:
                     - protocol
                     type: object
                   type: array
-                  uniqueItems: true
                 labName:
                   type: string
                 labSubnetName:

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -65,7 +65,6 @@ type ContainerNodePoolSpecNodeConfig struct {
 	// +optional
 	MinCPUPlatform string `json:"minCPUPlatform,omitempty" tf:"min_cpu_platform,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	OauthScopes []string `json:"oauthScopes,omitempty" tf:"oauth_scopes,omitempty"`
 	// +optional
 	Preemptible bool `json:"preemptible,omitempty" tf:"preemptible,omitempty"`
@@ -128,7 +127,7 @@ type ContainerNodePoolStatus struct {
 	// +optional
 	Output *ContainerNodePoolSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

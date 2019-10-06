@@ -462,12 +462,10 @@ spec:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   subnets:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                 required:
                 - securityGroupIDS
                 - subnets
@@ -552,12 +550,10 @@ spec:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       subnets:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                     required:
                     - securityGroupIDS
                     - subnets

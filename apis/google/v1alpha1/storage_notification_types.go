@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -27,7 +27,6 @@ type StorageNotificationSpec struct {
 	// +optional
 	CustomAttributes map[string]string `json:"customAttributes,omitempty" tf:"custom_attributes,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EventTypes []string `json:"eventTypes,omitempty" tf:"event_types,omitempty"`
 	// +optional
 	ObjectNamePrefix string `json:"objectNamePrefix,omitempty" tf:"object_name_prefix,omitempty"`
@@ -44,7 +43,7 @@ type StorageNotificationStatus struct {
 	// +optional
 	Output *StorageNotificationSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

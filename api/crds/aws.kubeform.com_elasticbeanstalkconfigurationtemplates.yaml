@@ -433,7 +433,6 @@ spec:
                 - value
                 type: object
               type: array
-              uniqueItems: true
             solutionStackName:
               type: string
           required:
@@ -486,7 +485,6 @@ spec:
                     - value
                     type: object
                   type: array
-                  uniqueItems: true
                 solutionStackName:
                   type: string
               required:

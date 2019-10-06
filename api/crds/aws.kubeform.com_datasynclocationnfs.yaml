@@ -408,7 +408,6 @@ spec:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                 required:
                 - agentArns
                 type: object
@@ -459,7 +458,6 @@ spec:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                     required:
                     - agentArns
                     type: object

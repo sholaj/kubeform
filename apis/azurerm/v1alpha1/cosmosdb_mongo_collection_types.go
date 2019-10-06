@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -34,7 +34,6 @@ type CosmosdbMongoCollectionSpec struct {
 	// +optional
 	DefaultTtlSeconds int `json:"defaultTtlSeconds,omitempty" tf:"default_ttl_seconds,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Indexes           []CosmosdbMongoCollectionSpecIndexes `json:"indexes,omitempty" tf:"indexes,omitempty"`
 	Name              string                               `json:"name" tf:"name"`
 	ResourceGroupName string                               `json:"resourceGroupName" tf:"resource_group_name"`
@@ -49,7 +48,7 @@ type CosmosdbMongoCollectionStatus struct {
 	// +optional
 	Output *CosmosdbMongoCollectionSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

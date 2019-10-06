@@ -415,7 +415,6 @@ spec:
                 - type
                 type: object
               type: array
-              uniqueItems: true
             ebsOptimized:
               type: boolean
             id:
@@ -471,7 +470,6 @@ spec:
                     - type
                     type: object
                   type: array
-                  uniqueItems: true
                 ebsOptimized:
                   type: boolean
                 id:

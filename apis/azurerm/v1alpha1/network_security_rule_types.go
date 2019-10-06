@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -29,16 +29,13 @@ type NetworkSecurityRuleSpec struct {
 	// +optional
 	DestinationAddressPrefix string `json:"destinationAddressPrefix,omitempty" tf:"destination_address_prefix,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	DestinationAddressPrefixes []string `json:"destinationAddressPrefixes,omitempty" tf:"destination_address_prefixes,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	DestinationApplicationSecurityGroupIDS []string `json:"destinationApplicationSecurityGroupIDS,omitempty" tf:"destination_application_security_group_ids,omitempty"`
 	// +optional
 	DestinationPortRange string `json:"destinationPortRange,omitempty" tf:"destination_port_range,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	DestinationPortRanges    []string `json:"destinationPortRanges,omitempty" tf:"destination_port_ranges,omitempty"`
 	Direction                string   `json:"direction" tf:"direction"`
 	Name                     string   `json:"name" tf:"name"`
@@ -49,16 +46,13 @@ type NetworkSecurityRuleSpec struct {
 	// +optional
 	SourceAddressPrefix string `json:"sourceAddressPrefix,omitempty" tf:"source_address_prefix,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SourceAddressPrefixes []string `json:"sourceAddressPrefixes,omitempty" tf:"source_address_prefixes,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	SourceApplicationSecurityGroupIDS []string `json:"sourceApplicationSecurityGroupIDS,omitempty" tf:"source_application_security_group_ids,omitempty"`
 	// +optional
 	SourcePortRange string `json:"sourcePortRange,omitempty" tf:"source_port_range,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SourcePortRanges []string `json:"sourcePortRanges,omitempty" tf:"source_port_ranges,omitempty"`
 }
 
@@ -69,7 +63,7 @@ type NetworkSecurityRuleStatus struct {
 	// +optional
 	Output *NetworkSecurityRuleSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

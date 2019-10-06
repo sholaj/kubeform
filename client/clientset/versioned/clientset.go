@@ -24,18 +24,24 @@ import (
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
 	awsv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/aws/v1alpha1"
 	azurermv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/azurerm/v1alpha1"
+	basev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/base/v1alpha1"
 	digitaloceanv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/digitalocean/v1alpha1"
 	googlev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/google/v1alpha1"
 	linodev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/linode/v1alpha1"
+	modulesv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/modules/v1alpha1"
+	basev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/register.go/v1alpha1"
 )
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
 	AwsV1alpha1() awsv1alpha1.AwsV1alpha1Interface
 	AzurermV1alpha1() azurermv1alpha1.AzurermV1alpha1Interface
+	BaseV1alpha1() basev1alpha1.BaseV1alpha1Interface
 	DigitaloceanV1alpha1() digitaloceanv1alpha1.DigitaloceanV1alpha1Interface
 	GoogleV1alpha1() googlev1alpha1.GoogleV1alpha1Interface
 	LinodeV1alpha1() linodev1alpha1.LinodeV1alpha1Interface
+	ModulesV1alpha1() modulesv1alpha1.ModulesV1alpha1Interface
+	BaseV1alpha1() basev1alpha1.BaseV1alpha1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
@@ -44,9 +50,12 @@ type Clientset struct {
 	*discovery.DiscoveryClient
 	awsV1alpha1          *awsv1alpha1.AwsV1alpha1Client
 	azurermV1alpha1      *azurermv1alpha1.AzurermV1alpha1Client
+	baseV1alpha1         *basev1alpha1.BaseV1alpha1Client
 	digitaloceanV1alpha1 *digitaloceanv1alpha1.DigitaloceanV1alpha1Client
 	googleV1alpha1       *googlev1alpha1.GoogleV1alpha1Client
 	linodeV1alpha1       *linodev1alpha1.LinodeV1alpha1Client
+	modulesV1alpha1      *modulesv1alpha1.ModulesV1alpha1Client
+	baseV1alpha1         *basev1alpha1.BaseV1alpha1Client
 }
 
 // AwsV1alpha1 retrieves the AwsV1alpha1Client
@@ -57,6 +66,11 @@ func (c *Clientset) AwsV1alpha1() awsv1alpha1.AwsV1alpha1Interface {
 // AzurermV1alpha1 retrieves the AzurermV1alpha1Client
 func (c *Clientset) AzurermV1alpha1() azurermv1alpha1.AzurermV1alpha1Interface {
 	return c.azurermV1alpha1
+}
+
+// BaseV1alpha1 retrieves the BaseV1alpha1Client
+func (c *Clientset) BaseV1alpha1() basev1alpha1.BaseV1alpha1Interface {
+	return c.baseV1alpha1
 }
 
 // DigitaloceanV1alpha1 retrieves the DigitaloceanV1alpha1Client
@@ -72,6 +86,16 @@ func (c *Clientset) GoogleV1alpha1() googlev1alpha1.GoogleV1alpha1Interface {
 // LinodeV1alpha1 retrieves the LinodeV1alpha1Client
 func (c *Clientset) LinodeV1alpha1() linodev1alpha1.LinodeV1alpha1Interface {
 	return c.linodeV1alpha1
+}
+
+// ModulesV1alpha1 retrieves the ModulesV1alpha1Client
+func (c *Clientset) ModulesV1alpha1() modulesv1alpha1.ModulesV1alpha1Interface {
+	return c.modulesV1alpha1
+}
+
+// BaseV1alpha1 retrieves the BaseV1alpha1Client
+func (c *Clientset) BaseV1alpha1() basev1alpha1.BaseV1alpha1Interface {
+	return c.baseV1alpha1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -98,6 +122,10 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	if err != nil {
 		return nil, err
 	}
+	cs.baseV1alpha1, err = basev1alpha1.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
 	cs.digitaloceanV1alpha1, err = digitaloceanv1alpha1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
@@ -107,6 +135,14 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 		return nil, err
 	}
 	cs.linodeV1alpha1, err = linodev1alpha1.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
+	cs.modulesV1alpha1, err = modulesv1alpha1.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
+	cs.baseV1alpha1, err = basev1alpha1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -124,9 +160,12 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
 	cs.awsV1alpha1 = awsv1alpha1.NewForConfigOrDie(c)
 	cs.azurermV1alpha1 = azurermv1alpha1.NewForConfigOrDie(c)
+	cs.baseV1alpha1 = basev1alpha1.NewForConfigOrDie(c)
 	cs.digitaloceanV1alpha1 = digitaloceanv1alpha1.NewForConfigOrDie(c)
 	cs.googleV1alpha1 = googlev1alpha1.NewForConfigOrDie(c)
 	cs.linodeV1alpha1 = linodev1alpha1.NewForConfigOrDie(c)
+	cs.modulesV1alpha1 = modulesv1alpha1.NewForConfigOrDie(c)
+	cs.baseV1alpha1 = basev1alpha1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -137,9 +176,12 @@ func New(c rest.Interface) *Clientset {
 	var cs Clientset
 	cs.awsV1alpha1 = awsv1alpha1.New(c)
 	cs.azurermV1alpha1 = azurermv1alpha1.New(c)
+	cs.baseV1alpha1 = basev1alpha1.New(c)
 	cs.digitaloceanV1alpha1 = digitaloceanv1alpha1.New(c)
 	cs.googleV1alpha1 = googlev1alpha1.New(c)
 	cs.linodeV1alpha1 = linodev1alpha1.New(c)
+	cs.modulesV1alpha1 = modulesv1alpha1.New(c)
+	cs.baseV1alpha1 = basev1alpha1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

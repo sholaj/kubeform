@@ -401,7 +401,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             dxGatewayAssociationID:
               type: string
             dxGatewayID:
@@ -437,7 +436,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 dxGatewayAssociationID:
                   type: string
                 dxGatewayID:

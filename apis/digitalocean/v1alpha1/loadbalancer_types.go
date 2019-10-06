@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -61,7 +61,6 @@ type LoadbalancerSpec struct {
 	// +optional
 	Algorithm string `json:"algorithm,omitempty" tf:"algorithm,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	DropletIDS []int64 `json:"dropletIDS,omitempty" tf:"droplet_ids,omitempty"`
 	// +optional
 	DropletTag string `json:"dropletTag,omitempty" tf:"droplet_tag,omitempty"`
@@ -95,7 +94,7 @@ type LoadbalancerStatus struct {
 	// +optional
 	Output *LoadbalancerSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

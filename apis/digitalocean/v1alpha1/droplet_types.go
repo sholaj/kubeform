@@ -5,7 +5,7 @@ import (
 
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -56,12 +56,10 @@ type DropletSpec struct {
 	ResizeDisk bool   `json:"resizeDisk,omitempty" tf:"resize_disk,omitempty"`
 	Size       string `json:"size" tf:"size"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
 	Status string `json:"status,omitempty" tf:"status,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	Urn string `json:"urn,omitempty" tf:"urn,omitempty"`
@@ -70,7 +68,6 @@ type DropletSpec struct {
 	// +optional
 	Vcpus int `json:"vcpus,omitempty" tf:"vcpus,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VolumeIDS []string `json:"volumeIDS,omitempty" tf:"volume_ids,omitempty"`
 }
 
@@ -81,7 +78,7 @@ type DropletStatus struct {
 	// +optional
 	Output *DropletSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

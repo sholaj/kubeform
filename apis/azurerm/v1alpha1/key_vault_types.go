@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -37,10 +37,8 @@ type KeyVaultSpecNetworkAcls struct {
 	Bypass        string `json:"bypass" tf:"bypass"`
 	DefaultAction string `json:"defaultAction" tf:"default_action"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	IpRules []string `json:"ipRules,omitempty" tf:"ip_rules,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VirtualNetworkSubnetIDS []string `json:"virtualNetworkSubnetIDS,omitempty" tf:"virtual_network_subnet_ids,omitempty"`
 }
 
@@ -89,7 +87,7 @@ type KeyVaultStatus struct {
 	// +optional
 	Output *KeyVaultSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

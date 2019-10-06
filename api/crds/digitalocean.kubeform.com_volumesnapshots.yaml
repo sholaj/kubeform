@@ -418,7 +418,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             size:
               description: A Number represents a JSON number literal.
               type: string
@@ -459,7 +458,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 size:
                   description: A Number represents a JSON number literal.
                   type: string

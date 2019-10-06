@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -30,15 +30,12 @@ type ApiManagementAuthorizationServerSpec struct {
 
 	SecretRef *core.LocalObjectReference `json:"secretRef,omitempty" tf:"-"`
 
-	ApiManagementName     string `json:"apiManagementName" tf:"api_management_name"`
-	AuthorizationEndpoint string `json:"authorizationEndpoint" tf:"authorization_endpoint"`
-	// +kubebuilder:validation:UniqueItems=true
-	AuthorizationMethods []string `json:"authorizationMethods" tf:"authorization_methods"`
+	ApiManagementName     string   `json:"apiManagementName" tf:"api_management_name"`
+	AuthorizationEndpoint string   `json:"authorizationEndpoint" tf:"authorization_endpoint"`
+	AuthorizationMethods  []string `json:"authorizationMethods" tf:"authorization_methods"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	BearerTokenSendingMethods []string `json:"bearerTokenSendingMethods,omitempty" tf:"bearer_token_sending_methods,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ClientAuthenticationMethod []string `json:"clientAuthenticationMethod,omitempty" tf:"client_authentication_method,omitempty"`
 	ClientID                   string   `json:"clientID" tf:"client_id"`
 	ClientRegistrationEndpoint string   `json:"clientRegistrationEndpoint" tf:"client_registration_endpoint"`
@@ -47,9 +44,8 @@ type ApiManagementAuthorizationServerSpec struct {
 	// +optional
 	DefaultScope string `json:"defaultScope,omitempty" tf:"default_scope,omitempty"`
 	// +optional
-	Description string `json:"description,omitempty" tf:"description,omitempty"`
-	DisplayName string `json:"displayName" tf:"display_name"`
-	// +kubebuilder:validation:UniqueItems=true
+	Description       string   `json:"description,omitempty" tf:"description,omitempty"`
+	DisplayName       string   `json:"displayName" tf:"display_name"`
 	GrantTypes        []string `json:"grantTypes" tf:"grant_types"`
 	Name              string   `json:"name" tf:"name"`
 	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
@@ -72,7 +68,7 @@ type ApiManagementAuthorizationServerStatus struct {
 	// +optional
 	Output *ApiManagementAuthorizationServerSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

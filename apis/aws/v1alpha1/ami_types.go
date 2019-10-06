@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -49,12 +49,10 @@ type AmiSpec struct {
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EbsBlockDevice []AmiSpecEbsBlockDevice `json:"ebsBlockDevice,omitempty" tf:"ebs_block_device,omitempty"`
 	// +optional
 	EnaSupport bool `json:"enaSupport,omitempty" tf:"ena_support,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EphemeralBlockDevice []AmiSpecEphemeralBlockDevice `json:"ephemeralBlockDevice,omitempty" tf:"ephemeral_block_device,omitempty"`
 	// +optional
 	ImageLocation string `json:"imageLocation,omitempty" tf:"image_location,omitempty"`
@@ -84,7 +82,7 @@ type AmiStatus struct {
 	// +optional
 	Output *AmiSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

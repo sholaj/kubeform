@@ -452,7 +452,6 @@ spec:
                 - name
                 type: object
               type: array
-              uniqueItems: true
             tags:
               additionalProperties:
                 type: string
@@ -528,7 +527,6 @@ spec:
                     - name
                     type: object
                   type: array
-                  uniqueItems: true
                 tags:
                   additionalProperties:
                     type: string

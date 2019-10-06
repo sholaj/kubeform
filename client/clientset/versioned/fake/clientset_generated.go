@@ -29,12 +29,18 @@ import (
 	fakeawsv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/aws/v1alpha1/fake"
 	azurermv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/azurerm/v1alpha1"
 	fakeazurermv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/azurerm/v1alpha1/fake"
+	basev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/base/v1alpha1"
+	fakebasev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/base/v1alpha1/fake"
 	digitaloceanv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/digitalocean/v1alpha1"
 	fakedigitaloceanv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/digitalocean/v1alpha1/fake"
 	googlev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/google/v1alpha1"
 	fakegooglev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/google/v1alpha1/fake"
 	linodev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/linode/v1alpha1"
 	fakelinodev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/linode/v1alpha1/fake"
+	modulesv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/modules/v1alpha1"
+	fakemodulesv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/modules/v1alpha1/fake"
+	basev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/register.go/v1alpha1"
+	fakebasev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/register.go/v1alpha1/fake"
 )
 
 // NewSimpleClientset returns a clientset that will respond with the provided objects.
@@ -89,6 +95,11 @@ func (c *Clientset) AzurermV1alpha1() azurermv1alpha1.AzurermV1alpha1Interface {
 	return &fakeazurermv1alpha1.FakeAzurermV1alpha1{Fake: &c.Fake}
 }
 
+// BaseV1alpha1 retrieves the BaseV1alpha1Client
+func (c *Clientset) BaseV1alpha1() basev1alpha1.BaseV1alpha1Interface {
+	return &fakebasev1alpha1.FakeBaseV1alpha1{Fake: &c.Fake}
+}
+
 // DigitaloceanV1alpha1 retrieves the DigitaloceanV1alpha1Client
 func (c *Clientset) DigitaloceanV1alpha1() digitaloceanv1alpha1.DigitaloceanV1alpha1Interface {
 	return &fakedigitaloceanv1alpha1.FakeDigitaloceanV1alpha1{Fake: &c.Fake}
@@ -102,4 +113,14 @@ func (c *Clientset) GoogleV1alpha1() googlev1alpha1.GoogleV1alpha1Interface {
 // LinodeV1alpha1 retrieves the LinodeV1alpha1Client
 func (c *Clientset) LinodeV1alpha1() linodev1alpha1.LinodeV1alpha1Interface {
 	return &fakelinodev1alpha1.FakeLinodeV1alpha1{Fake: &c.Fake}
+}
+
+// ModulesV1alpha1 retrieves the ModulesV1alpha1Client
+func (c *Clientset) ModulesV1alpha1() modulesv1alpha1.ModulesV1alpha1Interface {
+	return &fakemodulesv1alpha1.FakeModulesV1alpha1{Fake: &c.Fake}
+}
+
+// BaseV1alpha1 retrieves the BaseV1alpha1Client
+func (c *Clientset) BaseV1alpha1() basev1alpha1.BaseV1alpha1Interface {
+	return &fakebasev1alpha1.FakeBaseV1alpha1{Fake: &c.Fake}
 }

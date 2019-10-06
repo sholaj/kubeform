@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -51,10 +51,9 @@ type ApiManagementAPISpec struct {
 	// +optional
 	IsCurrent bool `json:"isCurrent,omitempty" tf:"is_current,omitempty"`
 	// +optional
-	IsOnline bool   `json:"isOnline,omitempty" tf:"is_online,omitempty"`
-	Name     string `json:"name" tf:"name"`
-	Path     string `json:"path" tf:"path"`
-	// +kubebuilder:validation:UniqueItems=true
+	IsOnline          bool     `json:"isOnline,omitempty" tf:"is_online,omitempty"`
+	Name              string   `json:"name" tf:"name"`
+	Path              string   `json:"path" tf:"path"`
 	Protocols         []string `json:"protocols" tf:"protocols"`
 	ResourceGroupName string   `json:"resourceGroupName" tf:"resource_group_name"`
 	Revision          string   `json:"revision" tf:"revision"`
@@ -78,7 +77,7 @@ type ApiManagementAPIStatus struct {
 	// +optional
 	Output *ApiManagementAPISpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

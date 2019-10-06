@@ -437,7 +437,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             tags:
               additionalProperties:
                 type: string
@@ -497,7 +496,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 tags:
                   additionalProperties:
                     type: string

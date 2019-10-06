@@ -401,7 +401,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             enablePowerBiService:
               type: boolean
             id:
@@ -464,7 +463,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 enablePowerBiService:
                   type: boolean
                 id:

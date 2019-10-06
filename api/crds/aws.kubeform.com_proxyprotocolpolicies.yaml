@@ -403,7 +403,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             loadBalancer:
               type: string
             providerRef:
@@ -435,7 +434,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 loadBalancer:
                   type: string
                 providerRef:

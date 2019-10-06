@@ -405,7 +405,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             description:
               type: string
             executionRoleName:
@@ -459,7 +458,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 description:
                   type: string
                 executionRoleName:

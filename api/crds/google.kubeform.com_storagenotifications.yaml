@@ -407,7 +407,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             id:
               type: string
             objectNamePrefix:
@@ -452,7 +451,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 id:
                   type: string
                 objectNamePrefix:

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -37,7 +37,6 @@ type VpcEndpointSpec struct {
 	// +optional
 	DnsEntry []VpcEndpointSpecDnsEntry `json:"dnsEntry,omitempty" tf:"dns_entry,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	NetworkInterfaceIDS []string `json:"networkInterfaceIDS,omitempty" tf:"network_interface_ids,omitempty"`
 	// +optional
 	Policy string `json:"policy,omitempty" tf:"policy,omitempty"`
@@ -46,16 +45,13 @@ type VpcEndpointSpec struct {
 	// +optional
 	PrivateDNSEnabled bool `json:"privateDNSEnabled,omitempty" tf:"private_dns_enabled,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RouteTableIDS []string `json:"routeTableIDS,omitempty" tf:"route_table_ids,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroupIDS []string `json:"securityGroupIDS,omitempty" tf:"security_group_ids,omitempty"`
 	ServiceName      string   `json:"serviceName" tf:"service_name"`
 	// +optional
 	State string `json:"state,omitempty" tf:"state,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SubnetIDS []string `json:"subnetIDS,omitempty" tf:"subnet_ids,omitempty"`
 	// +optional
 	VpcEndpointType string `json:"vpcEndpointType,omitempty" tf:"vpc_endpoint_type,omitempty"`
@@ -69,7 +65,7 @@ type VpcEndpointStatus struct {
 	// +optional
 	Output *VpcEndpointSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

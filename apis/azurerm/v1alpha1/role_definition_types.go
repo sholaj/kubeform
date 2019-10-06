@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -22,12 +22,10 @@ type RoleDefinitionSpecPermissions struct {
 	// +optional
 	Actions []string `json:"actions,omitempty" tf:"actions,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	DataActions []string `json:"dataActions,omitempty" tf:"data_actions,omitempty"`
 	// +optional
 	NotActions []string `json:"notActions,omitempty" tf:"not_actions,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	NotDataActions []string `json:"notDataActions,omitempty" tf:"not_data_actions,omitempty"`
 }
 
@@ -53,7 +51,7 @@ type RoleDefinitionStatus struct {
 	// +optional
 	Output *RoleDefinitionSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

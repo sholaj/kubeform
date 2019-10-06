@@ -404,7 +404,6 @@ spec:
                 type: string
               maxItems: 5
               type: array
-              uniqueItems: true
             createdDate:
               type: string
             description:
@@ -460,7 +459,6 @@ spec:
                     type: string
                   maxItems: 5
                   type: array
-                  uniqueItems: true
                 createdDate:
                   type: string
                 description:

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -55,7 +55,6 @@ type RedshiftClusterSpec struct {
 	// +optional
 	ClusterRevisionNumber string `json:"clusterRevisionNumber,omitempty" tf:"cluster_revision_number,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ClusterSecurityGroups []string `json:"clusterSecurityGroups,omitempty" tf:"cluster_security_groups,omitempty"`
 	// +optional
 	ClusterSubnetGroupName string `json:"clusterSubnetGroupName,omitempty" tf:"cluster_subnet_group_name,omitempty"`
@@ -78,7 +77,6 @@ type RedshiftClusterSpec struct {
 	// +optional
 	FinalSnapshotIdentifier string `json:"finalSnapshotIdentifier,omitempty" tf:"final_snapshot_identifier,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	IamRoles []string `json:"iamRoles,omitempty" tf:"iam_roles,omitempty"`
 	// +optional
 	KmsKeyID string `json:"kmsKeyID,omitempty" tf:"kms_key_id,omitempty"`
@@ -112,7 +110,6 @@ type RedshiftClusterSpec struct {
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VpcSecurityGroupIDS []string `json:"vpcSecurityGroupIDS,omitempty" tf:"vpc_security_group_ids,omitempty"`
 }
 
@@ -123,7 +120,7 @@ type RedshiftClusterStatus struct {
 	// +optional
 	Output *RedshiftClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

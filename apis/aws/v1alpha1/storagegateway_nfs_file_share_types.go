@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -38,7 +38,6 @@ type StoragegatewayNfsFileShareSpec struct {
 	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	ClientList []string `json:"clientList" tf:"client_list"`
 	// +optional
 	DefaultStorageClass string `json:"defaultStorageClass,omitempty" tf:"default_storage_class,omitempty"`
@@ -73,7 +72,7 @@ type StoragegatewayNfsFileShareStatus struct {
 	// +optional
 	Output *StoragegatewayNfsFileShareSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

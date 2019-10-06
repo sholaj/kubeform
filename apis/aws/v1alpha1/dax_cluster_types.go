@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -42,7 +42,6 @@ type DaxClusterSpec struct {
 	// +optional
 	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AvailabilityZones []string `json:"availabilityZones,omitempty" tf:"availability_zones,omitempty"`
 	// +optional
 	ClusterAddress string `json:"clusterAddress,omitempty" tf:"cluster_address,omitempty"`
@@ -65,7 +64,6 @@ type DaxClusterSpec struct {
 	Port              int `json:"port,omitempty" tf:"port,omitempty"`
 	ReplicationFactor int `json:"replicationFactor" tf:"replication_factor"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroupIDS []string `json:"securityGroupIDS,omitempty" tf:"security_group_ids,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -83,7 +81,7 @@ type DaxClusterStatus struct {
 	// +optional
 	Output *DaxClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

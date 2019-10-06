@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -30,7 +30,6 @@ type BinaryAuthorizationPolicySpecClusterAdmissionRules struct {
 	// +optional
 	EvaluationMode string `json:"evaluationMode,omitempty" tf:"evaluation_mode,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RequireAttestationsBy []string `json:"requireAttestationsBy,omitempty" tf:"require_attestations_by,omitempty"`
 }
 
@@ -38,7 +37,6 @@ type BinaryAuthorizationPolicySpecDefaultAdmissionRule struct {
 	EnforcementMode string `json:"enforcementMode" tf:"enforcement_mode"`
 	EvaluationMode  string `json:"evaluationMode" tf:"evaluation_mode"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RequireAttestationsBy []string `json:"requireAttestationsBy,omitempty" tf:"require_attestations_by,omitempty"`
 }
 
@@ -50,7 +48,6 @@ type BinaryAuthorizationPolicySpec struct {
 	// +optional
 	AdmissionWhitelistPatterns []BinaryAuthorizationPolicySpecAdmissionWhitelistPatterns `json:"admissionWhitelistPatterns,omitempty" tf:"admission_whitelist_patterns,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ClusterAdmissionRules []BinaryAuthorizationPolicySpecClusterAdmissionRules `json:"clusterAdmissionRules,omitempty" tf:"cluster_admission_rules,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	DefaultAdmissionRule []BinaryAuthorizationPolicySpecDefaultAdmissionRule `json:"defaultAdmissionRule" tf:"default_admission_rule"`
@@ -67,7 +64,7 @@ type BinaryAuthorizationPolicyStatus struct {
 	// +optional
 	Output *BinaryAuthorizationPolicySpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

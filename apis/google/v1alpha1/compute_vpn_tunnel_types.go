@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -38,7 +38,6 @@ type ComputeVPNTunnelSpec struct {
 	// +optional
 	Labels map[string]string `json:"labels,omitempty" tf:"labels,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	LocalTrafficSelector []string `json:"localTrafficSelector,omitempty" tf:"local_traffic_selector,omitempty"`
 	Name                 string   `json:"name" tf:"name"`
 	PeerIP               string   `json:"peerIP" tf:"peer_ip"`
@@ -47,7 +46,6 @@ type ComputeVPNTunnelSpec struct {
 	// +optional
 	Region string `json:"region,omitempty" tf:"region,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RemoteTrafficSelector []string `json:"remoteTrafficSelector,omitempty" tf:"remote_traffic_selector,omitempty"`
 	// +optional
 	Router string `json:"router,omitempty" tf:"router,omitempty"`
@@ -66,7 +64,7 @@ type ComputeVPNTunnelStatus struct {
 	// +optional
 	Output *ComputeVPNTunnelSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

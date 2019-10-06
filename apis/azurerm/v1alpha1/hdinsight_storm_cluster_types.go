@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -32,7 +32,6 @@ type HdinsightStormClusterSpecRolesHeadNode struct {
 	// +optional
 	Password string `json:"-" sensitive:"true" tf:"password,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
 	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
@@ -48,7 +47,6 @@ type HdinsightStormClusterSpecRolesWorkerNode struct {
 	// +optional
 	Password string `json:"-" sensitive:"true" tf:"password,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
 	SubnetID            string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
@@ -63,7 +61,6 @@ type HdinsightStormClusterSpecRolesZookeeperNode struct {
 	// +optional
 	Password string `json:"-" sensitive:"true" tf:"password,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SshKeys []string `json:"sshKeys,omitempty" tf:"ssh_keys,omitempty"`
 	// +optional
 	SubnetID string `json:"subnetID,omitempty" tf:"subnet_id,omitempty"`
@@ -122,7 +119,7 @@ type HdinsightStormClusterStatus struct {
 	// +optional
 	Output *HdinsightStormClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -478,7 +478,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             targetSize:
               type: integer
             updateStrategy:
@@ -605,7 +604,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 targetSize:
                   type: integer
                 updateStrategy:

@@ -402,7 +402,6 @@ spec:
                 type: string
               minItems: 1
               type: array
-              uniqueItems: true
             id:
               type: string
             locations:
@@ -410,7 +409,6 @@ spec:
                 type: string
               minItems: 1
               type: array
-              uniqueItems: true
             name:
               type: string
             providerRef:
@@ -459,7 +457,6 @@ spec:
                     type: string
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 id:
                   type: string
                 locations:
@@ -467,7 +464,6 @@ spec:
                     type: string
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 name:
                   type: string
                 providerRef:

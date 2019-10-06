@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -34,7 +34,6 @@ type KinesisStreamSpec struct {
 	RetentionPeriod int `json:"retentionPeriod,omitempty" tf:"retention_period,omitempty"`
 	ShardCount      int `json:"shardCount" tf:"shard_count"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ShardLevelMetrics []string `json:"shardLevelMetrics,omitempty" tf:"shard_level_metrics,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -47,7 +46,7 @@ type KinesisStreamStatus struct {
 	// +optional
 	Output *KinesisStreamSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

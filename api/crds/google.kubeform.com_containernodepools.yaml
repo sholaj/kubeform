@@ -477,7 +477,6 @@ spec:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   preemptible:
                     type: boolean
                   serviceAccount:
@@ -628,7 +627,6 @@ spec:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       preemptible:
                         type: boolean
                       serviceAccount:

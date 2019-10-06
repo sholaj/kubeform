@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -88,7 +88,6 @@ type ComputeInstanceGroupManagerSpec struct {
 	// +optional
 	SelfLink string `json:"selfLink,omitempty" tf:"self_link,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	TargetPools []string `json:"targetPools,omitempty" tf:"target_pools,omitempty"`
 	// +optional
 	TargetSize int `json:"targetSize,omitempty" tf:"target_size,omitempty"`
@@ -110,7 +109,7 @@ type ComputeInstanceGroupManagerStatus struct {
 	// +optional
 	Output *ComputeInstanceGroupManagerSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

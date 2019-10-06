@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -39,7 +39,6 @@ type ServiceFabricClusterSpecCertificateCommonNamesCommonNames struct {
 
 type ServiceFabricClusterSpecCertificateCommonNames struct {
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	CommonNames   []ServiceFabricClusterSpecCertificateCommonNamesCommonNames `json:"commonNames" tf:"common_names"`
 	X509StoreName string                                                      `json:"x509StoreName" tf:"x509_store_name"`
 }
@@ -108,7 +107,6 @@ type ServiceFabricClusterSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AddOnFeatures []string `json:"addOnFeatures,omitempty" tf:"add_on_features,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -153,7 +151,7 @@ type ServiceFabricClusterStatus struct {
 	// +optional
 	Output *ServiceFabricClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

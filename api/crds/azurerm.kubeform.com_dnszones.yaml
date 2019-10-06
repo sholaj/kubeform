@@ -407,7 +407,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             numberOfRecordSets:
               type: integer
             providerRef:
@@ -459,7 +458,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 numberOfRecordSets:
                   type: integer
                 providerRef:

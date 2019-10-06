@@ -34,6 +34,7 @@ import (
 	google "kubeform.dev/kubeform/client/informers/externalversions/google"
 	internalinterfaces "kubeform.dev/kubeform/client/informers/externalversions/internalinterfaces"
 	linode "kubeform.dev/kubeform/client/informers/externalversions/linode"
+	modules "kubeform.dev/kubeform/client/informers/externalversions/modules"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.
@@ -181,6 +182,7 @@ type SharedInformerFactory interface {
 	Digitalocean() digitalocean.Interface
 	Google() google.Interface
 	Linode() linode.Interface
+	Modules() modules.Interface
 }
 
 func (f *sharedInformerFactory) Aws() aws.Interface {
@@ -201,4 +203,8 @@ func (f *sharedInformerFactory) Google() google.Interface {
 
 func (f *sharedInformerFactory) Linode() linode.Interface {
 	return linode.New(f, f.namespace, f.tweakListOptions)
+}
+
+func (f *sharedInformerFactory) Modules() modules.Interface {
+	return modules.New(f, f.namespace, f.tweakListOptions)
 }

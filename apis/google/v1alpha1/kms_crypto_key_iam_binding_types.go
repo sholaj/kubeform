@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -25,8 +25,7 @@ type KmsCryptoKeyIamBindingSpec struct {
 
 	CryptoKeyID string `json:"cryptoKeyID" tf:"crypto_key_id"`
 	// +optional
-	Etag string `json:"etag,omitempty" tf:"etag,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
+	Etag    string   `json:"etag,omitempty" tf:"etag,omitempty"`
 	Members []string `json:"members" tf:"members"`
 	Role    string   `json:"role" tf:"role"`
 }
@@ -38,7 +37,7 @@ type KmsCryptoKeyIamBindingStatus struct {
 	// +optional
 	Output *KmsCryptoKeyIamBindingSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

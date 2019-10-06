@@ -443,7 +443,6 @@ spec:
                 - type
                 type: object
               type: array
-              uniqueItems: true
             roles:
               additionalProperties:
                 properties:
@@ -513,7 +512,6 @@ spec:
                     - type
                     type: object
                   type: array
-                  uniqueItems: true
                 roles:
                   additionalProperties:
                     properties:

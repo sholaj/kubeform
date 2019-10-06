@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -46,7 +46,6 @@ type SsmPatchBaselineSpec struct {
 	// +optional
 	ApprovalRule []SsmPatchBaselineSpecApprovalRule `json:"approvalRule,omitempty" tf:"approval_rule,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ApprovedPatches []string `json:"approvedPatches,omitempty" tf:"approved_patches,omitempty"`
 	// +optional
 	ApprovedPatchesComplianceLevel string `json:"approvedPatchesComplianceLevel,omitempty" tf:"approved_patches_compliance_level,omitempty"`
@@ -59,7 +58,6 @@ type SsmPatchBaselineSpec struct {
 	// +optional
 	OperatingSystem string `json:"operatingSystem,omitempty" tf:"operating_system,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RejectedPatches []string `json:"rejectedPatches,omitempty" tf:"rejected_patches,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -72,7 +70,7 @@ type SsmPatchBaselineStatus struct {
 	// +optional
 	Output *SsmPatchBaselineSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

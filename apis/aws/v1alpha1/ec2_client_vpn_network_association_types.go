@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -25,7 +25,6 @@ type Ec2ClientVPNNetworkAssociationSpec struct {
 
 	ClientVPNEndpointID string `json:"clientVPNEndpointID" tf:"client_vpn_endpoint_id"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroups []string `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
 	// +optional
 	Status   string `json:"status,omitempty" tf:"status,omitempty"`
@@ -41,7 +40,7 @@ type Ec2ClientVPNNetworkAssociationStatus struct {
 	// +optional
 	Output *Ec2ClientVPNNetworkAssociationSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

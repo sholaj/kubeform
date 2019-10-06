@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -52,14 +52,12 @@ type AmiCopySpec struct {
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EbsBlockDevice []AmiCopySpecEbsBlockDevice `json:"ebsBlockDevice,omitempty" tf:"ebs_block_device,omitempty"`
 	// +optional
 	EnaSupport bool `json:"enaSupport,omitempty" tf:"ena_support,omitempty"`
 	// +optional
 	Encrypted bool `json:"encrypted,omitempty" tf:"encrypted,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	EphemeralBlockDevice []AmiCopySpecEphemeralBlockDevice `json:"ephemeralBlockDevice,omitempty" tf:"ephemeral_block_device,omitempty"`
 	// +optional
 	ImageLocation string `json:"imageLocation,omitempty" tf:"image_location,omitempty"`
@@ -93,7 +91,7 @@ type AmiCopyStatus struct {
 	// +optional
 	Output *AmiCopySpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

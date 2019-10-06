@@ -401,7 +401,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             cacheNamespace:
               type: string
             connectionID:
@@ -467,7 +466,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 cacheNamespace:
                   type: string
                 connectionID:

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -65,13 +65,10 @@ type LbSpec struct {
 	// +optional
 	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroups []string `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SubnetMapping []LbSpecSubnetMapping `json:"subnetMapping,omitempty" tf:"subnet_mapping,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Subnets []string `json:"subnets,omitempty" tf:"subnets,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -88,7 +85,7 @@ type LbStatus struct {
 	// +optional
 	Output *LbSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

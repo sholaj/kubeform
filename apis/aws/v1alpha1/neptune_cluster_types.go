@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -28,7 +28,6 @@ type NeptuneClusterSpec struct {
 	// +optional
 	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AvailabilityZones []string `json:"availabilityZones,omitempty" tf:"availability_zones,omitempty"`
 	// +optional
 	BackupRetentionPeriod int `json:"backupRetentionPeriod,omitempty" tf:"backup_retention_period,omitempty"`
@@ -37,7 +36,6 @@ type NeptuneClusterSpec struct {
 	// +optional
 	ClusterIdentifierPrefix string `json:"clusterIdentifierPrefix,omitempty" tf:"cluster_identifier_prefix,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ClusterMembers []string `json:"clusterMembers,omitempty" tf:"cluster_members,omitempty"`
 	// +optional
 	ClusterResourceID string `json:"clusterResourceID,omitempty" tf:"cluster_resource_id,omitempty"`
@@ -54,7 +52,6 @@ type NeptuneClusterSpec struct {
 	// +optional
 	IamDatabaseAuthenticationEnabled bool `json:"iamDatabaseAuthenticationEnabled,omitempty" tf:"iam_database_authentication_enabled,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	IamRoles []string `json:"iamRoles,omitempty" tf:"iam_roles,omitempty"`
 	// +optional
 	KmsKeyArn string `json:"kmsKeyArn,omitempty" tf:"kms_key_arn,omitempty"`
@@ -81,7 +78,6 @@ type NeptuneClusterSpec struct {
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VpcSecurityGroupIDS []string `json:"vpcSecurityGroupIDS,omitempty" tf:"vpc_security_group_ids,omitempty"`
 }
 
@@ -92,7 +88,7 @@ type NeptuneClusterStatus struct {
 	// +optional
 	Output *NeptuneClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

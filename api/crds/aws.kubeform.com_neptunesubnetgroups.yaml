@@ -421,7 +421,6 @@ spec:
                 type: string
               minItems: 1
               type: array
-              uniqueItems: true
             tags:
               additionalProperties:
                 type: string
@@ -463,7 +462,6 @@ spec:
                     type: string
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 tags:
                   additionalProperties:
                     type: string

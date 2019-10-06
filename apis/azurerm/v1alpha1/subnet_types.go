@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -39,7 +39,6 @@ type SubnetSpec struct {
 	// +optional
 	Delegation []SubnetSpecDelegation `json:"delegation,omitempty" tf:"delegation,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	IpConfigurations []string `json:"ipConfigurations,omitempty" tf:"ip_configurations,omitempty"`
 	Name             string   `json:"name" tf:"name"`
 	// +optional
@@ -61,7 +60,7 @@ type SubnetStatus struct {
 	// +optional
 	Output *SubnetSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -19,16 +19,13 @@ type DirectoryServiceDirectory struct {
 }
 
 type DirectoryServiceDirectorySpecConnectSettings struct {
-	// +kubebuilder:validation:UniqueItems=true
 	CustomerDNSIPS   []string `json:"customerDNSIPS" tf:"customer_dns_ips"`
 	CustomerUsername string   `json:"customerUsername" tf:"customer_username"`
-	// +kubebuilder:validation:UniqueItems=true
-	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
-	VpcID     string   `json:"vpcID" tf:"vpc_id"`
+	SubnetIDS        []string `json:"subnetIDS" tf:"subnet_ids"`
+	VpcID            string   `json:"vpcID" tf:"vpc_id"`
 }
 
 type DirectoryServiceDirectorySpecVpcSettings struct {
-	// +kubebuilder:validation:UniqueItems=true
 	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
 	VpcID     string   `json:"vpcID" tf:"vpc_id"`
 }
@@ -50,7 +47,6 @@ type DirectoryServiceDirectorySpec struct {
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	DnsIPAddresses []string `json:"dnsIPAddresses,omitempty" tf:"dns_ip_addresses,omitempty"`
 	// +optional
 	Edition string `json:"edition,omitempty" tf:"edition,omitempty"`
@@ -80,7 +76,7 @@ type DirectoryServiceDirectoryStatus struct {
 	// +optional
 	Output *DirectoryServiceDirectorySpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

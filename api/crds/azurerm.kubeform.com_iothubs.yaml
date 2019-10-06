@@ -482,7 +482,6 @@ spec:
                 - name
                 type: object
               type: array
-              uniqueItems: true
             location:
               type: string
             name:
@@ -661,7 +660,6 @@ spec:
                     - name
                     type: object
                   type: array
-                  uniqueItems: true
                 location:
                   type: string
                 name:

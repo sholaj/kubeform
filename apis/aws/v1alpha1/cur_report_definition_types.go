@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -24,9 +24,7 @@ type CurReportDefinitionSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
-	AdditionalArtifacts []string `json:"additionalArtifacts,omitempty" tf:"additional_artifacts,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
+	AdditionalArtifacts      []string `json:"additionalArtifacts,omitempty" tf:"additional_artifacts,omitempty"`
 	AdditionalSchemaElements []string `json:"additionalSchemaElements" tf:"additional_schema_elements"`
 	Compression              string   `json:"compression" tf:"compression"`
 	Format                   string   `json:"format" tf:"format"`
@@ -45,7 +43,7 @@ type CurReportDefinitionStatus struct {
 	// +optional
 	Output *CurReportDefinitionSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -405,7 +405,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             orgID:
               type: string
             providerRef:
@@ -442,7 +441,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 orgID:
                   type: string
                 providerRef:

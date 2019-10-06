@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -54,13 +54,10 @@ type VirtualNetworkGatewaySpecVpnClientConfiguration struct {
 	// +optional
 	RadiusServerSecret string `json:"radiusServerSecret,omitempty" tf:"radius_server_secret,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RevokedCertificate []VirtualNetworkGatewaySpecVpnClientConfigurationRevokedCertificate `json:"revokedCertificate,omitempty" tf:"revoked_certificate,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	RootCertificate []VirtualNetworkGatewaySpecVpnClientConfigurationRootCertificate `json:"rootCertificate,omitempty" tf:"root_certificate,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VpnClientProtocols []string `json:"vpnClientProtocols,omitempty" tf:"vpn_client_protocols,omitempty"`
 }
 
@@ -101,7 +98,7 @@ type VirtualNetworkGatewayStatus struct {
 	// +optional
 	Output *VirtualNetworkGatewaySpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

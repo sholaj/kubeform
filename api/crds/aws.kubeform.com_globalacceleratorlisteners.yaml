@@ -414,7 +414,6 @@ spec:
               maxItems: 10
               minItems: 1
               type: array
-              uniqueItems: true
             protocol:
               type: string
             providerRef:
@@ -458,7 +457,6 @@ spec:
                   maxItems: 10
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 protocol:
                   type: string
                 providerRef:

@@ -421,7 +421,6 @@ spec:
                 - ID
                 type: object
               type: array
-              uniqueItems: true
             id:
               type: string
             metadata:
@@ -486,7 +485,6 @@ spec:
                     - ID
                     type: object
                   type: array
-                  uniqueItems: true
                 id:
                   type: string
                 metadata:

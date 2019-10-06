@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -31,10 +31,8 @@ type KmsGrantSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Constraints []KmsGrantSpecConstraints `json:"constraints,omitempty" tf:"constraints,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	GrantCreationTokens []string `json:"grantCreationTokens,omitempty" tf:"grant_creation_tokens,omitempty"`
 	// +optional
 	GrantID string `json:"grantID,omitempty" tf:"grant_id,omitempty"`
@@ -43,8 +41,7 @@ type KmsGrantSpec struct {
 	GranteePrincipal string `json:"granteePrincipal" tf:"grantee_principal"`
 	KeyID            string `json:"keyID" tf:"key_id"`
 	// +optional
-	Name string `json:"name,omitempty" tf:"name,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
+	Name       string   `json:"name,omitempty" tf:"name,omitempty"`
 	Operations []string `json:"operations" tf:"operations"`
 	// +optional
 	RetireOnDelete bool `json:"retireOnDelete,omitempty" tf:"retire_on_delete,omitempty"`
@@ -59,7 +56,7 @@ type KmsGrantStatus struct {
 	// +optional
 	Output *KmsGrantSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

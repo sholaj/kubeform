@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -110,43 +110,32 @@ type IotTopicRuleSpec struct {
 	// +optional
 	Arn string `json:"arn,omitempty" tf:"arn,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	CloudwatchAlarm []IotTopicRuleSpecCloudwatchAlarm `json:"cloudwatchAlarm,omitempty" tf:"cloudwatch_alarm,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	CloudwatchMetric []IotTopicRuleSpecCloudwatchMetric `json:"cloudwatchMetric,omitempty" tf:"cloudwatch_metric,omitempty"`
 	// +optional
 	Description string `json:"description,omitempty" tf:"description,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Dynamodb []IotTopicRuleSpecDynamodb `json:"dynamodb,omitempty" tf:"dynamodb,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Elasticsearch []IotTopicRuleSpecElasticsearch `json:"elasticsearch,omitempty" tf:"elasticsearch,omitempty"`
 	Enabled       bool                            `json:"enabled" tf:"enabled"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Firehose []IotTopicRuleSpecFirehose `json:"firehose,omitempty" tf:"firehose,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Kinesis []IotTopicRuleSpecKinesis `json:"kinesis,omitempty" tf:"kinesis,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Lambda []IotTopicRuleSpecLambda `json:"lambda,omitempty" tf:"lambda,omitempty"`
 	Name   string                   `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Republish []IotTopicRuleSpecRepublish `json:"republish,omitempty" tf:"republish,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	S3 []IotTopicRuleSpecS3 `json:"s3,omitempty" tf:"s3,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Sns        []IotTopicRuleSpecSns `json:"sns,omitempty" tf:"sns,omitempty"`
 	Sql        string                `json:"sql" tf:"sql"`
 	SqlVersion string                `json:"sqlVersion" tf:"sql_version"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Sqs []IotTopicRuleSpecSqs `json:"sqs,omitempty" tf:"sqs,omitempty"`
 }
 
@@ -157,7 +146,7 @@ type IotTopicRuleStatus struct {
 	// +optional
 	Output *IotTopicRuleSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

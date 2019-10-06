@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -39,7 +39,6 @@ type DxHostedPublicVirtualInterfaceSpec struct {
 	Name            string `json:"name" tf:"name"`
 	OwnerAccountID  string `json:"ownerAccountID" tf:"owner_account_id"`
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	RouteFilterPrefixes []string `json:"routeFilterPrefixes" tf:"route_filter_prefixes"`
 	Vlan                int      `json:"vlan" tf:"vlan"`
 }
@@ -51,7 +50,7 @@ type DxHostedPublicVirtualInterfaceStatus struct {
 	// +optional
 	Output *DxHostedPublicVirtualInterfaceSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

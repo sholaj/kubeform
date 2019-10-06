@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -24,7 +24,6 @@ type CloudformationStackSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Capabilities []string `json:"capabilities,omitempty" tf:"capabilities,omitempty"`
 	// +optional
 	DisableRollback bool `json:"disableRollback,omitempty" tf:"disable_rollback,omitempty"`
@@ -32,7 +31,6 @@ type CloudformationStackSpec struct {
 	IamRoleArn string `json:"iamRoleArn,omitempty" tf:"iam_role_arn,omitempty"`
 	Name       string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	NotificationArns []string `json:"notificationArns,omitempty" tf:"notification_arns,omitempty"`
 	// +optional
 	OnFailure string `json:"onFailure,omitempty" tf:"on_failure,omitempty"`
@@ -61,7 +59,7 @@ type CloudformationStackStatus struct {
 	// +optional
 	Output *CloudformationStackSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

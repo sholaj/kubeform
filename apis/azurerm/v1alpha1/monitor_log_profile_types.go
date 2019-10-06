@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -30,10 +30,8 @@ type MonitorLogProfileSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Categories []string `json:"categories" tf:"categories"`
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Locations []string `json:"locations" tf:"locations"`
 	Name      string   `json:"name" tf:"name"`
 	// +kubebuilder:validation:MaxItems=1
@@ -51,7 +49,7 @@ type MonitorLogProfileStatus struct {
 	// +optional
 	Output *MonitorLogProfileSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

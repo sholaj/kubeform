@@ -436,7 +436,6 @@ spec:
                 type: object
               minItems: 1
               type: array
-              uniqueItems: true
             zoneID:
               type: string
           required:
@@ -491,7 +490,6 @@ spec:
                     type: object
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 zoneID:
                   type: string
               required:

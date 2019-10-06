@@ -425,7 +425,6 @@ spec:
                 type: string
               minItems: 1
               type: array
-              uniqueItems: true
             subnetID:
               type: string
             tags:
@@ -475,7 +474,6 @@ spec:
                     type: string
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 subnetID:
                   type: string
                 tags:

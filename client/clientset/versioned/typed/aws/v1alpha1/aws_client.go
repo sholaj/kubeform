@@ -74,12 +74,10 @@ type AwsV1alpha1Interface interface {
 	AppmeshVirtualServicesGetter
 	AppsyncAPIKeysGetter
 	AppsyncDatasourcesGetter
-	AppsyncFunctionsGetter
 	AppsyncGraphqlAPIsGetter
 	AppsyncResolversGetter
 	AthenaDatabasesGetter
 	AthenaNamedQueriesGetter
-	AthenaWorkgroupsGetter
 	AutoscalingAttachmentsGetter
 	AutoscalingGroupsGetter
 	AutoscalingLifecycleHooksGetter
@@ -140,7 +138,6 @@ type AwsV1alpha1Interface interface {
 	ConfigDeliveryChannelsGetter
 	CurReportDefinitionsGetter
 	CustomerGatewaysGetter
-	DatapipelinePipelinesGetter
 	DatasyncAgentsGetter
 	DatasyncLocationEfsesGetter
 	DatasyncLocationNfsesGetter
@@ -167,7 +164,6 @@ type AwsV1alpha1Interface interface {
 	DevicefarmProjectsGetter
 	DirectoryServiceConditionalForwardersGetter
 	DirectoryServiceDirectoriesGetter
-	DirectoryServiceLogSubscriptionsGetter
 	DlmLifecyclePoliciesGetter
 	DmsCertificatesGetter
 	DmsEndpointsGetter
@@ -195,8 +191,6 @@ type AwsV1alpha1Interface interface {
 	DynamodbGlobalTablesGetter
 	DynamodbTablesGetter
 	DynamodbTableItemsGetter
-	EbsDefaultKmsKeysGetter
-	EbsEncryptionByDefaultsGetter
 	EbsSnapshotsGetter
 	EbsSnapshotCopiesGetter
 	EbsVolumesGetter
@@ -210,7 +204,6 @@ type AwsV1alpha1Interface interface {
 	Ec2TransitGatewayRouteTableAssociationsGetter
 	Ec2TransitGatewayRouteTablePropagationsGetter
 	Ec2TransitGatewayVpcAttachmentsGetter
-	Ec2TransitGatewayVpcAttachmentAcceptersGetter
 	EcrLifecyclePoliciesGetter
 	EcrRepositoriesGetter
 	EcrRepositoryPoliciesGetter
@@ -249,7 +242,6 @@ type AwsV1alpha1Interface interface {
 	GlacierVaultsGetter
 	GlacierVaultLocksGetter
 	GlobalacceleratorAcceleratorsGetter
-	GlobalacceleratorEndpointGroupsGetter
 	GlobalacceleratorListenersGetter
 	GlueCatalogDatabasesGetter
 	GlueCatalogTablesGetter
@@ -342,8 +334,6 @@ type AwsV1alpha1Interface interface {
 	MediaStoreContainerPoliciesGetter
 	MqBrokersGetter
 	MqConfigurationsGetter
-	MskClustersGetter
-	MskConfigurationsGetter
 	NatGatewaysGetter
 	NeptuneClustersGetter
 	NeptuneClusterInstancesGetter
@@ -449,17 +439,14 @@ type AwsV1alpha1Interface interface {
 	SesDomainIdentitiesGetter
 	SesDomainIdentityVerificationsGetter
 	SesDomainMailFromsGetter
-	SesEmailIdentitiesGetter
 	SesEventDestinationsGetter
 	SesIdentityNotificationTopicsGetter
-	SesIdentityPoliciesGetter
 	SesReceiptFiltersGetter
 	SesReceiptRulesGetter
 	SesReceiptRuleSetsGetter
 	SesTemplatesGetter
 	SfnActivitiesGetter
 	SfnStateMachinesGetter
-	ShieldProtectionsGetter
 	SimpledbDomainsGetter
 	SnapshotCreateVolumePermissionsGetter
 	SnsPlatformApplicationsGetter
@@ -736,10 +723,6 @@ func (c *AwsV1alpha1Client) AppsyncDatasources(namespace string) AppsyncDatasour
 	return newAppsyncDatasources(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) AppsyncFunctions(namespace string) AppsyncFunctionInterface {
-	return newAppsyncFunctions(c, namespace)
-}
-
 func (c *AwsV1alpha1Client) AppsyncGraphqlAPIs(namespace string) AppsyncGraphqlAPIInterface {
 	return newAppsyncGraphqlAPIs(c, namespace)
 }
@@ -754,10 +737,6 @@ func (c *AwsV1alpha1Client) AthenaDatabases(namespace string) AthenaDatabaseInte
 
 func (c *AwsV1alpha1Client) AthenaNamedQueries(namespace string) AthenaNamedQueryInterface {
 	return newAthenaNamedQueries(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) AthenaWorkgroups(namespace string) AthenaWorkgroupInterface {
-	return newAthenaWorkgroups(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) AutoscalingAttachments(namespace string) AutoscalingAttachmentInterface {
@@ -1000,10 +979,6 @@ func (c *AwsV1alpha1Client) CustomerGateways(namespace string) CustomerGatewayIn
 	return newCustomerGateways(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) DatapipelinePipelines(namespace string) DatapipelinePipelineInterface {
-	return newDatapipelinePipelines(c, namespace)
-}
-
 func (c *AwsV1alpha1Client) DatasyncAgents(namespace string) DatasyncAgentInterface {
 	return newDatasyncAgents(c, namespace)
 }
@@ -1106,10 +1081,6 @@ func (c *AwsV1alpha1Client) DirectoryServiceConditionalForwarders(namespace stri
 
 func (c *AwsV1alpha1Client) DirectoryServiceDirectories(namespace string) DirectoryServiceDirectoryInterface {
 	return newDirectoryServiceDirectories(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) DirectoryServiceLogSubscriptions(namespace string) DirectoryServiceLogSubscriptionInterface {
-	return newDirectoryServiceLogSubscriptions(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) DlmLifecyclePolicies(namespace string) DlmLifecyclePolicyInterface {
@@ -1220,14 +1191,6 @@ func (c *AwsV1alpha1Client) DynamodbTableItems(namespace string) DynamodbTableIt
 	return newDynamodbTableItems(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) EbsDefaultKmsKeys(namespace string) EbsDefaultKmsKeyInterface {
-	return newEbsDefaultKmsKeys(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) EbsEncryptionByDefaults(namespace string) EbsEncryptionByDefaultInterface {
-	return newEbsEncryptionByDefaults(c, namespace)
-}
-
 func (c *AwsV1alpha1Client) EbsSnapshots(namespace string) EbsSnapshotInterface {
 	return newEbsSnapshots(c, namespace)
 }
@@ -1278,10 +1241,6 @@ func (c *AwsV1alpha1Client) Ec2TransitGatewayRouteTablePropagations(namespace st
 
 func (c *AwsV1alpha1Client) Ec2TransitGatewayVpcAttachments(namespace string) Ec2TransitGatewayVpcAttachmentInterface {
 	return newEc2TransitGatewayVpcAttachments(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) Ec2TransitGatewayVpcAttachmentAccepters(namespace string) Ec2TransitGatewayVpcAttachmentAccepterInterface {
-	return newEc2TransitGatewayVpcAttachmentAccepters(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) EcrLifecyclePolicies(namespace string) EcrLifecyclePolicyInterface {
@@ -1434,10 +1393,6 @@ func (c *AwsV1alpha1Client) GlacierVaultLocks(namespace string) GlacierVaultLock
 
 func (c *AwsV1alpha1Client) GlobalacceleratorAccelerators(namespace string) GlobalacceleratorAcceleratorInterface {
 	return newGlobalacceleratorAccelerators(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) GlobalacceleratorEndpointGroups(namespace string) GlobalacceleratorEndpointGroupInterface {
-	return newGlobalacceleratorEndpointGroups(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) GlobalacceleratorListeners(namespace string) GlobalacceleratorListenerInterface {
@@ -1806,14 +1761,6 @@ func (c *AwsV1alpha1Client) MqBrokers(namespace string) MqBrokerInterface {
 
 func (c *AwsV1alpha1Client) MqConfigurations(namespace string) MqConfigurationInterface {
 	return newMqConfigurations(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) MskClusters(namespace string) MskClusterInterface {
-	return newMskClusters(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) MskConfigurations(namespace string) MskConfigurationInterface {
-	return newMskConfigurations(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) NatGateways(namespace string) NatGatewayInterface {
@@ -2236,20 +2183,12 @@ func (c *AwsV1alpha1Client) SesDomainMailFroms(namespace string) SesDomainMailFr
 	return newSesDomainMailFroms(c, namespace)
 }
 
-func (c *AwsV1alpha1Client) SesEmailIdentities(namespace string) SesEmailIdentityInterface {
-	return newSesEmailIdentities(c, namespace)
-}
-
 func (c *AwsV1alpha1Client) SesEventDestinations(namespace string) SesEventDestinationInterface {
 	return newSesEventDestinations(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) SesIdentityNotificationTopics(namespace string) SesIdentityNotificationTopicInterface {
 	return newSesIdentityNotificationTopics(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) SesIdentityPolicies(namespace string) SesIdentityPolicyInterface {
-	return newSesIdentityPolicies(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) SesReceiptFilters(namespace string) SesReceiptFilterInterface {
@@ -2274,10 +2213,6 @@ func (c *AwsV1alpha1Client) SfnActivities(namespace string) SfnActivityInterface
 
 func (c *AwsV1alpha1Client) SfnStateMachines(namespace string) SfnStateMachineInterface {
 	return newSfnStateMachines(c, namespace)
-}
-
-func (c *AwsV1alpha1Client) ShieldProtections(namespace string) ShieldProtectionInterface {
-	return newShieldProtections(c, namespace)
 }
 
 func (c *AwsV1alpha1Client) SimpledbDomains(namespace string) SimpledbDomainInterface {

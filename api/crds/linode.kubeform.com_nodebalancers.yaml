@@ -435,7 +435,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             transfer:
               additionalProperties:
                 properties:
@@ -506,7 +505,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 transfer:
                   additionalProperties:
                     properties:

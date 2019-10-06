@@ -433,7 +433,6 @@ spec:
                 type: string
               minItems: 1
               type: array
-              uniqueItems: true
             vlan:
               type: integer
           required:
@@ -491,7 +490,6 @@ spec:
                     type: string
                   minItems: 1
                   type: array
-                  uniqueItems: true
                 vlan:
                   type: integer
               required:

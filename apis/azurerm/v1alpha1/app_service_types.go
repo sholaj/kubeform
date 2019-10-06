@@ -5,7 +5,7 @@ import (
 
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -145,7 +145,6 @@ type AppServiceSpecLogs struct {
 }
 
 type AppServiceSpecSiteConfigCors struct {
-	// +kubebuilder:validation:UniqueItems=true
 	AllowedOrigins []string `json:"allowedOrigins" tf:"allowed_origins"`
 	// +optional
 	SupportCredentials bool `json:"supportCredentials,omitempty" tf:"support_credentials,omitempty"`
@@ -254,7 +253,6 @@ type AppServiceSpec struct {
 	// +optional
 	ClientCertEnabled bool `json:"clientCertEnabled,omitempty" tf:"client_cert_enabled,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ConnectionString []AppServiceSpecConnectionString `json:"connectionString,omitempty" tf:"connection_string,omitempty"`
 	// +optional
 	DefaultSiteHostname string `json:"defaultSiteHostname,omitempty" tf:"default_site_hostname,omitempty"`
@@ -285,7 +283,6 @@ type AppServiceSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	SourceControl []AppServiceSpecSourceControl `json:"sourceControl,omitempty" tf:"source_control,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	StorageAccount []AppServiceSpecStorageAccount `json:"storageAccount,omitempty" tf:"storage_account,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -298,7 +295,7 @@ type AppServiceStatus struct {
 	// +optional
 	Output *AppServiceSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

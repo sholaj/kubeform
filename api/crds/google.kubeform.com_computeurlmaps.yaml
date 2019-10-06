@@ -419,7 +419,6 @@ spec:
                 - pathMatcher
                 type: object
               type: array
-              uniqueItems: true
             id:
               type: string
             mapID:
@@ -520,7 +519,6 @@ spec:
                     - pathMatcher
                     type: object
                   type: array
-                  uniqueItems: true
                 id:
                   type: string
                 mapID:

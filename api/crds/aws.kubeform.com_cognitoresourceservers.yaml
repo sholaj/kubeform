@@ -425,7 +425,6 @@ spec:
                 type: object
               maxItems: 25
               type: array
-              uniqueItems: true
             scopeIdentifiers:
               items:
                 type: string
@@ -475,7 +474,6 @@ spec:
                     type: object
                   maxItems: 25
                   type: array
-                  uniqueItems: true
                 scopeIdentifiers:
                   items:
                     type: string

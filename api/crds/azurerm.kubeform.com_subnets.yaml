@@ -429,7 +429,6 @@ spec:
               items:
                 type: string
               type: array
-              uniqueItems: true
             name:
               type: string
             networkSecurityGroupID:
@@ -503,7 +502,6 @@ spec:
                   items:
                     type: string
                   type: array
-                  uniqueItems: true
                 name:
                   type: string
                 networkSecurityGroupID:

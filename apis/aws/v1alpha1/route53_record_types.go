@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -51,7 +51,6 @@ type Route53RecordSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Alias []Route53RecordSpecAlias `json:"alias,omitempty" tf:"alias,omitempty"`
 	// +optional
 	AllowOverwrite bool `json:"allowOverwrite,omitempty" tf:"allow_overwrite,omitempty"`
@@ -69,7 +68,6 @@ type Route53RecordSpec struct {
 	MultivalueAnswerRoutingPolicy bool   `json:"multivalueAnswerRoutingPolicy,omitempty" tf:"multivalue_answer_routing_policy,omitempty"`
 	Name                          string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Records []string `json:"records,omitempty" tf:"records,omitempty"`
 	// +optional
 	SetIdentifier string `json:"setIdentifier,omitempty" tf:"set_identifier,omitempty"`
@@ -88,7 +86,7 @@ type Route53RecordStatus struct {
 	// +optional
 	Output *Route53RecordSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

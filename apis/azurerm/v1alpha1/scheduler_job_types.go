@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -128,23 +128,18 @@ type SchedulerJobSpecRecurrence struct {
 	EndTime   string `json:"endTime,omitempty" tf:"end_time,omitempty"`
 	Frequency string `json:"frequency" tf:"frequency"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Hours []int64 `json:"hours,omitempty" tf:"hours,omitempty"`
 	// +optional
 	Interval int `json:"interval,omitempty" tf:"interval,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Minutes []int64 `json:"minutes,omitempty" tf:"minutes,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	MonthDays []int64 `json:"monthDays,omitempty" tf:"month_days,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	MonthlyOccurrences []SchedulerJobSpecRecurrenceMonthlyOccurrences `json:"monthlyOccurrences,omitempty" tf:"monthly_occurrences,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	WeekDays []string `json:"weekDays,omitempty" tf:"week_days,omitempty"`
 }
 
@@ -197,7 +192,7 @@ type SchedulerJobStatus struct {
 	// +optional
 	Output *SchedulerJobSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

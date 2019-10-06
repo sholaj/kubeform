@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -45,7 +45,6 @@ type VpcPeeringConnectionAccepterSpec struct {
 	AcceptStatus string `json:"acceptStatus,omitempty" tf:"accept_status,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Accepter []VpcPeeringConnectionAccepterSpecAccepter `json:"accepter,omitempty" tf:"accepter,omitempty"`
 	// +optional
 	AutoAccept bool `json:"autoAccept,omitempty" tf:"auto_accept,omitempty"`
@@ -57,7 +56,6 @@ type VpcPeeringConnectionAccepterSpec struct {
 	PeerVpcID string `json:"peerVpcID,omitempty" tf:"peer_vpc_id,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	Requester []VpcPeeringConnectionAccepterSpecRequester `json:"requester,omitempty" tf:"requester,omitempty"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
@@ -73,7 +71,7 @@ type VpcPeeringConnectionAccepterStatus struct {
 	// +optional
 	Output *VpcPeeringConnectionAccepterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

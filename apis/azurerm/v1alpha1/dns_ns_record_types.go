@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -29,7 +29,6 @@ type DnsNsRecordSpec struct {
 
 	Name string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	// Deprecated
 	Record []DnsNsRecordSpecRecord `json:"record,omitempty" tf:"record,omitempty"`
 	// +optional
@@ -48,7 +47,7 @@ type DnsNsRecordStatus struct {
 	// +optional
 	Output *DnsNsRecordSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -47,9 +47,8 @@ type CloudhsmV2ClusterSpec struct {
 	// +optional
 	SecurityGroupID string `json:"securityGroupID,omitempty" tf:"security_group_id,omitempty"`
 	// +optional
-	SourceBackupIdentifier string `json:"sourceBackupIdentifier,omitempty" tf:"source_backup_identifier,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
-	SubnetIDS []string `json:"subnetIDS" tf:"subnet_ids"`
+	SourceBackupIdentifier string   `json:"sourceBackupIdentifier,omitempty" tf:"source_backup_identifier,omitempty"`
+	SubnetIDS              []string `json:"subnetIDS" tf:"subnet_ids"`
 	// +optional
 	Tags map[string]string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
@@ -63,7 +62,7 @@ type CloudhsmV2ClusterStatus struct {
 	// +optional
 	Output *CloudhsmV2ClusterSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

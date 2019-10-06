@@ -448,7 +448,6 @@ spec:
                 - value
                 type: object
               type: array
-              uniqueItems: true
             id:
               type: string
             name:
@@ -556,7 +555,6 @@ spec:
                     - value
                     type: object
                   type: array
-                  uniqueItems: true
                 id:
                   type: string
                 name:

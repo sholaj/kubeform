@@ -5,7 +5,7 @@ import (
 
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -32,7 +32,6 @@ type DropletSnapshotSpec struct {
 	MinDiskSize int    `json:"minDiskSize,omitempty" tf:"min_disk_size,omitempty"`
 	Name        string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Regions []string `json:"regions,omitempty" tf:"regions,omitempty"`
 	// +optional
 	Size json.Number `json:"size,omitempty" tf:"size,omitempty"`
@@ -45,7 +44,7 @@ type DropletSnapshotStatus struct {
 	// +optional
 	Output *DropletSnapshotSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -39,21 +39,17 @@ type SesEventDestinationSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	CloudwatchDestination []SesEventDestinationSpecCloudwatchDestination `json:"cloudwatchDestination,omitempty" tf:"cloudwatch_destination,omitempty"`
 	ConfigurationSetName  string                                         `json:"configurationSetName" tf:"configuration_set_name"`
 	// +optional
 	Enabled bool `json:"enabled,omitempty" tf:"enabled,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	KinesisDestination []SesEventDestinationSpecKinesisDestination `json:"kinesisDestination,omitempty" tf:"kinesis_destination,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
-	MatchingTypes []string `json:"matchingTypes" tf:"matching_types"`
-	Name          string   `json:"name" tf:"name"`
+	MatchingTypes      []string                                    `json:"matchingTypes" tf:"matching_types"`
+	Name               string                                      `json:"name" tf:"name"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	SnsDestination []SesEventDestinationSpecSnsDestination `json:"snsDestination,omitempty" tf:"sns_destination,omitempty"`
 }
 
@@ -64,7 +60,7 @@ type SesEventDestinationStatus struct {
 	// +optional
 	Output *SesEventDestinationSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

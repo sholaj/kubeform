@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -32,7 +32,6 @@ type WafRateBasedRuleSpec struct {
 	MetricName string `json:"metricName" tf:"metric_name"`
 	Name       string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Predicates []WafRateBasedRuleSpecPredicates `json:"predicates,omitempty" tf:"predicates,omitempty"`
 	RateKey    string                           `json:"rateKey" tf:"rate_key"`
 	RateLimit  int                              `json:"rateLimit" tf:"rate_limit"`
@@ -45,7 +44,7 @@ type WafRateBasedRuleStatus struct {
 	// +optional
 	Output *WafRateBasedRuleSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

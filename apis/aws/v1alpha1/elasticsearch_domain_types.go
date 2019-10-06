@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -74,13 +74,10 @@ type ElasticsearchDomainSpecSnapshotOptions struct {
 
 type ElasticsearchDomainSpecVpcOptions struct {
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	AvailabilityZones []string `json:"availabilityZones,omitempty" tf:"availability_zones,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroupIDS []string `json:"securityGroupIDS,omitempty" tf:"security_group_ids,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SubnetIDS []string `json:"subnetIDS,omitempty" tf:"subnet_ids,omitempty"`
 	// +optional
 	VpcID string `json:"vpcID,omitempty" tf:"vpc_id,omitempty"`
@@ -119,7 +116,6 @@ type ElasticsearchDomainSpec struct {
 	// +optional
 	KibanaEndpoint string `json:"kibanaEndpoint,omitempty" tf:"kibana_endpoint,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	LogPublishingOptions []ElasticsearchDomainSpecLogPublishingOptions `json:"logPublishingOptions,omitempty" tf:"log_publishing_options,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -141,7 +137,7 @@ type ElasticsearchDomainStatus struct {
 	// +optional
 	Output *ElasticsearchDomainSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

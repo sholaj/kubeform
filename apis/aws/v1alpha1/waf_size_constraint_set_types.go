@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -27,7 +27,6 @@ type WafSizeConstraintSetSpecSizeConstraintsFieldToMatch struct {
 type WafSizeConstraintSetSpecSizeConstraints struct {
 	ComparisonOperator string `json:"comparisonOperator" tf:"comparison_operator"`
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	FieldToMatch       []WafSizeConstraintSetSpecSizeConstraintsFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
 	Size               int                                                   `json:"size" tf:"size"`
 	TextTransformation string                                                `json:"textTransformation" tf:"text_transformation"`
@@ -40,7 +39,6 @@ type WafSizeConstraintSetSpec struct {
 
 	Name string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SizeConstraints []WafSizeConstraintSetSpecSizeConstraints `json:"sizeConstraints,omitempty" tf:"size_constraints,omitempty"`
 }
 
@@ -51,7 +49,7 @@ type WafSizeConstraintSetStatus struct {
 	// +optional
 	Output *WafSizeConstraintSetSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

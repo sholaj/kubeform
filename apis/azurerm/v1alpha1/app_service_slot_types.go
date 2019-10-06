@@ -5,7 +5,7 @@ import (
 
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -107,7 +107,6 @@ type AppServiceSlotSpecIdentity struct {
 }
 
 type AppServiceSlotSpecSiteConfigCors struct {
-	// +kubebuilder:validation:UniqueItems=true
 	AllowedOrigins []string `json:"allowedOrigins" tf:"allowed_origins"`
 	// +optional
 	SupportCredentials bool `json:"supportCredentials,omitempty" tf:"support_credentials,omitempty"`
@@ -195,7 +194,6 @@ type AppServiceSlotSpec struct {
 	// +optional
 	ClientAffinityEnabled bool `json:"clientAffinityEnabled,omitempty" tf:"client_affinity_enabled,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ConnectionString []AppServiceSlotSpecConnectionString `json:"connectionString,omitempty" tf:"connection_string,omitempty"`
 	// +optional
 	DefaultSiteHostname string `json:"defaultSiteHostname,omitempty" tf:"default_site_hostname,omitempty"`
@@ -226,7 +224,7 @@ type AppServiceSlotStatus struct {
 	// +optional
 	Output *AppServiceSlotSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

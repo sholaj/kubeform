@@ -435,12 +435,10 @@ spec:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   subnetIDS:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   vpcID:
                     type: string
                 required:
@@ -512,12 +510,10 @@ spec:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       subnetIDS:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       vpcID:
                         type: string
                     required:

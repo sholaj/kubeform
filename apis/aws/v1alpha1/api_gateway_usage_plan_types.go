@@ -5,7 +5,7 @@ import (
 
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -53,11 +53,9 @@ type ApiGatewayUsagePlanSpec struct {
 	ProductCode string `json:"productCode,omitempty" tf:"product_code,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	QuotaSettings []ApiGatewayUsagePlanSpecQuotaSettings `json:"quotaSettings,omitempty" tf:"quota_settings,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	ThrottleSettings []ApiGatewayUsagePlanSpecThrottleSettings `json:"throttleSettings,omitempty" tf:"throttle_settings,omitempty"`
 }
 
@@ -68,7 +66,7 @@ type ApiGatewayUsagePlanStatus struct {
 	// +optional
 	Output *ApiGatewayUsagePlanSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

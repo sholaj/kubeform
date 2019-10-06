@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -121,7 +121,6 @@ type DbInstanceSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	S3Import []DbInstanceSpecS3Import `json:"s3Import,omitempty" tf:"s3_import,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	SecurityGroupNames []string `json:"securityGroupNames,omitempty" tf:"security_group_names,omitempty"`
 	// +optional
 	SkipFinalSnapshot bool `json:"skipFinalSnapshot,omitempty" tf:"skip_final_snapshot,omitempty"`
@@ -140,7 +139,6 @@ type DbInstanceSpec struct {
 	// +optional
 	Username string `json:"username,omitempty" tf:"username,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VpcSecurityGroupIDS []string `json:"vpcSecurityGroupIDS,omitempty" tf:"vpc_security_group_ids,omitempty"`
 }
 
@@ -151,7 +149,7 @@ type DbInstanceStatus struct {
 	// +optional
 	Output *DbInstanceSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -25,18 +25,15 @@ type DbOptionGroupSpecOptionOptionSettings struct {
 
 type DbOptionGroupSpecOption struct {
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	DbSecurityGroupMemberships []string `json:"dbSecurityGroupMemberships,omitempty" tf:"db_security_group_memberships,omitempty"`
 	OptionName                 string   `json:"optionName" tf:"option_name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	OptionSettings []DbOptionGroupSpecOptionOptionSettings `json:"optionSettings,omitempty" tf:"option_settings,omitempty"`
 	// +optional
 	Port int `json:"port,omitempty" tf:"port,omitempty"`
 	// +optional
 	Version string `json:"version,omitempty" tf:"version,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VpcSecurityGroupMemberships []string `json:"vpcSecurityGroupMemberships,omitempty" tf:"vpc_security_group_memberships,omitempty"`
 }
 
@@ -54,7 +51,6 @@ type DbOptionGroupSpec struct {
 	// +optional
 	NamePrefix string `json:"namePrefix,omitempty" tf:"name_prefix,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Option []DbOptionGroupSpecOption `json:"option,omitempty" tf:"option,omitempty"`
 	// +optional
 	OptionGroupDescription string `json:"optionGroupDescription,omitempty" tf:"option_group_description,omitempty"`
@@ -69,7 +65,7 @@ type DbOptionGroupStatus struct {
 	// +optional
 	Output *DbOptionGroupSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

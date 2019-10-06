@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -58,7 +58,6 @@ type ComputeURLMapSpec struct {
 	// +optional
 	Fingerprint string `json:"fingerprint,omitempty" tf:"fingerprint,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	HostRule []ComputeURLMapSpecHostRule `json:"hostRule,omitempty" tf:"host_rule,omitempty"`
 	// +optional
 	MapID string `json:"mapID,omitempty" tf:"map_id,omitempty"`
@@ -80,7 +79,7 @@ type ComputeURLMapStatus struct {
 	// +optional
 	Output *ComputeURLMapSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

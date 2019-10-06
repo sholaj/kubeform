@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -114,8 +114,7 @@ type ComputeInstanceFromTemplateSpecScratchDisk struct {
 
 type ComputeInstanceFromTemplateSpecServiceAccount struct {
 	// +optional
-	Email string `json:"email,omitempty" tf:"email,omitempty"`
-	// +kubebuilder:validation:UniqueItems=true
+	Email  string   `json:"email,omitempty" tf:"email,omitempty"`
 	Scopes []string `json:"scopes" tf:"scopes"`
 }
 
@@ -176,7 +175,6 @@ type ComputeInstanceFromTemplateSpec struct {
 	ServiceAccount         []ComputeInstanceFromTemplateSpecServiceAccount `json:"serviceAccount,omitempty" tf:"service_account,omitempty"`
 	SourceInstanceTemplate string                                          `json:"sourceInstanceTemplate" tf:"source_instance_template"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Tags []string `json:"tags,omitempty" tf:"tags,omitempty"`
 	// +optional
 	TagsFingerprint string `json:"tagsFingerprint,omitempty" tf:"tags_fingerprint,omitempty"`
@@ -191,7 +189,7 @@ type ComputeInstanceFromTemplateStatus struct {
 	// +optional
 	Output *ComputeInstanceFromTemplateSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -38,7 +38,6 @@ type ElasticBeanstalkConfigurationTemplateSpec struct {
 	EnvironmentID string `json:"environmentID,omitempty" tf:"environment_id,omitempty"`
 	Name          string `json:"name" tf:"name"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Setting []ElasticBeanstalkConfigurationTemplateSpecSetting `json:"setting,omitempty" tf:"setting,omitempty"`
 	// +optional
 	SolutionStackName string `json:"solutionStackName,omitempty" tf:"solution_stack_name,omitempty"`
@@ -51,7 +50,7 @@ type ElasticBeanstalkConfigurationTemplateStatus struct {
 	// +optional
 	Output *ElasticBeanstalkConfigurationTemplateSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

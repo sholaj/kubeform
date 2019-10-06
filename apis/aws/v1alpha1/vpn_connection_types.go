@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -51,7 +51,6 @@ type VpnConnectionSpec struct {
 	CustomerGatewayConfiguration string `json:"customerGatewayConfiguration,omitempty" tf:"customer_gateway_configuration,omitempty"`
 	CustomerGatewayID            string `json:"customerGatewayID" tf:"customer_gateway_id"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	Routes []VpnConnectionSpecRoutes `json:"routes,omitempty" tf:"routes,omitempty"`
 	// +optional
 	StaticRoutesOnly bool `json:"staticRoutesOnly,omitempty" tf:"static_routes_only,omitempty"`
@@ -91,7 +90,6 @@ type VpnConnectionSpec struct {
 	Tunnel2VgwInsideAddress string `json:"tunnel2VgwInsideAddress,omitempty" tf:"tunnel2_vgw_inside_address,omitempty"`
 	Type                    string `json:"type" tf:"type"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	VgwTelemetry []VpnConnectionSpecVgwTelemetry `json:"vgwTelemetry,omitempty" tf:"vgw_telemetry,omitempty"`
 	// +optional
 	VpnGatewayID string `json:"vpnGatewayID,omitempty" tf:"vpn_gateway_id,omitempty"`
@@ -104,7 +102,7 @@ type VpnConnectionStatus struct {
 	// +optional
 	Output *VpnConnectionSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

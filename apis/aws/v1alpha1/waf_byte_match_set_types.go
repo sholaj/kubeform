@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -26,7 +26,6 @@ type WafByteMatchSetSpecByteMatchTuplesFieldToMatch struct {
 
 type WafByteMatchSetSpecByteMatchTuples struct {
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	FieldToMatch         []WafByteMatchSetSpecByteMatchTuplesFieldToMatch `json:"fieldToMatch" tf:"field_to_match"`
 	PositionalConstraint string                                           `json:"positionalConstraint" tf:"positional_constraint"`
 	// +optional
@@ -40,7 +39,6 @@ type WafByteMatchSetSpec struct {
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ByteMatchTuples []WafByteMatchSetSpecByteMatchTuples `json:"byteMatchTuples,omitempty" tf:"byte_match_tuples,omitempty"`
 	Name            string                               `json:"name" tf:"name"`
 }
@@ -52,7 +50,7 @@ type WafByteMatchSetStatus struct {
 	// +optional
 	Output *WafByteMatchSetSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -46,7 +46,6 @@ type DevTestWindowsVirtualMachineSpec struct {
 	// +kubebuilder:validation:MaxItems=1
 	GalleryImageReference []DevTestWindowsVirtualMachineSpecGalleryImageReference `json:"galleryImageReference" tf:"gallery_image_reference"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	InboundNATRule      []DevTestWindowsVirtualMachineSpecInboundNATRule `json:"inboundNATRule,omitempty" tf:"inbound_nat_rule,omitempty"`
 	LabName             string                                           `json:"labName" tf:"lab_name"`
 	LabSubnetName       string                                           `json:"labSubnetName" tf:"lab_subnet_name"`
@@ -73,7 +72,7 @@ type DevTestWindowsVirtualMachineStatus struct {
 	// +optional
 	Output *DevTestWindowsVirtualMachineSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

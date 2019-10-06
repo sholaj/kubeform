@@ -444,7 +444,6 @@ spec:
                 - targetVaultName
                 type: object
               type: array
-              uniqueItems: true
             tags:
               additionalProperties:
                 type: string
@@ -512,7 +511,6 @@ spec:
                     - targetVaultName
                     type: object
                   type: array
-                  uniqueItems: true
                 tags:
                   additionalProperties:
                     type: string

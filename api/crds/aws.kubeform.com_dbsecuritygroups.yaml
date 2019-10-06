@@ -416,7 +416,6 @@ spec:
                     type: string
                 type: object
               type: array
-              uniqueItems: true
             name:
               type: string
             providerRef:
@@ -465,7 +464,6 @@ spec:
                         type: string
                     type: object
                   type: array
-                  uniqueItems: true
                 name:
                   type: string
                 providerRef:

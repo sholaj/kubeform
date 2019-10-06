@@ -406,7 +406,6 @@ spec:
                     items:
                       type: string
                     type: array
-                    uniqueItems: true
                   subnetArn:
                     type: string
                 required:
@@ -459,7 +458,6 @@ spec:
                         items:
                           type: string
                         type: array
-                        uniqueItems: true
                       subnetArn:
                         type: string
                     required:

@@ -421,7 +421,6 @@ spec:
                 - regionName
                 type: object
               type: array
-              uniqueItems: true
           required:
           - name
           - providerRef
@@ -460,7 +459,6 @@ spec:
                     - regionName
                     type: object
                   type: array
-                  uniqueItems: true
               required:
               - name
               - providerRef

@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -174,17 +174,14 @@ type VirtualMachineSpec struct {
 	NetworkInterfaceIDS []string `json:"networkInterfaceIDS" tf:"network_interface_ids"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	OsProfile []VirtualMachineSpecOsProfile `json:"osProfile,omitempty" tf:"os_profile,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	OsProfileLinuxConfig []VirtualMachineSpecOsProfileLinuxConfig `json:"osProfileLinuxConfig,omitempty" tf:"os_profile_linux_config,omitempty"`
 	// +optional
 	OsProfileSecrets []VirtualMachineSpecOsProfileSecrets `json:"osProfileSecrets,omitempty" tf:"os_profile_secrets,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	OsProfileWindowsConfig []VirtualMachineSpecOsProfileWindowsConfig `json:"osProfileWindowsConfig,omitempty" tf:"os_profile_windows_config,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
@@ -196,7 +193,6 @@ type VirtualMachineSpec struct {
 	StorageDataDisk []VirtualMachineSpecStorageDataDisk `json:"storageDataDisk,omitempty" tf:"storage_data_disk,omitempty"`
 	// +optional
 	// +kubebuilder:validation:MaxItems=1
-	// +kubebuilder:validation:UniqueItems=true
 	StorageImageReference []VirtualMachineSpecStorageImageReference `json:"storageImageReference,omitempty" tf:"storage_image_reference,omitempty"`
 	// +kubebuilder:validation:MaxItems=1
 	StorageOsDisk []VirtualMachineSpecStorageOsDisk `json:"storageOsDisk" tf:"storage_os_disk"`
@@ -215,7 +211,7 @@ type VirtualMachineStatus struct {
 	// +optional
 	Output *VirtualMachineSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

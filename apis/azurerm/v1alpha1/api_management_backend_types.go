@@ -3,7 +3,7 @@ package v1alpha1
 import (
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubeform.dev/kubeform/apis"
+	base "kubeform.dev/kubeform/apis/base/v1alpha1"
 )
 
 // +genclient
@@ -50,15 +50,12 @@ type ApiManagementBackendSpecServiceFabricClusterServerX509Name struct {
 }
 
 type ApiManagementBackendSpecServiceFabricCluster struct {
-	ClientCertificateThumbprint string `json:"clientCertificateThumbprint" tf:"client_certificate_thumbprint"`
-	// +kubebuilder:validation:UniqueItems=true
+	ClientCertificateThumbprint   string   `json:"clientCertificateThumbprint" tf:"client_certificate_thumbprint"`
 	ManagementEndpoints           []string `json:"managementEndpoints" tf:"management_endpoints"`
 	MaxPartitionResolutionRetries int      `json:"maxPartitionResolutionRetries" tf:"max_partition_resolution_retries"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ServerCertificateThumbprints []string `json:"serverCertificateThumbprints,omitempty" tf:"server_certificate_thumbprints,omitempty"`
 	// +optional
-	// +kubebuilder:validation:UniqueItems=true
 	ServerX509Name []ApiManagementBackendSpecServiceFabricClusterServerX509Name `json:"serverX509Name,omitempty" tf:"server_x509_name,omitempty"`
 }
 
@@ -108,7 +105,7 @@ type ApiManagementBackendStatus struct {
 	// +optional
 	Output *ApiManagementBackendSpec `json:"output,omitempty"`
 	// +optional
-	State *apis.State `json:"state,omitempty"`
+	State *base.State `json:"state,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
