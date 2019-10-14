@@ -11,6 +11,8 @@ spec:
     kind: S3BucketObject
     plural: s3bucketobjects
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

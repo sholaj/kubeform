@@ -11,6 +11,8 @@ spec:
     kind: SagemakerEndpointConfiguration
     plural: sagemakerendpointconfigurations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

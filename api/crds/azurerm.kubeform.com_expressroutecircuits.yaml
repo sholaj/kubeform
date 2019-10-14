@@ -11,6 +11,8 @@ spec:
     kind: ExpressRouteCircuit
     plural: expressroutecircuits
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

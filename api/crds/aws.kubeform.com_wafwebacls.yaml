@@ -11,6 +11,8 @@ spec:
     kind: WafWebACL
     plural: wafwebacls
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

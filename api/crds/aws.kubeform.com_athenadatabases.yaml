@@ -11,6 +11,8 @@ spec:
     kind: AthenaDatabase
     plural: athenadatabases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

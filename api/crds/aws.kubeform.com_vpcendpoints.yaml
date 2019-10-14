@@ -11,6 +11,8 @@ spec:
     kind: VpcEndpoint
     plural: vpcendpoints
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

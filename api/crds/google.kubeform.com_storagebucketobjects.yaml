@@ -11,6 +11,8 @@ spec:
     kind: StorageBucketObject
     plural: storagebucketobjects
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

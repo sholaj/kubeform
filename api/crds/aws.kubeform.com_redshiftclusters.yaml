@@ -11,6 +11,8 @@ spec:
     kind: RedshiftCluster
     plural: redshiftclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

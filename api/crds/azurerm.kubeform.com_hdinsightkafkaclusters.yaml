@@ -11,6 +11,8 @@ spec:
     kind: HdinsightKafkaCluster
     plural: hdinsightkafkaclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

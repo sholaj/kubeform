@@ -11,6 +11,8 @@ spec:
     kind: Certificate
     plural: certificates
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

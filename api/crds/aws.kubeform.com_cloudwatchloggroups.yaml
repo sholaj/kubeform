@@ -11,6 +11,8 @@ spec:
     kind: CloudwatchLogGroup
     plural: cloudwatchloggroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

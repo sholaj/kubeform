@@ -11,6 +11,8 @@ spec:
     kind: Instance
     plural: instances
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

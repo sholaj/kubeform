@@ -11,6 +11,8 @@ spec:
     kind: CdnProfile
     plural: cdnprofiles
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

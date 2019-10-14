@@ -11,6 +11,8 @@ spec:
     kind: CosmosdbAccount
     plural: cosmosdbaccounts
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: AutomationAccount
     plural: automationaccounts
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

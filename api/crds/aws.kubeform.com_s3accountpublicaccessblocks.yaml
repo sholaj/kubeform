@@ -11,6 +11,8 @@ spec:
     kind: S3AccountPublicAccessBlock
     plural: s3accountpublicaccessblocks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

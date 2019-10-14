@@ -11,6 +11,8 @@ spec:
     kind: ServicebusQueue
     plural: servicebusqueues
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

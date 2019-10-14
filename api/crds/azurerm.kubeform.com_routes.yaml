@@ -11,6 +11,8 @@ spec:
     kind: Route
     plural: routes
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

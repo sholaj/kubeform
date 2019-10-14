@@ -11,6 +11,8 @@ spec:
     kind: Ec2ClientVPNEndpoint
     plural: ec2clientvpnendpoints
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

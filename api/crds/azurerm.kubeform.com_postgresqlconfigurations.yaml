@@ -11,6 +11,8 @@ spec:
     kind: PostgresqlConfiguration
     plural: postgresqlconfigurations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

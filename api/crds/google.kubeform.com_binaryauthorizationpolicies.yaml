@@ -11,6 +11,8 @@ spec:
     kind: BinaryAuthorizationPolicy
     plural: binaryauthorizationpolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

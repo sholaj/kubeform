@@ -11,6 +11,8 @@ spec:
     kind: StorageDefaultObjectACL
     plural: storagedefaultobjectacls
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

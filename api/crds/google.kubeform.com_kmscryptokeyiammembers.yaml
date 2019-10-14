@@ -11,6 +11,8 @@ spec:
     kind: KmsCryptoKeyIamMember
     plural: kmscryptokeyiammembers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

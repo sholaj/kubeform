@@ -11,6 +11,8 @@ spec:
     kind: Ec2Fleet
     plural: ec2fleet
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

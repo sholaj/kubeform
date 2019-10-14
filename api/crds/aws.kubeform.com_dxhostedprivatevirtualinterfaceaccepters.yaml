@@ -11,6 +11,8 @@ spec:
     kind: DxHostedPrivateVirtualInterfaceAccepter
     plural: dxhostedprivatevirtualinterfaceaccepters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

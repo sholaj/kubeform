@@ -11,6 +11,8 @@ spec:
     kind: StorageBucketIamPolicy
     plural: storagebucketiampolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

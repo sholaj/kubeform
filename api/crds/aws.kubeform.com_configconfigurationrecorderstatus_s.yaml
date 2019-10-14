@@ -11,6 +11,8 @@ spec:
     kind: ConfigConfigurationRecorderStatus_
     plural: configconfigurationrecorderstatus_s
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

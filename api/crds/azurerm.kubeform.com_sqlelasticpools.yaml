@@ -11,6 +11,8 @@ spec:
     kind: SqlElasticpool
     plural: sqlelasticpools
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

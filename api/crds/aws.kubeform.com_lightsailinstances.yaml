@@ -11,6 +11,8 @@ spec:
     kind: LightsailInstance
     plural: lightsailinstances
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

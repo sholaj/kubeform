@@ -11,6 +11,8 @@ spec:
     kind: DirectoryServiceDirectory
     plural: directoryservicedirectories
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

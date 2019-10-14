@@ -11,6 +11,8 @@ spec:
     kind: SqlSSLCert
     plural: sqlsslcerts
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

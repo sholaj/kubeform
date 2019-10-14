@@ -11,6 +11,8 @@ spec:
     kind: CloudformationStackSetInstance
     plural: cloudformationstacksetinstances
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

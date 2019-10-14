@@ -11,6 +11,8 @@ spec:
     kind: AppmeshRoute
     plural: appmeshroutes
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

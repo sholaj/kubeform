@@ -11,6 +11,8 @@ spec:
     kind: SchedulerJobCollection
     plural: schedulerjobcollections
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

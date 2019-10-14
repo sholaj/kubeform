@@ -11,6 +11,8 @@ spec:
     kind: Ec2CapacityReservation
     plural: ec2capacityreservations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: ComputeTargetPool
     plural: computetargetpools
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

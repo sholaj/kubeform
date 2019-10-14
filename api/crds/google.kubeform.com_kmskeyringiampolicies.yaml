@@ -11,6 +11,8 @@ spec:
     kind: KmsKeyRingIamPolicy
     plural: kmskeyringiampolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

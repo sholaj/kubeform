@@ -11,6 +11,8 @@ spec:
     kind: CustomerGateway
     plural: customergateways
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: HdinsightInteractiveQueryCluster
     plural: hdinsightinteractivequeryclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

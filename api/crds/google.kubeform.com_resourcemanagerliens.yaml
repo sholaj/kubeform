@@ -11,6 +11,8 @@ spec:
     kind: ResourceManagerLien
     plural: resourcemanagerliens
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

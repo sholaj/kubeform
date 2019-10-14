@@ -11,6 +11,8 @@ spec:
     kind: SecurityCenterSubscriptionPricing
     plural: securitycentersubscriptionpricings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

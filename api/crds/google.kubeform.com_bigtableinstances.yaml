@@ -11,6 +11,8 @@ spec:
     kind: BigtableInstance
     plural: bigtableinstances
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: OpsworksPhpAppLayer
     plural: opsworksphpapplayers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

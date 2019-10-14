@@ -11,6 +11,8 @@ spec:
     kind: CloudwatchEventPermission
     plural: cloudwatcheventpermissions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

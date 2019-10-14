@@ -11,6 +11,8 @@ spec:
     kind: OpsworksHaproxyLayer
     plural: opsworkshaproxylayers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

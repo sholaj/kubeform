@@ -11,6 +11,8 @@ spec:
     kind: PinpointApnsVoipSandboxChannel
     plural: pinpointapnsvoipsandboxchannels
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

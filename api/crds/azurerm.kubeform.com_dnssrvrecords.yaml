@@ -11,6 +11,8 @@ spec:
     kind: DnsSrvRecord
     plural: dnssrvrecords
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: MysqlFirewallRule
     plural: mysqlfirewallrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

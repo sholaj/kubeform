@@ -11,6 +11,8 @@ spec:
     kind: SpotFleetRequest
     plural: spotfleetrequests
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

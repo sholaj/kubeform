@@ -11,6 +11,8 @@ spec:
     kind: NetworkSecurityRule
     plural: networksecurityrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

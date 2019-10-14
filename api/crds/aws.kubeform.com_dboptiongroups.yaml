@@ -11,6 +11,8 @@ spec:
     kind: DbOptionGroup
     plural: dboptiongroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

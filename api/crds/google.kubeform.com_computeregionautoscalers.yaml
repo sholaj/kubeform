@@ -11,6 +11,8 @@ spec:
     kind: ComputeRegionAutoscaler
     plural: computeregionautoscalers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

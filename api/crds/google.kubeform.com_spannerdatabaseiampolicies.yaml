@@ -11,6 +11,8 @@ spec:
     kind: SpannerDatabaseIamPolicy
     plural: spannerdatabaseiampolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

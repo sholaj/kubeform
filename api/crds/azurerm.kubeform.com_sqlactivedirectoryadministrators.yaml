@@ -11,6 +11,8 @@ spec:
     kind: SqlActiveDirectoryAdministrator
     plural: sqlactivedirectoryadministrators
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

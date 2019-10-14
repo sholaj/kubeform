@@ -11,6 +11,8 @@ spec:
     kind: DxLag
     plural: dxlags
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: Route53Record
     plural: route53records
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

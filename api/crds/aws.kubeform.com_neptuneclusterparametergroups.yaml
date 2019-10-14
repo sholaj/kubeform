@@ -11,6 +11,8 @@ spec:
     kind: NeptuneClusterParameterGroup
     plural: neptuneclusterparametergroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

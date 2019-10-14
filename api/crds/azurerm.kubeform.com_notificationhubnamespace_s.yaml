@@ -11,6 +11,8 @@ spec:
     kind: NotificationHubNamespace_
     plural: notificationhubnamespace_s
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

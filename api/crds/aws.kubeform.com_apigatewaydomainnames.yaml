@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayDomainName
     plural: apigatewaydomainnames
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

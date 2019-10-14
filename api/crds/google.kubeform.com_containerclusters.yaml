@@ -11,6 +11,8 @@ spec:
     kind: ContainerCluster
     plural: containerclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

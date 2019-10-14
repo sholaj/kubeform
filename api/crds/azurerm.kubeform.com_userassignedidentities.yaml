@@ -11,6 +11,8 @@ spec:
     kind: UserAssignedIdentity
     plural: userassignedidentities
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

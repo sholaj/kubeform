@@ -11,6 +11,8 @@ spec:
     kind: EfsFileSystem
     plural: efsfilesystems
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: Tag
     plural: tags
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

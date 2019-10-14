@@ -11,6 +11,8 @@ spec:
     kind: ConfigConfigurationRecorder
     plural: configconfigurationrecorders
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

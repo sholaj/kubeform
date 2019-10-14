@@ -11,6 +11,8 @@ spec:
     kind: NetworkProfile
     plural: networkprofiles
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: MonitorActionGroup
     plural: monitoractiongroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

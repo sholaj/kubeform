@@ -11,6 +11,8 @@ spec:
     kind: ComputeSubnetworkIamPolicy
     plural: computesubnetworkiampolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

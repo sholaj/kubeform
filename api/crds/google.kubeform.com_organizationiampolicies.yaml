@@ -11,6 +11,8 @@ spec:
     kind: OrganizationIamPolicy
     plural: organizationiampolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

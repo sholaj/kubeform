@@ -11,6 +11,8 @@ spec:
     kind: DataFactoryDatasetSQLServerTable
     plural: datafactorydatasetsqlservertables
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

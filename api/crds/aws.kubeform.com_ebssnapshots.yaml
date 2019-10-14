@@ -11,6 +11,8 @@ spec:
     kind: EbsSnapshot
     plural: ebssnapshots
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

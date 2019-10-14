@@ -11,6 +11,8 @@ spec:
     kind: ComputeImage
     plural: computeimages
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

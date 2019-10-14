@@ -11,6 +11,8 @@ spec:
     kind: ApiManagementAPIOperation
     plural: apimanagementapioperations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

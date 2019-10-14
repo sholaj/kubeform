@@ -11,6 +11,8 @@ spec:
     kind: AppmeshVirtualRouter
     plural: appmeshvirtualrouters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: CloudwatchLogSubscriptionFilter
     plural: cloudwatchlogsubscriptionfilters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

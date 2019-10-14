@@ -11,6 +11,8 @@ spec:
     kind: InspectorResourceGroup
     plural: inspectorresourcegroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

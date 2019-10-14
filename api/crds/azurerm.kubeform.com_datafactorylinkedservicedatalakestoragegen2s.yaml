@@ -11,6 +11,8 @@ spec:
     kind: DataFactoryLinkedServiceDataLakeStorageGen2
     plural: datafactorylinkedservicedatalakestoragegen2s
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

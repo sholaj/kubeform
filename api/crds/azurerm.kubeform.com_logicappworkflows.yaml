@@ -11,6 +11,8 @@ spec:
     kind: LogicAppWorkflow
     plural: logicappworkflows
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

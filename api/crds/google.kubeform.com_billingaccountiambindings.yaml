@@ -11,6 +11,8 @@ spec:
     kind: BillingAccountIamBinding
     plural: billingaccountiambindings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

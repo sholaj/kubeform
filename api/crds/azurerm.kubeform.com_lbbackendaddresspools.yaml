@@ -11,6 +11,8 @@ spec:
     kind: LbBackendAddressPool
     plural: lbbackendaddresspools
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

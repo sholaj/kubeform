@@ -11,6 +11,8 @@ spec:
     kind: NetworkWatcher
     plural: networkwatchers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: HdinsightMlServicesCluster
     plural: hdinsightmlservicesclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

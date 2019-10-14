@@ -11,6 +11,8 @@ spec:
     kind: AppautoscalingScheduledAction
     plural: appautoscalingscheduledactions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: AutoscalingSchedule
     plural: autoscalingschedules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

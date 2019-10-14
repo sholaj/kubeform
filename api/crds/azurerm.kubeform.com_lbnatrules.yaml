@@ -11,6 +11,8 @@ spec:
     kind: LbNATRule
     plural: lbnatrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

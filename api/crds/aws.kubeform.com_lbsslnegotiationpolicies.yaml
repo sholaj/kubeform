@@ -11,6 +11,8 @@ spec:
     kind: LbSSLNegotiationPolicy
     plural: lbsslnegotiationpolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

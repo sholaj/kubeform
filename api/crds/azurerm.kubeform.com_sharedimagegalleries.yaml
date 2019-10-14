@@ -11,6 +11,8 @@ spec:
     kind: SharedImageGallery
     plural: sharedimagegalleries
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

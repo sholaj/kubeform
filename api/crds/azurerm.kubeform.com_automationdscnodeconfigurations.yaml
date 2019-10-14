@@ -11,6 +11,8 @@ spec:
     kind: AutomationDscNodeconfiguration
     plural: automationdscnodeconfigurations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

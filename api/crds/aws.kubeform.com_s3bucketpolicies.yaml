@@ -11,6 +11,8 @@ spec:
     kind: S3BucketPolicy
     plural: s3bucketpolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

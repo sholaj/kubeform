@@ -11,6 +11,8 @@ spec:
     kind: FolderIamBinding
     plural: folderiambindings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: VirtualMachineDataDiskAttachment
     plural: virtualmachinedatadiskattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

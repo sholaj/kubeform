@@ -11,6 +11,8 @@ spec:
     kind: Snapshot
     plural: snapshots
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

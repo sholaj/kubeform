@@ -26,11 +26,11 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	awsv1alpha1 "kubeform.dev/kubeform/apis/aws/v1alpha1"
 	azurermv1alpha1 "kubeform.dev/kubeform/apis/azurerm/v1alpha1"
+	basev1alpha1 "kubeform.dev/kubeform/apis/base/v1alpha1"
 	digitaloceanv1alpha1 "kubeform.dev/kubeform/apis/digitalocean/v1alpha1"
 	googlev1alpha1 "kubeform.dev/kubeform/apis/google/v1alpha1"
 	linodev1alpha1 "kubeform.dev/kubeform/apis/linode/v1alpha1"
 	modulesv1alpha1 "kubeform.dev/kubeform/apis/modules/v1alpha1"
-	basev1alpha1 "kubeform.dev/kubeform/apis/register.go/v1alpha1"
 )
 
 var Scheme = runtime.NewScheme()
@@ -44,7 +44,6 @@ var localSchemeBuilder = runtime.SchemeBuilder{
 	googlev1alpha1.AddToScheme,
 	linodev1alpha1.AddToScheme,
 	modulesv1alpha1.AddToScheme,
-	basev1alpha1.AddToScheme,
 }
 
 // AddToScheme adds all types of this clientset into the given scheme. This allows composition

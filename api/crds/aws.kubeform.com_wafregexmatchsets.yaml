@@ -11,6 +11,8 @@ spec:
     kind: WafRegexMatchSet
     plural: wafregexmatchsets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

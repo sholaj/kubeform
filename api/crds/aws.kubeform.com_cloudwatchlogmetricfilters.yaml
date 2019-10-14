@@ -11,6 +11,8 @@ spec:
     kind: CloudwatchLogMetricFilter
     plural: cloudwatchlogmetricfilters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: StorageTable
     plural: storagetables
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

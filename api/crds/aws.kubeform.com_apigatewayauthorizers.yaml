@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayAuthorizer
     plural: apigatewayauthorizers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

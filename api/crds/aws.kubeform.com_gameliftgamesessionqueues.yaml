@@ -11,6 +11,8 @@ spec:
     kind: GameliftGameSessionQueue
     plural: gameliftgamesessionqueues
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

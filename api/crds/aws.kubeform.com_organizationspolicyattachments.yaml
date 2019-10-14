@@ -11,6 +11,8 @@ spec:
     kind: OrganizationsPolicyAttachment
     plural: organizationspolicyattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

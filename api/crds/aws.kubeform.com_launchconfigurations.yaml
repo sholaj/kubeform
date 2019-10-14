@@ -11,6 +11,8 @@ spec:
     kind: LaunchConfiguration
     plural: launchconfigurations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: LoggingProjectExclusion
     plural: loggingprojectexclusions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

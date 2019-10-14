@@ -11,6 +11,8 @@ spec:
     kind: KeyVault
     plural: keyvaults
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: AppautoscalingTarget
     plural: appautoscalingtargets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

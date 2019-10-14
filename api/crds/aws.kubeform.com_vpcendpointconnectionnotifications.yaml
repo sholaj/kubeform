@@ -11,6 +11,8 @@ spec:
     kind: VpcEndpointConnectionNotification
     plural: vpcendpointconnectionnotifications
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

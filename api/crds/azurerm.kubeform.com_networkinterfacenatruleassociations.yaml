@@ -11,6 +11,8 @@ spec:
     kind: NetworkInterfaceNATRuleAssociation
     plural: networkinterfacenatruleassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

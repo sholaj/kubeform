@@ -11,6 +11,8 @@ spec:
     kind: NetworkInterfaceSgAttachment
     plural: networkinterfacesgattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

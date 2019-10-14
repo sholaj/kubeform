@@ -11,6 +11,8 @@ spec:
     kind: SesTemplate
     plural: sestemplates
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

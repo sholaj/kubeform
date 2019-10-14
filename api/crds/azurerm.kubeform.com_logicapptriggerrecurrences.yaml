@@ -11,6 +11,8 @@ spec:
     kind: LogicAppTriggerRecurrence
     plural: logicapptriggerrecurrences
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

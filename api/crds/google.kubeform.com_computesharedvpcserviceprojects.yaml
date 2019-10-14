@@ -11,6 +11,8 @@ spec:
     kind: ComputeSharedVpcServiceProject
     plural: computesharedvpcserviceprojects
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

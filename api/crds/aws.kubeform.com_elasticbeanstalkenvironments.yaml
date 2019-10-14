@@ -11,6 +11,8 @@ spec:
     kind: ElasticBeanstalkEnvironment
     plural: elasticbeanstalkenvironments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

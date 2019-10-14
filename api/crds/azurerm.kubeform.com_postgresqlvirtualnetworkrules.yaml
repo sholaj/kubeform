@@ -11,6 +11,8 @@ spec:
     kind: PostgresqlVirtualNetworkRule
     plural: postgresqlvirtualnetworkrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

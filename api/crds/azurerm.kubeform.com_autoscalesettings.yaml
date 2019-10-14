@@ -11,6 +11,8 @@ spec:
     kind: AutoscaleSetting
     plural: autoscalesettings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

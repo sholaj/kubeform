@@ -11,6 +11,8 @@ spec:
     kind: EventhubAuthorizationRule
     plural: eventhubauthorizationrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

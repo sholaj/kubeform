@@ -11,6 +11,8 @@ spec:
     kind: ComputeHTTPSHealthCheck
     plural: computehttpshealthchecks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

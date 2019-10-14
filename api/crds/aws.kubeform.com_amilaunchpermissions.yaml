@@ -11,6 +11,8 @@ spec:
     kind: AmiLaunchPermission
     plural: amilaunchpermissions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

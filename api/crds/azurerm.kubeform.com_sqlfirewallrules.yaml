@@ -11,6 +11,8 @@ spec:
     kind: SqlFirewallRule
     plural: sqlfirewallrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: AppEngineApplication
     plural: appengineapplications
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

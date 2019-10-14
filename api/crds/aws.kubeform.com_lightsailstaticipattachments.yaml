@@ -11,6 +11,8 @@ spec:
     kind: LightsailStaticIPAttachment
     plural: lightsailstaticipattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: StorageShare
     plural: storageshares
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

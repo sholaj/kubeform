@@ -11,6 +11,8 @@ spec:
     kind: NetworkInterfaceAttachment
     plural: networkinterfaceattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

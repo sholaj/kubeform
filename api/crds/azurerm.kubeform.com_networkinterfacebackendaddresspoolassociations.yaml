@@ -11,6 +11,8 @@ spec:
     kind: NetworkInterfaceBackendAddressPoolAssociation
     plural: networkinterfacebackendaddresspoolassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

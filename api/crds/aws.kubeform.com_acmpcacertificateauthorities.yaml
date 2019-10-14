@@ -11,6 +11,8 @@ spec:
     kind: AcmpcaCertificateAuthority
     plural: acmpcacertificateauthorities
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: CodebuildWebhook
     plural: codebuildwebhooks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

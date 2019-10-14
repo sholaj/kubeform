@@ -11,6 +11,8 @@ spec:
     kind: DynamodbTableItem
     plural: dynamodbtableitems
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

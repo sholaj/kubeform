@@ -11,6 +11,8 @@ spec:
     kind: DxGatewayAssociationProposal
     plural: dxgatewayassociationproposals
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

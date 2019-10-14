@@ -11,6 +11,8 @@ spec:
     kind: MysqlVirtualNetworkRule
     plural: mysqlvirtualnetworkrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

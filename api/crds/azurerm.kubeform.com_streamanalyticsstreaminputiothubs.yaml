@@ -11,6 +11,8 @@ spec:
     kind: StreamAnalyticsStreamInputIothub
     plural: streamanalyticsstreaminputiothubs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

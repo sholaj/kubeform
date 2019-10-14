@@ -11,6 +11,8 @@ spec:
     kind: HdinsightHbaseCluster
     plural: hdinsighthbaseclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

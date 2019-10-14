@@ -11,6 +11,8 @@ spec:
     kind: IamUserPolicy
     plural: iamuserpolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

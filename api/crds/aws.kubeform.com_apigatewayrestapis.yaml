@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayRestAPI
     plural: apigatewayrestapis
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

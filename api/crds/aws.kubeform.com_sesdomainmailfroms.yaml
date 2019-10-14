@@ -11,6 +11,8 @@ spec:
     kind: SesDomainMailFrom
     plural: sesdomainmailfroms
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: NodebalancerNode
     plural: nodebalancernodes
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

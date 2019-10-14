@@ -11,6 +11,8 @@ spec:
     kind: LambdaAlias
     plural: lambdaaliases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

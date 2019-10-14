@@ -11,6 +11,8 @@ spec:
     kind: OrganizationIamBinding
     plural: organizationiambindings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

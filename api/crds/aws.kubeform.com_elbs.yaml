@@ -11,6 +11,8 @@ spec:
     kind: Elb
     plural: elbs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

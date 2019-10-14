@@ -11,6 +11,8 @@ spec:
     kind: ComputeRouter
     plural: computerouters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: MapsAccount
     plural: mapsaccounts
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: AutomationModule
     plural: automationmodules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

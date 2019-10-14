@@ -11,6 +11,8 @@ spec:
     kind: ServicebusSubscription
     plural: servicebussubscriptions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

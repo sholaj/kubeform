@@ -11,6 +11,8 @@ spec:
     kind: DefaultNetworkACL
     plural: defaultnetworkacls
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

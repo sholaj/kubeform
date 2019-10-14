@@ -11,6 +11,8 @@ spec:
     kind: VirtualMachineExtension
     plural: virtualmachineextensions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

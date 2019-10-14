@@ -11,6 +11,8 @@ spec:
     kind: ManagementGroup
     plural: managementgroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

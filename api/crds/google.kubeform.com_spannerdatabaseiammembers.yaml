@@ -11,6 +11,8 @@ spec:
     kind: SpannerDatabaseIamMember
     plural: spannerdatabaseiammembers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

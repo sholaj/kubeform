@@ -11,6 +11,8 @@ spec:
     kind: DxConnection
     plural: dxconnections
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

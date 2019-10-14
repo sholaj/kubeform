@@ -11,6 +11,8 @@ spec:
     kind: FloatingIP
     plural: floatingips
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

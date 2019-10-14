@@ -11,6 +11,8 @@ spec:
     kind: AlbListenerRule
     plural: alblistenerrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

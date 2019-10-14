@@ -11,6 +11,8 @@ spec:
     kind: AnalysisServicesServer
     plural: analysisservicesservers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

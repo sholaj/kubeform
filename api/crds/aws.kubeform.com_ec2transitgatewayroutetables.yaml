@@ -11,6 +11,8 @@ spec:
     kind: Ec2TransitGatewayRouteTable
     plural: ec2transitgatewayroutetables
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

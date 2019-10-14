@@ -11,6 +11,8 @@ spec:
     kind: KmsExternalKey
     plural: kmsexternalkeys
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

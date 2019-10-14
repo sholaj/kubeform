@@ -11,6 +11,8 @@ spec:
     kind: LbTargetGroupAttachment
     plural: lbtargetgroupattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

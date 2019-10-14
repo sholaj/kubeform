@@ -11,6 +11,8 @@ spec:
     kind: DataLakeAnalyticsFirewallRule
     plural: datalakeanalyticsfirewallrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

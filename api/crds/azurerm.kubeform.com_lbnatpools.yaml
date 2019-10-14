@@ -11,6 +11,8 @@ spec:
     kind: LbNATPool
     plural: lbnatpools
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: ContainerRegistry
     plural: containerregistries
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

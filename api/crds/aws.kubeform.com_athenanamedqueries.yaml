@@ -11,6 +11,8 @@ spec:
     kind: AthenaNamedQuery
     plural: athenanamedqueries
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

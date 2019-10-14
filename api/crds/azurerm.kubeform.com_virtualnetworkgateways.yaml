@@ -11,6 +11,8 @@ spec:
     kind: VirtualNetworkGateway
     plural: virtualnetworkgateways
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

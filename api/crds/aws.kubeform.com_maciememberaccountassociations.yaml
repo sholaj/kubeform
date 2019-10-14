@@ -11,6 +11,8 @@ spec:
     kind: MacieMemberAccountAssociation
     plural: maciememberaccountassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

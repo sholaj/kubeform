@@ -11,6 +11,8 @@ spec:
     kind: ContainerAnalysisNote
     plural: containeranalysisnotes
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

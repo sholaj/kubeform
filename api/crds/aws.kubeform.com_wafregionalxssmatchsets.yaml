@@ -11,6 +11,8 @@ spec:
     kind: WafregionalXssMatchSet
     plural: wafregionalxssmatchsets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

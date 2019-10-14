@@ -11,6 +11,8 @@ spec:
     kind: NeptuneSubnetGroup
     plural: neptunesubnetgroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

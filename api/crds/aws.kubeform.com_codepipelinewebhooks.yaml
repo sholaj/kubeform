@@ -11,6 +11,8 @@ spec:
     kind: CodepipelineWebhook
     plural: codepipelinewebhooks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

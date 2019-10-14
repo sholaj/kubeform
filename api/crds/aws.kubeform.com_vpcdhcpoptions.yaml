@@ -11,6 +11,8 @@ spec:
     kind: VpcDHCPOptions
     plural: vpcdhcpoptions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

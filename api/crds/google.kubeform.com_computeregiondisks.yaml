@@ -11,6 +11,8 @@ spec:
     kind: ComputeRegionDisk
     plural: computeregiondisks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

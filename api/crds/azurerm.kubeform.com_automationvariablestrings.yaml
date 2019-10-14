@@ -11,6 +11,8 @@ spec:
     kind: AutomationVariableString
     plural: automationvariablestrings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

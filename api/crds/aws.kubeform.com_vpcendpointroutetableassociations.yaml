@@ -11,6 +11,8 @@ spec:
     kind: VpcEndpointRouteTableAssociation
     plural: vpcendpointroutetableassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: PinpointGcmChannel
     plural: pinpointgcmchannels
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

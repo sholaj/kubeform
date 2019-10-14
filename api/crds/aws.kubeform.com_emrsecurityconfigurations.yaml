@@ -11,6 +11,8 @@ spec:
     kind: EmrSecurityConfiguration
     plural: emrsecurityconfigurations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

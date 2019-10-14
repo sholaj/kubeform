@@ -11,6 +11,8 @@ spec:
     kind: PlacementGroup
     plural: placementgroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

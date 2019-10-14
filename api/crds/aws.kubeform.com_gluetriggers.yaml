@@ -11,6 +11,8 @@ spec:
     kind: GlueTrigger
     plural: gluetriggers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: DatasyncLocationNfs
     plural: datasynclocationnfs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

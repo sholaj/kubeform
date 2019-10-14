@@ -11,6 +11,8 @@ spec:
     kind: KinesisStream
     plural: kinesisstreams
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

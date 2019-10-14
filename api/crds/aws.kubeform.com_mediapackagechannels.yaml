@@ -11,6 +11,8 @@ spec:
     kind: MediaPackageChannel
     plural: mediapackagechannels
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

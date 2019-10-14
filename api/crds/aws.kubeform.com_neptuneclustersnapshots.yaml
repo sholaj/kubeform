@@ -11,6 +11,8 @@ spec:
     kind: NeptuneClusterSnapshot
     plural: neptuneclustersnapshots
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

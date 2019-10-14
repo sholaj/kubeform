@@ -11,6 +11,8 @@ spec:
     kind: ComputeForwardingRule
     plural: computeforwardingrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

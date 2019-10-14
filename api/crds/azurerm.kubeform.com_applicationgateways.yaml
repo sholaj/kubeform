@@ -11,6 +11,8 @@ spec:
     kind: ApplicationGateway
     plural: applicationgateways
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

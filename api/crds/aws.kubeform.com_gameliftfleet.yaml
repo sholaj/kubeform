@@ -11,6 +11,8 @@ spec:
     kind: GameliftFleet
     plural: gameliftfleet
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: RamPrincipalAssociation
     plural: ramprincipalassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

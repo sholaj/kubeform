@@ -11,6 +11,8 @@ spec:
     kind: CloudhsmV2Hsm
     plural: cloudhsmv2hsms
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

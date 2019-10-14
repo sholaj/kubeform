@@ -11,6 +11,8 @@ spec:
     kind: StreamAnalyticsOutputServicebusQueue
     plural: streamanalyticsoutputservicebusqueues
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

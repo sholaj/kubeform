@@ -11,6 +11,8 @@ spec:
     kind: EcrRepository
     plural: ecrrepositories
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

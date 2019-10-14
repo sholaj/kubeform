@@ -11,6 +11,8 @@ spec:
     kind: MysqlConfiguration
     plural: mysqlconfigurations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

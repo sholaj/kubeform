@@ -11,6 +11,8 @@ spec:
     kind: SsmPatchGroup
     plural: ssmpatchgroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

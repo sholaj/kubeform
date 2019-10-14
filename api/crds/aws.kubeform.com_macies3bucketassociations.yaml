@@ -11,6 +11,8 @@ spec:
     kind: MacieS3BucketAssociation
     plural: macies3bucketassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

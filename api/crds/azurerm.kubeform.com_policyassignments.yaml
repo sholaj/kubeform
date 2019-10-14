@@ -11,6 +11,8 @@ spec:
     kind: PolicyAssignment
     plural: policyassignments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

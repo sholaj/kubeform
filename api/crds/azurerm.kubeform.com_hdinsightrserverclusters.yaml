@@ -11,6 +11,8 @@ spec:
     kind: HdinsightRserverCluster
     plural: hdinsightrserverclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

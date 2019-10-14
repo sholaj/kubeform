@@ -11,6 +11,8 @@ spec:
     kind: VpcEndpointSubnetAssociation
     plural: vpcendpointsubnetassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

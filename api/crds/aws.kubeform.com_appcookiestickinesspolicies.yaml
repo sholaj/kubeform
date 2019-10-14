@@ -11,6 +11,8 @@ spec:
     kind: AppCookieStickinessPolicy
     plural: appcookiestickinesspolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: StorageQueue
     plural: storagequeues
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

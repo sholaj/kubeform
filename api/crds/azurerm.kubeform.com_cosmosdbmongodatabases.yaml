@@ -11,6 +11,8 @@ spec:
     kind: CosmosdbMongoDatabase
     plural: cosmosdbmongodatabases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

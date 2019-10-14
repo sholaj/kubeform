@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayAccount
     plural: apigatewayaccounts
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

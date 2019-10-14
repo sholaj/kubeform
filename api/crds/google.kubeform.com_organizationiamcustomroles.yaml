@@ -11,6 +11,8 @@ spec:
     kind: OrganizationIamCustomRole
     plural: organizationiamcustomroles
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

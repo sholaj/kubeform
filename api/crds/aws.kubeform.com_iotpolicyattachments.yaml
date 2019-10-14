@@ -11,6 +11,8 @@ spec:
     kind: IotPolicyAttachment
     plural: iotpolicyattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

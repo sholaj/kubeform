@@ -11,6 +11,8 @@ spec:
     kind: MonitorMetricAlertrule
     plural: monitormetricalertrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

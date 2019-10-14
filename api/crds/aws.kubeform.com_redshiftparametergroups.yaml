@@ -11,6 +11,8 @@ spec:
     kind: RedshiftParameterGroup
     plural: redshiftparametergroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

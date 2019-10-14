@@ -11,6 +11,8 @@ spec:
     kind: SagemakerNotebookInstanceLifecycleConfiguration
     plural: sagemakernotebookinstancelifecycleconfigurations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

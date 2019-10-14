@@ -11,6 +11,8 @@ spec:
     kind: FilestoreInstance
     plural: filestoreinstances
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: RamResourceAssociation
     plural: ramresourceassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

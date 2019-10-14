@@ -11,6 +11,8 @@ spec:
     kind: KmsAlias
     plural: kmsaliases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

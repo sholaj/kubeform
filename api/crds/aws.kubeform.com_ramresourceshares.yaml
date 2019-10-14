@@ -11,6 +11,8 @@ spec:
     kind: RamResourceShare
     plural: ramresourceshares
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

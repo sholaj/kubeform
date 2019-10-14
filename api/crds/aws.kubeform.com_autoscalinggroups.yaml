@@ -11,6 +11,8 @@ spec:
     kind: AutoscalingGroup
     plural: autoscalinggroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

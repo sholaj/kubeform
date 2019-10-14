@@ -11,6 +11,8 @@ spec:
     kind: ApiManagementGroupUser
     plural: apimanagementgroupusers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

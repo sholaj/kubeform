@@ -11,6 +11,8 @@ spec:
     kind: IotDps
     plural: iotdps
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

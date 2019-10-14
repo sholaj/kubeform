@@ -11,6 +11,8 @@ spec:
     kind: CurReportDefinition
     plural: curreportdefinitions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

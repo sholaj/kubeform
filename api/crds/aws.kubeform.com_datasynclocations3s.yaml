@@ -11,6 +11,8 @@ spec:
     kind: DatasyncLocationS3
     plural: datasynclocations3s
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

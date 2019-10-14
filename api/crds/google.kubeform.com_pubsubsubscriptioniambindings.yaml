@@ -11,6 +11,8 @@ spec:
     kind: PubsubSubscriptionIamBinding
     plural: pubsubsubscriptioniambindings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

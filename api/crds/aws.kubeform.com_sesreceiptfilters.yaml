@@ -11,6 +11,8 @@ spec:
     kind: SesReceiptFilter
     plural: sesreceiptfilters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: PinpointAdmChannel
     plural: pinpointadmchannels
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

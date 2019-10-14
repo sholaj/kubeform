@@ -11,6 +11,8 @@ spec:
     kind: IamInstanceProfile
     plural: iaminstanceprofiles
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

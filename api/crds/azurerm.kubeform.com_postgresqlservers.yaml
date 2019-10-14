@@ -11,6 +11,8 @@ spec:
     kind: PostgresqlServer
     plural: postgresqlservers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

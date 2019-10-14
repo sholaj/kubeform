@@ -11,6 +11,8 @@ spec:
     kind: DbInstance
     plural: dbinstances
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

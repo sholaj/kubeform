@@ -11,6 +11,8 @@ spec:
     kind: CognitoResourceServer
     plural: cognitoresourceservers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

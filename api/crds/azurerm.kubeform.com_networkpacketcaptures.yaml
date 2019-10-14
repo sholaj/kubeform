@@ -11,6 +11,8 @@ spec:
     kind: NetworkPacketCapture
     plural: networkpacketcaptures
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: SsmMaintenanceWindowTask
     plural: ssmmaintenancewindowtasks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: HdinsightSparkCluster
     plural: hdinsightsparkclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

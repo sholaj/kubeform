@@ -11,6 +11,8 @@ spec:
     kind: StorageNotification
     plural: storagenotifications
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

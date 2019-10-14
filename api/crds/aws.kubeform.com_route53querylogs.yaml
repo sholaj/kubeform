@@ -11,6 +11,8 @@ spec:
     kind: Route53QueryLog
     plural: route53querylogs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

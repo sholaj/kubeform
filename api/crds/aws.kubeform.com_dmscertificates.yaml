@@ -11,6 +11,8 @@ spec:
     kind: DmsCertificate
     plural: dmscertificates
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

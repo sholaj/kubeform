@@ -11,6 +11,8 @@ spec:
     kind: SfnActivity
     plural: sfnactivities
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

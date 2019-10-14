@@ -11,6 +11,8 @@ spec:
     kind: DataLakeStoreFile
     plural: datalakestorefiles
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: LoggingBillingAccountExclusion
     plural: loggingbillingaccountexclusions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

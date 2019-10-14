@@ -11,6 +11,8 @@ spec:
     kind: IamAccessKey
     plural: iamaccesskeys
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

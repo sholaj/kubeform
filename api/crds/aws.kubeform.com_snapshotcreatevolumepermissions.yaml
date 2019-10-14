@@ -11,6 +11,8 @@ spec:
     kind: SnapshotCreateVolumePermission
     plural: snapshotcreatevolumepermissions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

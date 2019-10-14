@@ -11,6 +11,8 @@ spec:
     kind: ElasticBeanstalkConfigurationTemplate
     plural: elasticbeanstalkconfigurationtemplates
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

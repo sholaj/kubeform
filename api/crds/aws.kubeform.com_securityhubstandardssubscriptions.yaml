@@ -11,6 +11,8 @@ spec:
     kind: SecurityhubStandardsSubscription
     plural: securityhubstandardssubscriptions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

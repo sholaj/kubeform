@@ -11,6 +11,8 @@ spec:
     kind: OrganizationsOrganizationalUnit
     plural: organizationsorganizationalunits
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

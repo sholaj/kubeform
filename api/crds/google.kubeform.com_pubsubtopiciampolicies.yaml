@@ -11,6 +11,8 @@ spec:
     kind: PubsubTopicIamPolicy
     plural: pubsubtopiciampolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: MetricAlertrule
     plural: metricalertrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

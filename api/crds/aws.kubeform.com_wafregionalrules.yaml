@@ -11,6 +11,8 @@ spec:
     kind: WafregionalRule
     plural: wafregionalrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

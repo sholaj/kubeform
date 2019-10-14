@@ -11,6 +11,8 @@ spec:
     kind: ApiManagementProductGroup
     plural: apimanagementproductgroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

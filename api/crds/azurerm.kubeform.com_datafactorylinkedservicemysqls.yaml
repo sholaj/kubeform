@@ -11,6 +11,8 @@ spec:
     kind: DataFactoryLinkedServiceMysql
     plural: datafactorylinkedservicemysqls
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

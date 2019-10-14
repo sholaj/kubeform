@@ -11,6 +11,8 @@ spec:
     kind: BigqueryTable
     plural: bigquerytables
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

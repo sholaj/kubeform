@@ -11,6 +11,8 @@ spec:
     kind: MariadbFirewallRule
     plural: mariadbfirewallrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

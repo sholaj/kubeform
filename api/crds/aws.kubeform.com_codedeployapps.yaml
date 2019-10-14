@@ -11,6 +11,8 @@ spec:
     kind: CodedeployApp
     plural: codedeployapps
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

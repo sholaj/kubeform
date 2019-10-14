@@ -11,6 +11,8 @@ spec:
     kind: Domain
     plural: domains
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

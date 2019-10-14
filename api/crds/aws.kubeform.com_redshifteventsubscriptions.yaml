@@ -11,6 +11,8 @@ spec:
     kind: RedshiftEventSubscription
     plural: redshifteventsubscriptions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

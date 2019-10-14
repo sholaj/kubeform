@@ -11,6 +11,8 @@ spec:
     kind: MysqlDatabase
     plural: mysqldatabases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

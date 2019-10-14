@@ -11,6 +11,8 @@ spec:
     kind: SecurityCenterWorkspace
     plural: securitycenterworkspaces
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

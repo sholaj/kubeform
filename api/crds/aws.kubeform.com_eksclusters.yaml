@@ -11,6 +11,8 @@ spec:
     kind: EksCluster
     plural: eksclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

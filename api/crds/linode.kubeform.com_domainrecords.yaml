@@ -11,6 +11,8 @@ spec:
     kind: DomainRecord
     plural: domainrecords
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

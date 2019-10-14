@@ -11,6 +11,8 @@ spec:
     kind: WafRule
     plural: wafrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

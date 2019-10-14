@@ -11,6 +11,8 @@ spec:
     kind: Cloudtrail
     plural: cloudtrails
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

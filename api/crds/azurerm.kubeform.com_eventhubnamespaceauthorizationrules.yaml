@@ -11,6 +11,8 @@ spec:
     kind: EventhubNamespaceAuthorizationRule
     plural: eventhubnamespaceauthorizationrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

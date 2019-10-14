@@ -11,6 +11,8 @@ spec:
     kind: RecoveryServicesProtectedVm
     plural: recoveryservicesprotectedvms
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

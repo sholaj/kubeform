@@ -11,6 +11,8 @@ spec:
     kind: LicensemanagerAssociation
     plural: licensemanagerassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

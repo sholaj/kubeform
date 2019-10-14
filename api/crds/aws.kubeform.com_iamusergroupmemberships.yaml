@@ -11,6 +11,8 @@ spec:
     kind: IamUserGroupMembership
     plural: iamusergroupmemberships
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

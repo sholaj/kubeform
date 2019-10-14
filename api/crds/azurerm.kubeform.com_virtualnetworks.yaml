@@ -11,6 +11,8 @@ spec:
     kind: VirtualNetwork
     plural: virtualnetworks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

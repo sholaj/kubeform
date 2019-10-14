@@ -11,6 +11,8 @@ spec:
     kind: ProxyProtocolPolicy
     plural: proxyprotocolpolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

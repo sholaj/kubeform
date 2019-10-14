@@ -11,6 +11,8 @@ spec:
     kind: ElastictranscoderPipeline
     plural: elastictranscoderpipelines
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

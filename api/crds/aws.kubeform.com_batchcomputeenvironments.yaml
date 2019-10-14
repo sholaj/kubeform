@@ -11,6 +11,8 @@ spec:
     kind: BatchComputeEnvironment
     plural: batchcomputeenvironments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

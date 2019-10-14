@@ -11,6 +11,8 @@ spec:
     kind: EventhubNamespace_
     plural: eventhubnamespace_s
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

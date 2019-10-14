@@ -11,6 +11,8 @@ spec:
     kind: DataFactoryLinkedServicePostgresql
     plural: datafactorylinkedservicepostgresqls
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

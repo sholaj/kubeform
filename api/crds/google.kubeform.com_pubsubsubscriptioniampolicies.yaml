@@ -11,6 +11,8 @@ spec:
     kind: PubsubSubscriptionIamPolicy
     plural: pubsubsubscriptioniampolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

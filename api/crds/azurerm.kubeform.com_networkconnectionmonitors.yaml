@@ -11,6 +11,8 @@ spec:
     kind: NetworkConnectionMonitor
     plural: networkconnectionmonitors
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

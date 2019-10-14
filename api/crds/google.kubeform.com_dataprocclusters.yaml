@@ -11,6 +11,8 @@ spec:
     kind: DataprocCluster
     plural: dataprocclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: CdnEndpoint
     plural: cdnendpoints
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: VpnConnection
     plural: vpnconnections
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

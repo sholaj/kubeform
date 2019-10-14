@@ -11,6 +11,8 @@ spec:
     kind: ServiceDiscoveryService
     plural: servicediscoveryservices
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

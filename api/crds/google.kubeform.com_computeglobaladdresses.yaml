@@ -11,6 +11,8 @@ spec:
     kind: ComputeGlobalAddress
     plural: computeglobaladdresses
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

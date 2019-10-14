@@ -11,6 +11,8 @@ spec:
     kind: SnsSmsPreferences
     plural: snssmspreferences
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

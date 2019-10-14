@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayMethodResponse
     plural: apigatewaymethodresponses
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

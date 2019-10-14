@@ -11,6 +11,8 @@ spec:
     kind: StorageAccount
     plural: storageaccounts
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

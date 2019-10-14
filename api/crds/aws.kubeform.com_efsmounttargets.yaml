@@ -11,6 +11,8 @@ spec:
     kind: EfsMountTarget
     plural: efsmounttargets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

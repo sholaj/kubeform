@@ -11,6 +11,8 @@ spec:
     kind: WafSizeConstraintSet
     plural: wafsizeconstraintsets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

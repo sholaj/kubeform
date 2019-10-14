@@ -11,6 +11,8 @@ spec:
     kind: SsmMaintenanceWindowTarget
     plural: ssmmaintenancewindowtargets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

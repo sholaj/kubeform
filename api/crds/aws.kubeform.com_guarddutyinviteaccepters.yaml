@@ -11,6 +11,8 @@ spec:
     kind: GuarddutyInviteAccepter
     plural: guarddutyinviteaccepters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: PostgresqlDatabase
     plural: postgresqldatabases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

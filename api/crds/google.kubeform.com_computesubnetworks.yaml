@@ -11,6 +11,8 @@ spec:
     kind: ComputeSubnetwork
     plural: computesubnetworks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: LambdaEventSourceMapping
     plural: lambdaeventsourcemappings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

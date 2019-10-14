@@ -11,6 +11,8 @@ spec:
     kind: GameliftBuild
     plural: gameliftbuilds
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

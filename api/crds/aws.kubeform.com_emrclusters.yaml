@@ -11,6 +11,8 @@ spec:
     kind: EmrCluster
     plural: emrclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

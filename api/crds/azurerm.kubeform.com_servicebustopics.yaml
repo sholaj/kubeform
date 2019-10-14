@@ -11,6 +11,8 @@ spec:
     kind: ServicebusTopic
     plural: servicebustopics
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

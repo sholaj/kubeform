@@ -11,6 +11,8 @@ spec:
     kind: ComputeSSLCertificate
     plural: computesslcertificates
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

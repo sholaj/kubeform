@@ -11,6 +11,8 @@ spec:
     kind: ServicebusNamespaceAuthorizationRule
     plural: servicebusnamespaceauthorizationrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

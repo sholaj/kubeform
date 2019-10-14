@@ -11,6 +11,8 @@ spec:
     kind: DbSnapshot
     plural: dbsnapshots
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

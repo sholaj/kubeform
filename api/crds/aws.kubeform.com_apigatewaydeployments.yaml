@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayDeployment
     plural: apigatewaydeployments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

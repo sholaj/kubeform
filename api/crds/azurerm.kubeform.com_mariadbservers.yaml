@@ -11,6 +11,8 @@ spec:
     kind: MariadbServer
     plural: mariadbservers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

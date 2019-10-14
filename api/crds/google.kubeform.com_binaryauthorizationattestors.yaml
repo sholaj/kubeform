@@ -11,6 +11,8 @@ spec:
     kind: BinaryAuthorizationAttestor
     plural: binaryauthorizationattestors
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: LoadBalancerPolicy
     plural: loadbalancerpolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

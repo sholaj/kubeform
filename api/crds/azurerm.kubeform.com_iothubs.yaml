@@ -11,6 +11,8 @@ spec:
     kind: Iothub
     plural: iothubs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

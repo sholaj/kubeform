@@ -11,6 +11,8 @@ spec:
     kind: Record
     plural: records
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

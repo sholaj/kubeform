@@ -11,6 +11,8 @@ spec:
     kind: DataprocJob
     plural: dataprocjobs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

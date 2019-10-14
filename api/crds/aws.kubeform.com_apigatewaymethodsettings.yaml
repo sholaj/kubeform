@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayMethodSettings
     plural: apigatewaymethodsettings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

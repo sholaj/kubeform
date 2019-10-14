@@ -11,6 +11,8 @@ spec:
     kind: IotThingType
     plural: iotthingtypes
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

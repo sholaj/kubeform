@@ -11,6 +11,8 @@ spec:
     kind: ServiceDiscoveryPublicDNSNamespace
     plural: servicediscoverypublicdnsnamespaces
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

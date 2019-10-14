@@ -11,6 +11,8 @@ spec:
     kind: IamAccountAlias
     plural: iamaccountaliases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

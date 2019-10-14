@@ -11,6 +11,8 @@ spec:
     kind: S3BucketMetric
     plural: s3bucketmetrics
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

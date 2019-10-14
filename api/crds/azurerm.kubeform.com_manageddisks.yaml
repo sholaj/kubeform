@@ -11,6 +11,8 @@ spec:
     kind: ManagedDisk
     plural: manageddisks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

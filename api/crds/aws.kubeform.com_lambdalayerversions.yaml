@@ -11,6 +11,8 @@ spec:
     kind: LambdaLayerVersion
     plural: lambdalayerversions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

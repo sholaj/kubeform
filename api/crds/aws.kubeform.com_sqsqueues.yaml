@@ -11,6 +11,8 @@ spec:
     kind: SqsQueue
     plural: sqsqueues
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

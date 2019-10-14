@@ -11,6 +11,8 @@ spec:
     kind: ComputeURLMap
     plural: computeurlmaps
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

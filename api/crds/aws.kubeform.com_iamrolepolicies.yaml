@@ -11,6 +11,8 @@ spec:
     kind: IamRolePolicy
     plural: iamrolepolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

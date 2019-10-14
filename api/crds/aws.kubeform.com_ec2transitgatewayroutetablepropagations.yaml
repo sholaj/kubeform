@@ -11,6 +11,8 @@ spec:
     kind: Ec2TransitGatewayRouteTablePropagation
     plural: ec2transitgatewayroutetablepropagations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: VirtualNetworkPeering
     plural: virtualnetworkpeerings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

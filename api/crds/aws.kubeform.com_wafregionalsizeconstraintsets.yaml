@@ -11,6 +11,8 @@ spec:
     kind: WafregionalSizeConstraintSet
     plural: wafregionalsizeconstraintsets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

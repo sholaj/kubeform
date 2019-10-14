@@ -11,6 +11,8 @@ spec:
     kind: CloudwatchMetricAlarm
     plural: cloudwatchmetricalarms
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

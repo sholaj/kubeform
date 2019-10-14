@@ -11,6 +11,8 @@ spec:
     kind: CloudiotRegistry
     plural: cloudiotregistries
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

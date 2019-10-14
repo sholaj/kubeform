@@ -11,6 +11,8 @@ spec:
     kind: ServicebusNamespace
     plural: servicebusnamespaces
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

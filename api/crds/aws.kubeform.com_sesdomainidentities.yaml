@@ -11,6 +11,8 @@ spec:
     kind: SesDomainIdentity
     plural: sesdomainidentities
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

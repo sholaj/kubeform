@@ -11,6 +11,8 @@ spec:
     kind: FirewallNATRuleCollection
     plural: firewallnatrulecollections
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

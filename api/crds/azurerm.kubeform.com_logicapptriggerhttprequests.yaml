@@ -11,6 +11,8 @@ spec:
     kind: LogicAppTriggerHTTPRequest
     plural: logicapptriggerhttprequests
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

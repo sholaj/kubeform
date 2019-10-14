@@ -11,6 +11,8 @@ spec:
     kind: IamPolicyAttachment
     plural: iampolicyattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

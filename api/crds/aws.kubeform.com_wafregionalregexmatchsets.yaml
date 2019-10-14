@@ -11,6 +11,8 @@ spec:
     kind: WafregionalRegexMatchSet
     plural: wafregionalregexmatchsets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

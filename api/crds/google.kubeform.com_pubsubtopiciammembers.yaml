@@ -11,6 +11,8 @@ spec:
     kind: PubsubTopicIamMember
     plural: pubsubtopiciammembers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: CognitoIdentityPoolRolesAttachment
     plural: cognitoidentitypoolrolesattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

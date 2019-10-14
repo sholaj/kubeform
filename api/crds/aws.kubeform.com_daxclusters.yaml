@@ -11,6 +11,8 @@ spec:
     kind: DaxCluster
     plural: daxclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

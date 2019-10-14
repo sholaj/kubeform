@@ -11,6 +11,8 @@ spec:
     kind: DocdbClusterSnapshot
     plural: docdbclustersnapshots
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

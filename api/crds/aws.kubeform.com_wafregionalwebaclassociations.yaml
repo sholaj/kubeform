@@ -11,6 +11,8 @@ spec:
     kind: WafregionalWebACLAssociation
     plural: wafregionalwebaclassociations
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

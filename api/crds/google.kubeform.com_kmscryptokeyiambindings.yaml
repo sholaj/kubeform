@@ -11,6 +11,8 @@ spec:
     kind: KmsCryptoKeyIamBinding
     plural: kmscryptokeyiambindings
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

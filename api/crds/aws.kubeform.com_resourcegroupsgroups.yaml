@@ -11,6 +11,8 @@ spec:
     kind: ResourcegroupsGroup
     plural: resourcegroupsgroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

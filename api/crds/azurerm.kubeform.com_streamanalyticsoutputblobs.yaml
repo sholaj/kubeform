@@ -11,6 +11,8 @@ spec:
     kind: StreamAnalyticsOutputBlob
     plural: streamanalyticsoutputblobs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

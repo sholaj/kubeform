@@ -11,6 +11,8 @@ spec:
     kind: Subnet
     plural: subnets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

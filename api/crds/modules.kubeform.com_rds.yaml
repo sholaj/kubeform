@@ -11,6 +11,8 @@ spec:
     kind: RDS
     plural: rds
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

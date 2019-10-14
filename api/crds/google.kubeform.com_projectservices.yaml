@@ -11,6 +11,8 @@ spec:
     kind: ProjectService
     plural: projectservices
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

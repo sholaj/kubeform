@@ -11,6 +11,8 @@ spec:
     kind: LoggingOrganizationExclusion
     plural: loggingorganizationexclusions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

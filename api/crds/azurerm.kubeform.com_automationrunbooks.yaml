@@ -11,6 +11,8 @@ spec:
     kind: AutomationRunbook
     plural: automationrunbooks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

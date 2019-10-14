@@ -11,6 +11,8 @@ spec:
     kind: ElastictranscoderPreset
     plural: elastictranscoderpresets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

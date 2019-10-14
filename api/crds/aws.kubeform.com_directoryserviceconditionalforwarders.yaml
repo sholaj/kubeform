@@ -11,6 +11,8 @@ spec:
     kind: DirectoryServiceConditionalForwarder
     plural: directoryserviceconditionalforwarders
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

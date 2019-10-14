@@ -11,6 +11,8 @@ spec:
     kind: EcsCluster
     plural: ecsclusters
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

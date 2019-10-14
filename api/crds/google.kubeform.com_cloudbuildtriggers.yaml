@@ -11,6 +11,8 @@ spec:
     kind: CloudbuildTrigger
     plural: cloudbuildtriggers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

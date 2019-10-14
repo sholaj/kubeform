@@ -11,6 +11,8 @@ spec:
     kind: ApplicationInsights
     plural: applicationinsights
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

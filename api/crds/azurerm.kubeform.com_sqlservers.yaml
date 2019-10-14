@@ -11,6 +11,8 @@ spec:
     kind: SqlServer
     plural: sqlservers
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayDocumentationVersion
     plural: apigatewaydocumentationversions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

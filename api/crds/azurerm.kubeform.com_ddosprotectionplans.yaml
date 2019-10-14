@@ -11,6 +11,8 @@ spec:
     kind: DdosProtectionPlan
     plural: ddosprotectionplans
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

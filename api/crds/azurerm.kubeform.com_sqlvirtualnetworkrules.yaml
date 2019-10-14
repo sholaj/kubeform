@@ -11,6 +11,8 @@ spec:
     kind: SqlVirtualNetworkRule
     plural: sqlvirtualnetworkrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -11,6 +11,8 @@ spec:
     kind: DmsReplicationSubnetGroup
     plural: dmsreplicationsubnetgroups
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

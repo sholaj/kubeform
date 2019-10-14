@@ -11,6 +11,8 @@ spec:
     kind: CloudfunctionsFunction
     plural: cloudfunctionsfunctions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

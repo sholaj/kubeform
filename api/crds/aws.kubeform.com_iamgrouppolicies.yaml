@@ -11,6 +11,8 @@ spec:
     kind: IamGroupPolicy
     plural: iamgrouppolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

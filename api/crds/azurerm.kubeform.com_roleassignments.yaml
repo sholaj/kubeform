@@ -11,6 +11,8 @@ spec:
     kind: RoleAssignment
     plural: roleassignments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

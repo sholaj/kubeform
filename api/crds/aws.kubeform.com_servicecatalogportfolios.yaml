@@ -11,6 +11,8 @@ spec:
     kind: ServicecatalogPortfolio
     plural: servicecatalogportfolios
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

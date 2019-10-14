@@ -11,6 +11,8 @@ spec:
     kind: ComputeRegionBackendService
     plural: computeregionbackendservices
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

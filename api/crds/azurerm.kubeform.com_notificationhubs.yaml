@@ -11,6 +11,8 @@ spec:
     kind: NotificationHub
     plural: notificationhubs
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

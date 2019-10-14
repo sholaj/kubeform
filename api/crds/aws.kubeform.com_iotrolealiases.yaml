@@ -11,6 +11,8 @@ spec:
     kind: IotRoleAlias
     plural: iotrolealiases
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

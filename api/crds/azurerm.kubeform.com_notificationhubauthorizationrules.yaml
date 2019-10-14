@@ -11,6 +11,8 @@ spec:
     kind: NotificationHubAuthorizationRule
     plural: notificationhubauthorizationrules
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

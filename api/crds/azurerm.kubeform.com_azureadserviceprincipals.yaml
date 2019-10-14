@@ -11,6 +11,8 @@ spec:
     kind: AzureadServicePrincipal
     plural: azureadserviceprincipals
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

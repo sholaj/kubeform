@@ -11,6 +11,8 @@ spec:
     kind: SesReceiptRuleSet
     plural: sesreceiptrulesets
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

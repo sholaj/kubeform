@@ -11,6 +11,8 @@ spec:
     kind: FunctionApp
     plural: functionapps
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

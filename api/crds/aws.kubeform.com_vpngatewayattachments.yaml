@@ -11,6 +11,8 @@ spec:
     kind: VpnGatewayAttachment
     plural: vpngatewayattachments
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

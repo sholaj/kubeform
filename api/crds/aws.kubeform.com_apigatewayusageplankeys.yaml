@@ -11,6 +11,8 @@ spec:
     kind: ApiGatewayUsagePlanKey
     plural: apigatewayusageplankeys
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

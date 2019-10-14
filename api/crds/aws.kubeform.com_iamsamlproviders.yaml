@@ -11,6 +11,8 @@ spec:
     kind: IamSamlProvider
     plural: iamsamlproviders
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

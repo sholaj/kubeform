@@ -11,6 +11,8 @@ spec:
     kind: ManagementLock
     plural: managementlocks
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

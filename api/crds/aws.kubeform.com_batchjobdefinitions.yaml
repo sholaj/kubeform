@@ -11,6 +11,8 @@ spec:
     kind: BatchJobDefinition
     plural: batchjobdefinitions
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

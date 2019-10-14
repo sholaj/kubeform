@@ -11,6 +11,8 @@ spec:
     kind: MonitoringAlertPolicy
     plural: monitoringalertpolicies
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

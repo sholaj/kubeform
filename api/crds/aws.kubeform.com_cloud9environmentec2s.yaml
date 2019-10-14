@@ -11,6 +11,8 @@ spec:
     kind: Cloud9EnvironmentEc2
     plural: cloud9environmentec2s
   scope: ""
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:
