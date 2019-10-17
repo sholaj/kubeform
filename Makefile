@@ -81,7 +81,7 @@ BUILD_DIRS  := bin/$(OS)_$(ARCH)     \
 # If you want to build all binaries, see the 'all-build' rule.
 # If you want to build all containers, see the 'all-container' rule.
 # If you want to build AND push all containers, see the 'all-push' rule.
-all: gen
+all: gen gen-crd-docs
 
 # For the following OS/ARCH expansions, we transform OS/ARCH into OS_ARCH
 # because make pattern rules don't match with embedded '/' characters.
@@ -222,7 +222,7 @@ gen-crd-docs:
 manifests: gen-crds label-crds
 
 .PHONY: gen
-gen: gen-types fmt clientset openapi manifests gen-crd-docs
+gen: gen-types fmt clientset openapi manifests
 
 fmt: $(BUILD_DIRS)
 	@docker run                                                 \
