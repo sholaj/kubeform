@@ -49,7 +49,7 @@ endif
 ### These variables should not need tweaking.
 ###
 
-SRC_DIRS := *.go apis client util hack/gencrd # directories which hold app source (not vendored)
+SRC_DIRS := *.go apis client data util hack/gencrd # directories which hold app source (not vendored)
 
 DOCKER_PLATFORMS := linux/amd64 linux/arm linux/arm64
 BIN_PLATFORMS    := $(DOCKER_PLATFORMS)
@@ -125,6 +125,7 @@ gen-types: $(BUILD_DIRS)
 	        VERSION=$(VERSION)                                  \
 	        ./hack/run.sh                                       \
 	    "
+	@$(MAKE) fmt --no-print-directory
 
 # Generate a typed clientset
 .PHONY: clientset
@@ -188,7 +189,7 @@ openapi-%:
 			--go-header-file "./hack/boilerplate.go.txt" \
 			--input-dirs "$(GO_PKG)/$(REPO)/apis/$(subst _,/,$*),k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/apimachinery/pkg/api/resource,k8s.io/apimachinery/pkg/runtime,k8s.io/apimachinery/pkg/util/intstr,k8s.io/api/core/v1" \
 			--output-package "$(GO_PKG)/$(REPO)/apis/$(subst _,/,$*)" \
-			--report-filename api/api-rules/violation_exceptions.list
+			--report-filename /tmp/violation_exceptions.list
 
 # Generate CRD manifests
 .PHONY: gen-crds
@@ -236,7 +237,7 @@ gen-crd-docs:
 manifests: gen-crds label-crds
 
 .PHONY: gen
-gen: gen-types fmt clientset openapi manifests
+gen: gen-types clientset openapi manifests
 
 fmt: $(BUILD_DIRS)
 	@docker run                                                 \
@@ -324,7 +325,7 @@ lint: $(BUILD_DIRS)
 	    --env GO111MODULE=on                                    \
 	    --env GOFLAGS="-mod=vendor"                             \
 	    $(BUILD_IMAGE)                                          \
-	    golangci-lint run --enable $(ADDTL_LINTERS) --timeout=10m --skip-files="generated.*\.go$\" --skip-dirs-use-default --skip-dirs=client,vendor
+	    golangci-lint run --enable $(ADDTL_LINTERS) --timeout=60m --skip-files="generated.*\.go$\" --skip-dirs-use-default --skip-dirs=client,vendor
 
 $(BUILD_DIRS):
 	@mkdir -p $@
@@ -344,13 +345,13 @@ verify-modules:
 	fi
 
 .PHONY: verify-gen
-verify-gen: gen
+verify-gen: gen fmt
 	@if !(git diff --exit-code HEAD); then \
-		echo "generated files are out of date, run make gen"; exit 1; \
+		echo "files are out of date, run make gen fmt"; exit 1; \
 	fi
 
 .PHONY: ci
-ci: verify-gen lint test #build cover
+ci: verify lint test #build cover
 
 .PHONY: clean
 clean:
