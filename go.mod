@@ -12,6 +12,7 @@ require (
 	github.com/googleapis/gax-go v2.0.2+incompatible // indirect
 	github.com/hashicorp/terraform v0.12.7-0.20190808211310-979a2fa6d13b
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20190327195015-8022a2663a70
+	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4 // indirect
 	github.com/terraform-providers/terraform-provider-aws v0.0.0-20190510001811-4b894dbf13f6
 	github.com/terraform-providers/terraform-provider-azurerm v1.32.1
 	github.com/terraform-providers/terraform-provider-digitalocean v1.5.0
