@@ -1,6 +1,5 @@
 # kubeform
 
-[![Go Report Card](https://goreportcard.com/badge/kubeform.dev/kubeform)](https://goreportcard.com/report/kubeform.dev/kubeform)
 [![Build Status](https://github.com/kubeform/kubeform/workflows/CI/badge.svg)](https://github.com/kubeform/kubeform/actions?workflow=CI)
 [![codecov](https://codecov.io/gh/kubeform/kubeform/branch/master/graph/badge.svg)](https://codecov.io/gh/kubeform/kubeform)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kubeform/kubeform.svg)](https://hub.docker.com/r/kubeform/kubeform/)
