@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   creationTimestamp: null
   labels:
-    app: kubeform
+    app.kubernetes.io/name: kubeform
   name: batchcomputeenvironments.aws.kubeform.com
 spec:
   additionalPrinterColumns:

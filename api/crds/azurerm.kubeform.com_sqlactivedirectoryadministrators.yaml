@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   creationTimestamp: null
   labels:
-    app: kubeform
+    app.kubernetes.io/name: kubeform
   name: sqlactivedirectoryadministrators.azurerm.kubeform.com
 spec:
   additionalPrinterColumns:
