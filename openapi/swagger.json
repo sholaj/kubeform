@@ -1215,6 +1215,9 @@
         "providerRef": {
           "$ref": "#/definitions/io.k8s.api.core.v1.LocalObjectReference"
         },
+        "remoteBackend": {
+          "$ref": "#/definitions/dev.kubeform.kubeform.apis.base.v1alpha1.Backend"
+        },
         "securityGroups": {
           "type": "array",
           "items": {
@@ -1294,6 +1297,18 @@
         },
         "state": {
           "$ref": "#/definitions/dev.kubeform.kubeform.apis.base.v1alpha1.State"
+        }
+      }
+    },
+    "dev.kubeform.kubeform.apis.base.v1alpha1.Backend": {
+      "description": "Backend specifies the configuration of the terraform backend",
+      "type": "object",
+      "properties": {
+        "ref": {
+          "$ref": "#/definitions/io.k8s.api.core.v1.LocalObjectReference"
+        },
+        "type": {
+          "type": "string"
         }
       }
     },

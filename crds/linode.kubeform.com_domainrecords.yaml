@@ -74,6 +74,21 @@ spec:
                 A records associate a domain name with an IPv4 address, and AAAA records
                 associate a domain name with an IPv6 address.
               type: string
+            remoteBackend:
+              description: Backend specifies the configuration of the terraform backend
+              properties:
+                ref:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                type:
+                  type: string
+              type: object
             service:
               description: The service this Record identified. Only valid for SRV
                 records.
@@ -152,6 +167,22 @@ spec:
                     A records associate a domain name with an IPv4 address, and AAAA
                     records associate a domain name with an IPv6 address.
                   type: string
+                remoteBackend:
+                  description: Backend specifies the configuration of the terraform
+                    backend
+                  properties:
+                    ref:
+                      description: LocalObjectReference contains enough information
+                        to let you locate the referenced object inside the same namespace.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                            TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
+                    type:
+                      type: string
+                  type: object
                 service:
                   description: The service this Record identified. Only valid for
                     SRV records.

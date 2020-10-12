@@ -69,6 +69,21 @@ spec:
             region:
               description: The region where this NodeBalancer will be deployed.
               type: string
+            remoteBackend:
+              description: Backend specifies the configuration of the terraform backend
+              properties:
+                ref:
+                  description: LocalObjectReference contains enough information to
+                    let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                        TODO: Add other useful fields. apiVersion, kind, uid?'
+                      type: string
+                  type: object
+                type:
+                  type: string
+              type: object
             tags:
               description: An array of tags applied to this object. Tags are for organizational
                 purposes only.
@@ -143,6 +158,22 @@ spec:
                 region:
                   description: The region where this NodeBalancer will be deployed.
                   type: string
+                remoteBackend:
+                  description: Backend specifies the configuration of the terraform
+                    backend
+                  properties:
+                    ref:
+                      description: LocalObjectReference contains enough information
+                        to let you locate the referenced object inside the same namespace.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                            TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
+                    type:
+                      type: string
+                  type: object
                 tags:
                   description: An array of tags applied to this object. Tags are for
                     organizational purposes only.
