@@ -135,8 +135,8 @@ spec:
                 is deleted.
               type: string
             iamDatabaseAuthenticationEnabled:
-              description: Specifies whether or mappings of AWS Identity and Access
-                Management (IAM) accounts to database accounts is enabled
+              description: Specifies whether or not the mappings of AWS Identity and
+                Access Management (IAM) accounts to database accounts are enabled
               type: boolean
             identifier:
               description: The name of the RDS instance, if omitted, Terraform will
