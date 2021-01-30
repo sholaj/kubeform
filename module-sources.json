@@ -12,5 +12,12 @@
       "provider": "google",
       "url": "https://github.com/terraform-google-modules/terraform-google-service-accounts/archive/master.zip",
       "subDirectory": ""
+    },
+    {
+      "name": "SDPAzappserviceplanv1",
+      "source": "git::https://github.com/sholaj/azure-terraform-resourcegroups.git",
+      "provider": "azurerm",
+      "url": "https://github.com/sholaj/azure-terraform-resourcegroups/archive/main.zip",
+      "subDirectory": ""
     }
 ]
